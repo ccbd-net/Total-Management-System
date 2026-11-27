@@ -1,0 +1,134 @@
+{
+  "companies": [
+    {
+      "id": "cmp-1795633979222",
+      "name": "Test Sec Travels",
+      "logoUrl": "",
+      "address": "",
+      "phone": "",
+      "subscriptionExpiry": "2027-12-31",
+      "adminLoginId": "",
+      "adminPinHash": "ae56a49a8a29a8f34fa6949d6c936f08272ea033f44989c9de546f5417e9782b",
+      "adminPinSalt": "e02230f3570c7d4ec0e00c4abce098f6",
+      "status": "active",
+      "createdAt": "2026-11-25T19:12:59.222Z"
+    }
+  ],
+  "users": [
+    {
+      "id": "usr-01",
+      "loginId": "admin",
+      "name": "Zayem Bhuiya / জায়িম ভুইয়া (মাস্টার এডমিন)",
+      "role": "super_admin",
+      "phone": "01700-111111",
+      "status": "active",
+      "pinHash": "263d453e5b1ad08bf5171393e02a2e846da991178abaf97929decf0aa1f67175",
+      "pinSalt": "3fb8fed4454fc875935789450c0702a2",
+      "createdAt": "2026-01-01T08:00:00Z"
+    },
+    {
+      "id": "usr-1795633979223",
+      "loginId": "sec01_secret",
+      "name": "Test Sec Travels এডমিন",
+      "role": "company_admin",
+      "companyId": "cmp-1795633979222",
+      "phone": "",
+      "status": "active",
+      "pinHash": "929908d2240d8ee54a121f150df4fd9c667d81d7a89f2f2edf1874dbc23eb1d9",
+      "pinSalt": "3b01495a4df9016a8369ca69ed789642",
+      "createdAt": "2026-11-25T19:12:59.223Z"
+    }
+  ],
+  "supervisors": [],
+  "drivers": [],
+  "counters": [],
+  "vehicles": [],
+  "routes": [],
+  "schedules": [],
+  "bookings": [],
+  "reconciliations": [],
+  "auditLogs": [
+    {
+      "companyId": "cmp-1795633979222",
+      "userId": "usr-1795633979223",
+      "userName": "Test Sec Travels এডমিন",
+      "role": "company_admin",
+      "actionType": "LOGIN",
+      "entityType": "USER",
+      "entityId": "usr-1795633979223",
+      "details": "Test Sec Travels এডমিন সফলভাবে সিস্টেমে প্রবেশ করেছেন।",
+      "id": "aud-1795633979230-728",
+      "timestamp": "2026-11-25T19:12:59.230Z"
+    },
+    {
+      "userId": "usr-01",
+      "userName": "Zayem Bhuiya / জায়িম ভুইয়া (মাস্টার এডমিন)",
+      "role": "super_admin",
+      "actionType": "CREATE_COMPANY",
+      "entityType": "COMPANY",
+      "entityId": "cmp-1795633979222",
+      "details": "নতুন কোম্পানি \"Test Sec Travels\" তৈরি করা হয়েছে। সাবস্ক্রিপশন মেয়াদ: 2027-12-31",
+      "id": "aud-1795633979223-678",
+      "timestamp": "2026-11-25T19:12:59.223Z"
+    },
+    {
+      "userId": "usr-01",
+      "userName": "Zayem Bhuiya / জায়িম ভুইয়া (মাস্টার এডমিন)",
+      "role": "super_admin",
+      "actionType": "LOGIN",
+      "entityType": "USER",
+      "entityId": "usr-01",
+      "details": "Zayem Bhuiya / জায়িম ভুইয়া (মাস্টার এডমিন) সফলভাবে সিস্টেমে প্রবেশ করেছেন।",
+      "id": "aud-1795633979217-5",
+      "timestamp": "2026-11-25T19:12:59.217Z"
+    },
+    {
+      "userId": "usr-01",
+      "userName": "Zayem Bhuiya / জায়িম ভুইয়া (মাস্টার এডমিন)",
+      "role": "super_admin",
+      "actionType": "DELETE_COMPANY",
+      "entityType": "COMPANY",
+      "entityId": "cmp-1795546941995",
+      "details": "কোম্পানি \"Aranna Travels\" এবং এর সংশ্লিষ্ট 2 টি রেকর্ড নিরাপদভাবে মুছে ফেলা হয়েছে।",
+      "id": "aud-1795633452691-497",
+      "timestamp": "2026-11-25T19:04:12.691Z"
+    },
+    {
+      "userId": "usr-01",
+      "userName": "Zayem Bhuiya / জায়িম ভুইয়া (মাস্টার এডমিন)",
+      "role": "super_admin",
+      "actionType": "LOGIN",
+      "entityType": "USER",
+      "entityId": "usr-01",
+      "details": "Zayem Bhuiya / জায়িম ভুইয়া (মাস্টার এডমিন) (super_admin) সফলভাবে সিস্টেমে প্রবেশ করেছেন।",
+      "id": "aud-1795573919178-57",
+      "timestamp": "2026-11-25T02:31:59.178Z"
+    },
+    {
+      "userId": "usr-01",
+      "userName": "Zayem Bhuiya / জায়িম ভুইয়া (মাস্টার এডমিন)",
+      "role": "super_admin",
+      "actionType": "LOGIN",
+      "entityType": "USER",
+      "entityId": "usr-01",
+      "details": "Zayem Bhuiya / জায়িম ভুইয়া (মাস্টার এডমিন) (super_admin) সফলভাবে সিস্টেমে প্রবেশ করেছেন।",
+      "id": "aud-1795548599000-898",
+      "timestamp": "2026-11-24T19:29:59.000Z"
+    }
+  ],
+  "fuelEntries": [],
+  "fuelSettings": {},
+  "settings": {
+    "companyName": "Counter Management System",
+    "subTitle": "কাউন্টার বুকিং ও ট্রিপ ইনফরমেশন",
+    "hotline": "01711-000000",
+    "defaultFare": 550,
+    "noticeText": "সকল কাউন্টারকে দ্রুত বুকিং ও প্রিন্ট সেবা নিশ্চিত করতে অনুরোধ করা হচ্ছে।",
+    "currency": "৳",
+    "timezone": "Asia/Dhaka"
+  },
+  "deletedCompanyIds": [
+    "cmp-1795546941995"
+  ],
+  "companySettings": {}
+}
