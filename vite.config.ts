@@ -11,42 +11,22 @@ export default defineConfig(() => {
       tailwindcss(),
       VitePWA({
         registerType: 'autoUpdate',
-        includeAssets: ['favicon.png', 'apple-touch-icon.png', 'pwa-192x192.png', 'pwa-512x512.png', 'manifest.json', 'logo.jpg'],
-        manifest: {
-          id: '/',
-          name: 'Counter Management System',
-          short_name: 'CMS Counter',
-          description: 'কাউন্টার ম্যানেজমেন্ট সিস্টেম - Powered by Data&Code',
-          theme_color: '#0f172a',
-          background_color: '#0f172a',
-          display: 'standalone',
-          orientation: 'portrait-primary',
-          scope: '/',
-          start_url: '/',
-          icons: [
-            {
-              src: '/pwa-192x192.png',
-              sizes: '192x192',
-              type: 'image/png',
-              purpose: 'any'
-            },
-            {
-              src: '/pwa-512x512.png',
-              sizes: '512x512',
-              type: 'image/png',
-              purpose: 'any'
-            },
-            {
-              src: '/pwa-512x512.png',
-              sizes: '512x512',
-              type: 'image/png',
-              purpose: 'maskable'
-            }
-          ]
-        },
+        injectRegister: false,
+        manifest: false,
+        useCredentials: true,
+        includeAssets: [
+          'favicon.ico',
+          'favicon.png',
+          'apple-touch-icon.png',
+          'pwa-192x192.png',
+          'pwa-512x512.png',
+          'pwa-maskable-512x512.png',
+          'manifest.json',
+          'logo.png',
+          'logo.jpg'
+        ],
         devOptions: {
-          enabled: true,
-          type: 'module'
+          enabled: false,
         },
         workbox: {
           maximumFileSizeToCacheInBytes: 6 * 1024 * 1024,

@@ -395,118 +395,128 @@ export const UsersPage: React.FC = () => {
   });
 
   return (
-    <div className="space-y-6">
-      {/* Top Header Card */}
-      <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
-            <Users className="w-5 h-5 text-emerald-600" />
-            <span>ইউজার, সুপারভাইজার ও ড্রাইভার ব্যবস্থাপনা</span>
-          </h2>
-          <p className="text-xs text-slate-500 mt-0.5">
-            লগইন অপারেটর, সুপারভাইজার ও ড্রাইভারদের নাম তালিকা পরিচালনা করুন
-          </p>
-        </div>
+    <div className="space-y-3">
+      {/* Compact Header */}
+      <div className="bg-white rounded-xl border border-emerald-200 shadow-2xs overflow-hidden">
+        <div className="bg-[#0b2820] px-3 py-2 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div className="flex items-center gap-2 min-w-0">
+            <Users className="w-4 h-4 shrink-0 text-emerald-300" />
+            <div className="min-w-0">
+              <h2 className="text-xs sm:text-sm font-bold leading-tight truncate text-white">
+                ইউজার, সুপারভাইজার ও ড্রাইভার ব্যবস্থাপনা
+              </h2>
+              <p className="hidden sm:block text-[10px] text-emerald-200/80 leading-tight truncate">
+                লগইন অপারেটর, সুপারভাইজার ও ড্রাইভারদের তালিকা পরিচালনা
+              </p>
+            </div>
+          </div>
 
-        <div className="flex items-center gap-2.5">
-          <button
-            type="button"
-            onClick={fetchData}
-            className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition-colors"
-            title="রিফ্রেশ"
-          >
-            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-          </button>
+          <div className="flex items-center gap-1.5 shrink-0">
+            <button
+              type="button"
+              onClick={fetchData}
+              className="p-1.5 bg-white/15 hover:bg-white/25 text-white rounded-lg transition-colors cursor-pointer"
+              title="রিফ্রেশ"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+            </button>
 
-          {isMasterAdmin && (
-            activeTab === 'users' ? (
-              <button
-                type="button"
-                onClick={openAddUserModal}
-                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-xs hover:shadow-md transition-all flex items-center gap-1.5"
-              >
-                <Plus className="w-4 h-4" />
-                <span>নতুন ইউজার তৈরি করুন</span>
-              </button>
-            ) : activeTab === 'supervisors' ? (
-              <button
-                type="button"
-                onClick={openAddSupModal}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-xs hover:shadow-md transition-all flex items-center gap-1.5"
-              >
-                <Plus className="w-4 h-4" />
-                <span>নতুন সুপারভাইজার যোগ করুন</span>
-              </button>
-            ) : (
-              <button
-                type="button"
-                onClick={openAddDriverModal}
-                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-xs hover:shadow-md transition-all flex items-center gap-1.5"
-              >
-                <Plus className="w-4 h-4" />
-                <span>নতুন ড্রাইভার যোগ করুন</span>
-              </button>
-            )
-          )}
+            {isMasterAdmin && (
+              activeTab === 'users' ? (
+                <button
+                  type="button"
+                  onClick={openAddUserModal}
+                  className="px-2.5 py-1 bg-[#0d9488] hover:bg-[#0f766e] text-white text-[11px] font-extrabold rounded-lg shadow-2xs transition-all flex items-center gap-1 cursor-pointer border border-emerald-400/30"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>নতুন ইউজার</span>
+                </button>
+              ) : activeTab === 'supervisors' ? (
+                <button
+                  type="button"
+                  onClick={openAddSupModal}
+                  className="px-2.5 py-1 bg-[#0d9488] hover:bg-[#0f766e] text-white text-[11px] font-extrabold rounded-lg shadow-2xs transition-all flex items-center gap-1 cursor-pointer border border-emerald-400/30"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>নতুন সুপারভাইজার</span>
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={openAddDriverModal}
+                  className="px-2.5 py-1 bg-[#0d9488] hover:bg-[#0f766e] text-white text-[11px] font-extrabold rounded-lg shadow-2xs transition-all flex items-center gap-1 cursor-pointer border border-emerald-400/30"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>নতুন ড্রাইভার</span>
+                </button>
+              )
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Tabs */}
-      <div className="flex border-b border-slate-200 gap-3">
+      {/* Compact Excel Tabs */}
+      <div className="bg-white p-1.5 rounded-xl border border-emerald-200 shadow-2xs flex flex-wrap gap-1.5">
         <button
           type="button"
           onClick={() => setActiveTab('users')}
-          className={`pb-3 px-3 text-xs font-bold transition-all relative flex items-center gap-2 ${
-            activeTab === 'users' ? 'text-emerald-700 border-b-2 border-emerald-600' : 'text-slate-500 hover:text-slate-800'
+          className={`px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+            activeTab === 'users'
+              ? 'bg-[#0b2820] text-white shadow-2xs'
+              : 'bg-[#e6f4ef] text-slate-700 hover:text-slate-900'
           }`}
         >
-          <Shield className="w-4 h-4" />
-          <span>লগইন ইউজার ও কাউন্টার অপারেটর ({toBengaliDigits(users.length)})</span>
+          <Shield className="w-3.5 h-3.5" />
+          <span>অপারেটর ({toBengaliDigits(users.length)})</span>
         </button>
 
         <button
           type="button"
           onClick={() => setActiveTab('supervisors')}
-          className={`pb-3 px-3 text-xs font-bold transition-all relative flex items-center gap-2 ${
-            activeTab === 'supervisors' ? 'text-blue-700 border-b-2 border-blue-600' : 'text-slate-500 hover:text-slate-800'
+          className={`px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+            activeTab === 'supervisors'
+              ? 'bg-[#0d9488] text-white shadow-2xs'
+              : 'bg-[#e6f4ef] text-slate-700 hover:text-slate-900'
           }`}
         >
-          <Briefcase className="w-4 h-4" />
-          <span>সুপারভাইজার তালিকা (শুধু নাম) ({toBengaliDigits(supervisors.length)})</span>
+          <Briefcase className="w-3.5 h-3.5" />
+          <span>সুপারভাইজার ({toBengaliDigits(supervisors.length)})</span>
         </button>
 
         <button
           type="button"
           onClick={() => setActiveTab('drivers')}
-          className={`pb-3 px-3 text-xs font-bold transition-all relative flex items-center gap-2 ${
-            activeTab === 'drivers' ? 'text-indigo-700 border-b-2 border-indigo-600' : 'text-slate-500 hover:text-slate-800'
+          className={`px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+            activeTab === 'drivers'
+              ? 'bg-[#0f766e] text-white shadow-2xs'
+              : 'bg-[#e6f4ef] text-slate-700 hover:text-slate-900'
           }`}
         >
-          <Truck className="w-4 h-4" />
-          <span>ড্রাইভার তালিকা (শুধু নাম) ({toBengaliDigits(drivers.length)})</span>
+          <Truck className="w-3.5 h-3.5" />
+          <span>ড্রাইভার ({toBengaliDigits(drivers.length)})</span>
         </button>
       </div>
 
       {/* Messages */}
       {successMsg && (
-        <div className="p-3.5 bg-emerald-50 text-emerald-800 rounded-2xl text-xs font-semibold border border-emerald-200 flex items-center gap-2">
+        <div className="p-2.5 bg-emerald-50 text-emerald-800 rounded-xl text-xs font-semibold border border-emerald-200 flex items-center gap-2">
           <CheckCircle className="w-4 h-4 shrink-0 text-emerald-600" />
           <span>{successMsg}</span>
         </div>
       )}
 
       {errorMsg && (
-        <div className="p-3.5 bg-red-50 text-red-700 rounded-2xl text-xs font-semibold border border-red-200 flex items-center gap-2">
+        <div className="p-2.5 bg-rose-50 text-rose-700 rounded-xl text-xs font-semibold border border-rose-200 flex items-center gap-2">
           <AlertTriangle className="w-4 h-4 shrink-0" />
           <span>{errorMsg}</span>
         </div>
       )}
 
       {/* Search Input */}
-      <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex items-center gap-3">
+      <div className="bg-white p-2.5 rounded-xl border border-slate-300 shadow-2xs flex items-center gap-2">
         <div className="relative flex-1">
-          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-            <Search className="w-4 h-4" />
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+            <Search className="w-3.5 h-3.5" />
           </div>
           <input
             type="text"
@@ -519,18 +529,18 @@ export const UsersPage: React.FC = () => {
                 ? 'সুপারভাইজারের নাম খুঁজুন...'
                 : 'ড্রাইভারের নাম খুঁজুন...'
             }
-            className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-emerald-500 focus:bg-white outline-none"
+            className="w-full pl-8 pr-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-violet-500 focus:bg-white outline-none"
           />
         </div>
       </div>
 
       {/* TAB 1: USERS TABLE */}
       {activeTab === 'users' && (
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+        <div className="bg-white rounded-xl border border-emerald-200 shadow-2xs overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse text-xs">
               <thead>
-                <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider text-[11px]">
+                <tr className="bg-[#0b2820] text-white font-bold text-[11px]">
                   <th className="py-3 px-4">ব্যবহারকারী</th>
                   <th className="py-3 px-4">লগইন আইডি</th>
                   <th className="py-3 px-4">ভূমিকা (Role)</th>
@@ -701,17 +711,17 @@ export const UsersPage: React.FC = () => {
             </form>
           )}
 
-          <div className="bg-white rounded-xl border border-slate-300 shadow-xs overflow-hidden">
+          <div className="bg-white rounded-xl border border-slate-300 shadow-2xs overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse border border-slate-300 text-xs">
                 <thead>
-                  <tr className="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold uppercase text-[11px]">
-                    <th className="py-2.5 px-3 border-r border-slate-300 text-center w-20">ক্রম</th>
-                    <th className="py-2.5 px-4 border-r border-slate-300">সুপারভাইজারের নাম</th>
-                    <th className="py-2.5 px-3 border-r border-slate-300 text-center bg-blue-50/60 font-black text-blue-900 w-44">
+                  <tr className="bg-[#0b2820] text-white font-bold text-[11px]">
+                    <th className="py-2 px-3 border-r border-white/25 text-center w-20">ক্রম</th>
+                    <th className="py-2 px-4 border-r border-white/25">সুপারভাইজারের নাম</th>
+                    <th className="py-2 px-3 border-r border-white/25 text-center w-44">
                       মোট পূর্ণাঙ্গ ট্রিপ
                     </th>
-                    {isMasterAdmin && <th className="py-2.5 px-3 text-right w-24">একশন</th>}
+                    {isMasterAdmin && <th className="py-2 px-3 text-right w-24">একশন</th>}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-200 font-medium">
@@ -806,17 +816,17 @@ export const UsersPage: React.FC = () => {
             </form>
           )}
 
-          <div className="bg-white rounded-xl border border-slate-300 shadow-xs overflow-hidden">
+          <div className="bg-white rounded-xl border border-slate-300 shadow-2xs overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse border border-slate-300 text-xs">
                 <thead>
-                  <tr className="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold uppercase text-[11px]">
-                    <th className="py-2.5 px-3 border-r border-slate-300 text-center w-20">ক্রম</th>
-                    <th className="py-2.5 px-4 border-r border-slate-300">ড্রাইভারের নাম</th>
-                    <th className="py-2.5 px-3 border-r border-slate-300 text-center bg-indigo-50/60 font-black text-indigo-900 w-44">
+                  <tr className="bg-[#0b2820] text-white font-bold text-[11px]">
+                    <th className="py-2 px-3 border-r border-white/25 text-center w-20">ক্রম</th>
+                    <th className="py-2 px-4 border-r border-white/25">ড্রাইভারের নাম</th>
+                    <th className="py-2 px-3 border-r border-white/25 text-center w-44">
                       মোট পূর্ণাঙ্গ ট্রিপ
                     </th>
-                    {isMasterAdmin && <th className="py-2.5 px-3 text-right w-24">একশন</th>}
+                    {isMasterAdmin && <th className="py-2 px-3 text-right w-24">একশন</th>}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-200 font-medium">
@@ -874,140 +884,151 @@ export const UsersPage: React.FC = () => {
 
       {/* Add / Edit User Modal */}
       {isUserModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200">
-            <div className="flex items-center justify-between pb-3 border-b mb-4">
-              <h3 className="text-base font-bold text-slate-900">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
+          <div className="bg-white rounded-t-2xl sm:rounded-2xl max-w-md w-full shadow-2xl border border-emerald-200 flex flex-col max-h-[92dvh] sm:max-h-[88dvh] overflow-hidden">
+            <div className="shrink-0 px-4 py-3 bg-[#0b2820] text-white flex items-center justify-between gap-2">
+              <h3 className="text-sm sm:text-base font-bold text-white">
                 {editingUser ? 'ইউজার ও পিন সম্পাদনা' : 'নতুন ইউজার তৈরি করুন'}
               </h3>
               <button
                 type="button"
                 onClick={() => setIsUserModalOpen(false)}
-                className="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg"
+                className="p-1.5 text-emerald-100 hover:text-white hover:bg-white/15 rounded-lg cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            {errorMsg && (
-              <div className="mb-4 p-3 bg-red-50 text-red-700 text-xs font-semibold rounded-xl border border-red-200 flex items-center gap-2">
-                <AlertTriangle className="w-4 h-4 shrink-0" />
-                <span>{errorMsg}</span>
-              </div>
-            )}
+            <form onSubmit={handleSaveUser} className="flex-1 flex flex-col min-h-0 overflow-hidden">
+              <div className="flex-1 overflow-y-auto overscroll-contain p-4 space-y-3.5 text-slate-900">
+                {errorMsg && (
+                  <div className="p-3 bg-rose-50 text-rose-700 text-xs font-semibold rounded-xl border border-rose-200 flex items-center gap-2">
+                    <AlertTriangle className="w-4 h-4 shrink-0" />
+                    <span>{errorMsg}</span>
+                  </div>
+                )}
 
-            <form onSubmit={handleSaveUser} className="space-y-4">
-              {!editingUser && (
+                {!editingUser && (
+                  <div>
+                    <label className="block text-xs font-bold text-slate-800 mb-1">
+                      লগইন আইডি (ইউনিক) *
+                    </label>
+                    <input
+                      type="text"
+                      value={loginId ?? ''}
+                      onChange={(e) => setLoginId(e.target.value.toLowerCase().replace(/\s+/g, ''))}
+                      placeholder="e.g. counter01, mod02"
+                      className="w-full px-3 py-2 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs text-slate-900 font-mono font-bold focus:bg-white focus:ring-2 focus:ring-emerald-600 outline-none"
+                      required
+                    />
+                  </div>
+                )}
+
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
-                    লগইন আইডি (ইউনিক) *
+                  <label className="block text-xs font-bold text-slate-800 mb-1">
+                    ব্যবহারকারীর পূর্ণ নাম *
                   </label>
                   <input
                     type="text"
-                    value={loginId ?? ''}
-                    onChange={(e) => setLoginId(e.target.value.toLowerCase().replace(/\s+/g, ''))}
-                    placeholder="e.g. counter01, mod02"
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-mono font-bold focus:bg-white focus:ring-2 focus:ring-emerald-500 outline-none"
+                    value={name ?? ''}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="e.g. মোঃ করিম হোসেন"
+                    className="w-full px-3 py-2 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs text-slate-900 font-semibold focus:bg-white focus:ring-2 focus:ring-emerald-600 outline-none"
                     required
                   />
                 </div>
-              )}
 
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  ব্যবহারকারীর পূর্ণ নাম *
-                </label>
-                <input
-                  type="text"
-                  value={name ?? ''}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="e.g. মোঃ করিম হোসেন"
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-semibold focus:bg-white focus:ring-2 focus:ring-emerald-500 outline-none"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">ভূমিকা (Role) *</label>
-                <select
-                  value={role ?? 'booking_point'}
-                  onChange={(e) => setRole(e.target.value as any)}
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold focus:bg-white outline-none"
-                >
-                  <option value="booking_point">কাউন্টার বুকিং পয়েন্ট (Booking Operator)</option>
-                  <option value="fuel_manager">ফুয়েল ম্যানেজার (Fuel Manager)</option>
-                  <option value="checker">চেকার (Checker)</option>
-                  <option value="moderator">মডারেটর / অপারেশন ম্যানেজার (Moderator)</option>
-                  <option value="master_admin">মাস্টার এডমিন (Master Admin)</option>
-                </select>
-              </div>
-
-              {role === 'booking_point' && (
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
-                    নির্ধারিত কাউন্টার নির্বাচন *
+                  <label className="block text-xs font-bold text-slate-800 mb-1">ভূমিকা (Role) *</label>
+                  <select
+                    value={role ?? 'booking_point'}
+                    onChange={(e) => setRole(e.target.value as any)}
+                    className="w-full px-3 py-2 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs text-slate-900 font-bold focus:bg-white outline-none"
+                  >
+                    <option value="booking_point">কাউন্টার বুকিং পয়েন্ট (Booking Operator)</option>
+                    <option value="fuel_manager">ফুয়েল ম্যানেজার (Fuel Manager)</option>
+                    <option value="checker">চেকার (Checker)</option>
+                    <option value="moderator">মডারেটর / অপারেশন ম্যানেজার (Moderator)</option>
+                    <option value="master_admin">মাস্টার এডমিন (Master Admin)</option>
+                  </select>
+                </div>
+
+                {role === 'booking_point' && (
+                  <div>
+                    <label className="block text-xs font-bold text-slate-800 mb-1">
+                      নির্ধারিত কাউন্টার নির্বাচন *
+                    </label>
+                    <select
+                      value={counterId ?? ''}
+                      onChange={(e) => setCounterId(e.target.value)}
+                      className="w-full px-3 py-2 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs text-slate-900 font-bold focus:bg-white outline-none"
+                      required
+                    >
+                      <option value="">-- কাউন্টার সিলেক্ট করুন --</option>
+                      {counters.map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.name} ({c.code}) — {c.counterType === 'master_booking' ? 'মাষ্টার কাউন্টার' : 'রোড কাউন্টার'}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-800 mb-1">মোবাইল ফোন নম্বর</label>
+                  <input
+                    type="tel"
+                    value={phone ?? ''}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="017xxxxxxxx"
+                    className="w-full px-3 py-2 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs text-slate-900 font-mono focus:bg-white outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-800 mb-1">
+                    {editingUser ? 'নতুন পিন কোড (পরিবর্তন করতে চাইলে)' : 'লগইন পিন (৪-৬ ডিজিট) *'}
                   </label>
-                  <select
-                    value={counterId ?? ''}
-                    onChange={(e) => setCounterId(e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold focus:bg-white outline-none"
-                    required
-                  >
-                    <option value="">-- কাউন্টার সিলেক্ট করুন --</option>
-                    {counters.map((c) => (
-                      <option key={c.id} value={c.id}>
-                        {c.name} ({c.code}) — {c.counterType === 'master_booking' ? 'মাষ্টার কাউন্টার' : 'রোড কাউন্টার'}
-                      </option>
-                    ))}
-                  </select>
+                  <input
+                    type="password"
+                    value={pin ?? ''}
+                    onChange={(e) => setPin(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                    placeholder={editingUser ? 'পিন অপরিবর্তিত রাখতে খালি রাখুন' : '৪ থেকে ৬ সংখ্যার পিন'}
+                    className="w-full px-3 py-2 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs text-slate-900 font-mono tracking-widest text-center font-bold focus:bg-white focus:ring-2 focus:ring-emerald-600 outline-none"
+                    required={!editingUser}
+                  />
                 </div>
-              )}
 
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">মোবাইল ফোন নম্বর</label>
-                <input
-                  type="tel"
-                  value={phone ?? ''}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="017xxxxxxxx"
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-mono focus:bg-white outline-none"
-                />
+                {editingUser && (
+                  <div>
+                    <label className="block text-xs font-bold text-slate-800 mb-1">স্ট্যাটাস</label>
+                    <select
+                      value={status ?? 'active'}
+                      onChange={(e) => setStatus(e.target.value as any)}
+                      className="w-full px-3 py-2 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs text-slate-900 font-bold focus:bg-white outline-none"
+                    >
+                      <option value="active">সক্রিয় (Active)</option>
+                      <option value="inactive">নিষ্ক্রিয় (Inactive)</option>
+                    </select>
+                  </div>
+                )}
               </div>
 
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  {editingUser ? 'নতুন পিন কোড (পরিবর্তন করতে চাইলে)' : 'লগইন পিন (৪-৬ ডিজিট) *'}
-                </label>
-                <input
-                  type="password"
-                  value={pin ?? ''}
-                  onChange={(e) => setPin(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                  placeholder={editingUser ? 'পিন অপরিবর্তিত রাখতে খালি রাখুন' : '৪ থেকে ৬ সংখ্যার পিন'}
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-mono tracking-widest text-center font-bold focus:bg-white focus:ring-2 focus:ring-emerald-500 outline-none"
-                  required={!editingUser}
-                />
+              <div className="shrink-0 px-4 py-3 bg-[#f0f9f6] border-t border-emerald-200 flex items-center justify-end gap-2 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+                <button
+                  type="button"
+                  onClick={() => setIsUserModalOpen(false)}
+                  className="px-4 py-2.5 min-h-[44px] bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 rounded-xl text-xs font-bold cursor-pointer"
+                >
+                  বাতিল
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 sm:flex-none px-5 py-2.5 min-h-[44px] bg-[#0d9488] hover:bg-[#0f766e] text-white rounded-xl text-xs font-bold shadow-md transition-all cursor-pointer"
+                >
+                  {editingUser ? 'তথ্য আপডেট করুন' : 'নতুন ব্যবহারকারী তৈরি করুন'}
+                </button>
               </div>
-
-              {editingUser && (
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">স্ট্যাটাস</label>
-                  <select
-                    value={status ?? 'active'}
-                    onChange={(e) => setStatus(e.target.value as any)}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold focus:bg-white outline-none"
-                  >
-                    <option value="active">সক্রিয় (Active)</option>
-                    <option value="inactive">নিষ্ক্রিয় (Inactive)</option>
-                  </select>
-                </div>
-              )}
-
-              <button
-                type="submit"
-                className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-md transition-all cursor-pointer"
-              >
-                {editingUser ? 'তথ্য আপডেট করুন' : 'নতুন ব্যবহারকারী তৈরি করুন'}
-              </button>
             </form>
           </div>
         </div>
@@ -1015,81 +1036,92 @@ export const UsersPage: React.FC = () => {
 
       {/* Add / Edit Supervisor Modal (NAME ONLY, comma-separated bulk supported) */}
       {isSupModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200">
-            <div className="flex items-center justify-between pb-3 border-b mb-4">
-              <h3 className="text-base font-bold text-slate-900">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
+          <div className="bg-white rounded-t-2xl sm:rounded-2xl max-w-md w-full shadow-2xl border border-emerald-200 flex flex-col max-h-[92dvh] sm:max-h-[88dvh] overflow-hidden">
+            <div className="shrink-0 px-4 py-3 bg-[#0b2820] text-white flex items-center justify-between gap-2">
+              <h3 className="text-sm sm:text-base font-bold text-white">
                 {editingSup ? 'সুপারভাইজারের নাম সম্পাদনা' : 'নতুন সুপারভাইজার যোগ করুন'}
               </h3>
               <button
                 type="button"
                 onClick={() => setIsSupModalOpen(false)}
-                className="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg"
+                className="p-1.5 text-emerald-100 hover:text-white hover:bg-white/15 rounded-lg cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            {errorMsg && (
-              <div className="mb-4 p-3 bg-red-50 text-red-700 text-xs font-semibold rounded-xl border border-red-200 flex items-center gap-2">
-                <AlertTriangle className="w-4 h-4 shrink-0" />
-                <span>{errorMsg}</span>
-              </div>
-            )}
+            <form onSubmit={handleSaveSupervisor} className="flex-1 flex flex-col min-h-0 overflow-hidden">
+              <div className="flex-1 overflow-y-auto overscroll-contain p-4 space-y-3.5 text-slate-900">
+                {errorMsg && (
+                  <div className="p-3 bg-rose-50 text-rose-700 text-xs font-semibold rounded-xl border border-rose-200 flex items-center gap-2">
+                    <AlertTriangle className="w-4 h-4 shrink-0" />
+                    <span>{errorMsg}</span>
+                  </div>
+                )}
 
-            <form onSubmit={handleSaveSupervisor} className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  {editingSup ? 'সুপারভাইজারের নাম *' : 'সুপারভাইজারের নাম (কমা দিয়ে একাধিক নাম লিখুন) *'}
-                </label>
-                {editingSup ? (
-                  <input
-                    type="text"
-                    value={supName ?? ''}
-                    onChange={(e) => setSupName(e.target.value)}
-                    placeholder="যেমন: মোঃ কানন"
-                    className="w-full px-3.5 py-3 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none"
-                    required
-                  />
-                ) : (
-                  <textarea
-                    rows={3}
-                    value={supName ?? ''}
-                    onChange={(e) => setSupName(e.target.value)}
-                    placeholder="যেমন: মোঃ কানন, সবুজ, সিরাজ, রফিক"
-                    className="w-full px-3.5 py-3 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none resize-none"
-                    required
-                  />
+                <div>
+                  <label className="block text-xs font-bold text-slate-800 mb-1">
+                    {editingSup ? 'সুপারভাইজারের নাম *' : 'সুপারভাইজারের নাম (কমা দিয়ে একাধিক নাম লিখুন) *'}
+                  </label>
+                  {editingSup ? (
+                    <input
+                      type="text"
+                      value={supName ?? ''}
+                      onChange={(e) => setSupName(e.target.value)}
+                      placeholder="যেমন: মোঃ কানন"
+                      className="w-full px-3.5 py-2.5 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs text-slate-900 font-bold focus:bg-white focus:ring-2 focus:ring-emerald-600 outline-none"
+                      required
+                    />
+                  ) : (
+                    <textarea
+                      rows={3}
+                      value={supName ?? ''}
+                      onChange={(e) => setSupName(e.target.value)}
+                      placeholder="যেমন: মোঃ কানন, সবুজ, সিরাজ, রফিক"
+                      className="w-full px-3.5 py-2.5 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs text-slate-900 font-bold focus:bg-white focus:ring-2 focus:ring-emerald-600 outline-none resize-none"
+                      required
+                    />
+                  )}
+                </div>
+
+                {!editingSup && parseCommaNames(supName).length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 p-2.5 bg-emerald-50 border border-emerald-200 rounded-xl">
+                    <span className="text-[11px] font-bold text-emerald-950 w-full">
+                      মোট {toBengaliDigits(parseCommaNames(supName).length)} জন যুক্ত হবে:
+                    </span>
+                    {parseCommaNames(supName).map((n, i) => (
+                      <span
+                        key={`${n}-${i}`}
+                        className="px-2 py-0.5 bg-white text-emerald-900 border border-emerald-200 rounded-md text-[11px] font-bold"
+                      >
+                        {n}
+                      </span>
+                    ))}
+                  </div>
                 )}
               </div>
 
-              {!editingSup && parseCommaNames(supName).length > 0 && (
-                <div className="flex flex-wrap gap-1.5 p-2.5 bg-blue-50 border border-blue-200 rounded-xl">
-                  <span className="text-[11px] font-bold text-blue-900 w-full">
-                    মোট {toBengaliDigits(parseCommaNames(supName).length)} জন যুক্ত হবে:
-                  </span>
-                  {parseCommaNames(supName).map((n, i) => (
-                    <span
-                      key={`${n}-${i}`}
-                      className="px-2 py-0.5 bg-white text-blue-800 border border-blue-200 rounded-md text-[11px] font-bold"
-                    >
-                      {n}
-                    </span>
-                  ))}
-                </div>
-              )}
-
-              <button
-                type="submit"
-                disabled={supSubmitting}
-                className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-md transition-all cursor-pointer disabled:opacity-50"
-              >
-                {supSubmitting
-                  ? 'সংরক্ষণ হচ্ছে...'
-                  : editingSup
-                  ? 'নাম আপডেট করুন'
-                  : 'তালিকায় যুক্ত করুন'}
-              </button>
+              <div className="shrink-0 px-4 py-3 bg-[#f0f9f6] border-t border-emerald-200 flex items-center justify-end gap-2 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+                <button
+                  type="button"
+                  onClick={() => setIsSupModalOpen(false)}
+                  className="px-4 py-2.5 min-h-[44px] bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 rounded-xl text-xs font-bold cursor-pointer"
+                >
+                  বাতিল
+                </button>
+                <button
+                  type="submit"
+                  disabled={supSubmitting}
+                  className="flex-1 sm:flex-none px-5 py-2.5 min-h-[44px] bg-[#0d9488] hover:bg-[#0f766e] text-white rounded-xl text-xs font-bold shadow-md transition-all cursor-pointer disabled:opacity-50"
+                >
+                  {supSubmitting
+                    ? 'সংরক্ষণ হচ্ছে...'
+                    : editingSup
+                    ? 'নাম আপডেট করুন'
+                    : 'তালিকায় যুক্ত করুন'}
+                </button>
+              </div>
             </form>
           </div>
         </div>
@@ -1097,81 +1129,92 @@ export const UsersPage: React.FC = () => {
 
       {/* Add / Edit Driver Modal (NAME ONLY, comma-separated bulk supported) */}
       {isDriverModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200">
-            <div className="flex items-center justify-between pb-3 border-b mb-4">
-              <h3 className="text-base font-bold text-slate-900">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
+          <div className="bg-white rounded-t-2xl sm:rounded-2xl max-w-md w-full shadow-2xl border border-emerald-200 flex flex-col max-h-[92dvh] sm:max-h-[88dvh] overflow-hidden">
+            <div className="shrink-0 px-4 py-3 bg-[#0b2820] text-white flex items-center justify-between gap-2">
+              <h3 className="text-sm sm:text-base font-bold text-white">
                 {editingDriver ? 'ড্রাইভারের নাম সম্পাদনা' : 'নতুন ড্রাইভার যোগ করুন'}
               </h3>
               <button
                 type="button"
                 onClick={() => setIsDriverModalOpen(false)}
-                className="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg"
+                className="p-1.5 text-emerald-100 hover:text-white hover:bg-white/15 rounded-lg cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            {errorMsg && (
-              <div className="mb-4 p-3 bg-red-50 text-red-700 text-xs font-semibold rounded-xl border border-red-200 flex items-center gap-2">
-                <AlertTriangle className="w-4 h-4 shrink-0" />
-                <span>{errorMsg}</span>
-              </div>
-            )}
+            <form onSubmit={handleSaveDriver} className="flex-1 flex flex-col min-h-0 overflow-hidden">
+              <div className="flex-1 overflow-y-auto overscroll-contain p-4 space-y-3.5 text-slate-900">
+                {errorMsg && (
+                  <div className="p-3 bg-rose-50 text-rose-700 text-xs font-semibold rounded-xl border border-rose-200 flex items-center gap-2">
+                    <AlertTriangle className="w-4 h-4 shrink-0" />
+                    <span>{errorMsg}</span>
+                  </div>
+                )}
 
-            <form onSubmit={handleSaveDriver} className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  {editingDriver ? 'ড্রাইভারের নাম *' : 'ড্রাইভারের নাম (কমা দিয়ে একাধিক নাম লিখুন) *'}
-                </label>
-                {editingDriver ? (
-                  <input
-                    type="text"
-                    value={driverName ?? ''}
-                    onChange={(e) => setDriverName(e.target.value)}
-                    placeholder="যেমন: জামাল"
-                    className="w-full px-3.5 py-3 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none"
-                    required
-                  />
-                ) : (
-                  <textarea
-                    rows={3}
-                    value={driverName ?? ''}
-                    onChange={(e) => setDriverName(e.target.value)}
-                    placeholder="যেমন: জামাল, আনু, ফটিক, কুদ্দুস"
-                    className="w-full px-3.5 py-3 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none resize-none"
-                    required
-                  />
+                <div>
+                  <label className="block text-xs font-bold text-slate-800 mb-1">
+                    {editingDriver ? 'ড্রাইভারের নাম *' : 'ড্রাইভারের নাম (কমা দিয়ে একাধিক নাম লিখুন) *'}
+                  </label>
+                  {editingDriver ? (
+                    <input
+                      type="text"
+                      value={driverName ?? ''}
+                      onChange={(e) => setDriverName(e.target.value)}
+                      placeholder="যেমন: জামাল"
+                      className="w-full px-3.5 py-2.5 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs text-slate-900 font-bold focus:bg-white focus:ring-2 focus:ring-emerald-600 outline-none"
+                      required
+                    />
+                  ) : (
+                    <textarea
+                      rows={3}
+                      value={driverName ?? ''}
+                      onChange={(e) => setDriverName(e.target.value)}
+                      placeholder="যেমন: জামাল, আনু, ফটিক, কুদ্দুস"
+                      className="w-full px-3.5 py-2.5 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs text-slate-900 font-bold focus:bg-white focus:ring-2 focus:ring-emerald-600 outline-none resize-none"
+                      required
+                    />
+                  )}
+                </div>
+
+                {!editingDriver && parseCommaNames(driverName).length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 p-2.5 bg-emerald-50 border border-emerald-200 rounded-xl">
+                    <span className="text-[11px] font-bold text-emerald-950 w-full">
+                      মোট {toBengaliDigits(parseCommaNames(driverName).length)} জন যুক্ত হবে:
+                    </span>
+                    {parseCommaNames(driverName).map((n, i) => (
+                      <span
+                        key={`${n}-${i}`}
+                        className="px-2 py-0.5 bg-white text-emerald-900 border border-emerald-200 rounded-md text-[11px] font-bold"
+                      >
+                        {n}
+                      </span>
+                    ))}
+                  </div>
                 )}
               </div>
 
-              {!editingDriver && parseCommaNames(driverName).length > 0 && (
-                <div className="flex flex-wrap gap-1.5 p-2.5 bg-indigo-50 border border-indigo-200 rounded-xl">
-                  <span className="text-[11px] font-bold text-indigo-900 w-full">
-                    মোট {toBengaliDigits(parseCommaNames(driverName).length)} জন যুক্ত হবে:
-                  </span>
-                  {parseCommaNames(driverName).map((n, i) => (
-                    <span
-                      key={`${n}-${i}`}
-                      className="px-2 py-0.5 bg-white text-indigo-800 border border-indigo-200 rounded-md text-[11px] font-bold"
-                    >
-                      {n}
-                    </span>
-                  ))}
-                </div>
-              )}
-
-              <button
-                type="submit"
-                disabled={driverSubmitting}
-                className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-md transition-all cursor-pointer disabled:opacity-50"
-              >
-                {driverSubmitting
-                  ? 'সংরক্ষণ হচ্ছে...'
-                  : editingDriver
-                  ? 'নাম আপডেট করুন'
-                  : 'তালিকায় যুক্ত করুন'}
-              </button>
+              <div className="shrink-0 px-4 py-3 bg-[#f0f9f6] border-t border-emerald-200 flex items-center justify-end gap-2 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+                <button
+                  type="button"
+                  onClick={() => setIsDriverModalOpen(false)}
+                  className="px-4 py-2.5 min-h-[44px] bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 rounded-xl text-xs font-bold cursor-pointer"
+                >
+                  বাতিল
+                </button>
+                <button
+                  type="submit"
+                  disabled={driverSubmitting}
+                  className="flex-1 sm:flex-none px-5 py-2.5 min-h-[44px] bg-[#0d9488] hover:bg-[#0f766e] text-white rounded-xl text-xs font-bold shadow-md transition-all cursor-pointer disabled:opacity-50"
+                >
+                  {driverSubmitting
+                    ? 'সংরক্ষণ হচ্ছে...'
+                    : editingDriver
+                    ? 'নাম আপডেট করুন'
+                    : 'তালিকায় যুক্ত করুন'}
+                </button>
+              </div>
             </form>
           </div>
         </div>
@@ -1180,12 +1223,12 @@ export const UsersPage: React.FC = () => {
       {/* In-App Delete Confirmation Modal */}
       {deleteConfirmTarget && (
         <div
-          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4"
+          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4"
           role="dialog"
           aria-modal="true"
         >
-          <div className="bg-white w-full max-w-sm rounded-2xl shadow-2xl border border-slate-200 overflow-hidden">
-            <div className="px-5 py-3.5 bg-rose-600 text-white flex items-center justify-between">
+          <div className="bg-white w-full sm:max-w-sm rounded-t-2xl sm:rounded-2xl shadow-2xl border border-rose-200 flex flex-col max-h-[90dvh] overflow-hidden">
+            <div className="shrink-0 px-4 py-3 bg-rose-700 text-white flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <AlertTriangle className="w-4 h-4 shrink-0" />
                 <h3 className="font-bold text-sm">মুছে ফেলার নিশ্চিতকরণ</h3>
@@ -1199,8 +1242,8 @@ export const UsersPage: React.FC = () => {
                 <X className="w-4 h-4" />
               </button>
             </div>
-            <div className="p-5 space-y-4">
-              <p className="text-xs text-slate-700 leading-relaxed">
+            <div className="flex-1 overflow-y-auto overscroll-contain p-4">
+              <p className="text-xs text-slate-800 leading-relaxed">
                 আপনি কি নিশ্চিতভাবে{' '}
                 <strong className="text-slate-900">"{deleteConfirmTarget.name}"</strong>{' '}
                 {deleteConfirmTarget.type === 'user'
@@ -1210,25 +1253,25 @@ export const UsersPage: React.FC = () => {
                   : 'ড্রাইভারকে'}{' '}
                 তালিকা থেকে স্থায়ীভাবে মুছে ফেলতে চান?
               </p>
-              <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
-                <button
-                  type="button"
-                  onClick={() => setDeleteConfirmTarget(null)}
-                  disabled={deletingTarget}
-                  className="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold cursor-pointer disabled:opacity-50"
-                >
-                  বাতিল
-                </button>
-                <button
-                  type="button"
-                  onClick={confirmDeleteTargetAction}
-                  disabled={deletingTarget}
-                  className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
-                  <span>{deletingTarget ? 'মুছে ফেলা হচ্ছে...' : 'মুছে ফেলুন'}</span>
-                </button>
-              </div>
+            </div>
+            <div className="shrink-0 px-4 py-3 bg-[#f0f9f6] border-t border-slate-200 flex items-center justify-end gap-2 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+              <button
+                type="button"
+                onClick={() => setDeleteConfirmTarget(null)}
+                disabled={deletingTarget}
+                className="px-4 py-2.5 min-h-[44px] bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 rounded-xl text-xs font-bold cursor-pointer disabled:opacity-50"
+              >
+                বাতিল
+              </button>
+              <button
+                type="button"
+                onClick={confirmDeleteTargetAction}
+                disabled={deletingTarget}
+                className="px-4 py-2.5 min-h-[44px] bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>{deletingTarget ? 'মুছে ফেলা হচ্ছে...' : 'মুছে ফেলুন'}</span>
+              </button>
             </div>
           </div>
         </div>

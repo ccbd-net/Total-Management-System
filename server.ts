@@ -23,12 +23,14 @@ async function startServer() {
   app.get('/sw.js', (req, res) => {
     res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
     res.setHeader('Service-Worker-Allowed', '/');
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
     res.sendFile(path.resolve(__dirname, 'public', 'sw.js'));
   });
 
   // Explicitly serve manifest with application/manifest+json
   app.get(['/manifest.json', '/manifest.webmanifest'], (req, res) => {
     res.setHeader('Content-Type', 'application/manifest+json; charset=utf-8');
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
     res.sendFile(path.resolve(__dirname, 'public', 'manifest.json'));
   });
 

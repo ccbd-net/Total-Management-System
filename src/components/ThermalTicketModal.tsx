@@ -340,43 +340,43 @@ export const ThermalTicketModal: React.FC<ThermalTicketModalProps> = ({
 
   return (
     <>
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-xs p-3 sm:p-4 overflow-y-auto animate-in fade-in duration-200">
-        <div className="bg-white w-full max-w-lg rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col my-auto max-h-[92vh]">
-          {/* Header */}
-          <div className="px-5 py-3.5 bg-slate-900 text-white flex items-center justify-between border-b border-slate-800">
-            <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">
-                <Printer className="w-5 h-5" />
+      <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/70 backdrop-blur-xs p-0 sm:p-4 animate-in fade-in duration-200">
+        <div className="bg-white w-full max-w-lg rounded-t-2xl sm:rounded-2xl shadow-2xl border border-emerald-200 overflow-hidden flex flex-col max-h-[92dvh] sm:max-h-[90dvh]">
+          {/* Sticky Header */}
+          <div className="shrink-0 px-4 py-3 bg-[#0b2820] text-white flex items-center justify-between gap-2 border-b border-[#071d17]">
+            <div className="flex items-center gap-2 min-w-0">
+              <div className="w-8 h-8 rounded-xl bg-[#0d9488]/30 text-emerald-300 flex items-center justify-center font-bold shrink-0">
+                <Printer className="w-4 h-4" />
               </div>
-              <div>
-                <h3 className="font-bold text-sm sm:text-base">
+              <div className="min-w-0">
+                <h3 className="font-bold text-sm truncate">
                   থার্মাল টিকিট প্রিন্ট ও PDF প্রিভিউ
                 </h3>
-                <div className="text-[11px] text-slate-300 flex items-center gap-2">
-                  <span>{companyName}</span>
+                <div className="text-[11px] text-emerald-200 flex items-center gap-1.5 truncate">
+                  <span className="truncate">{companyName}</span>
                   <span>•</span>
-                  <span className="font-bold text-emerald-400">
+                  <span className="font-bold text-emerald-300 shrink-0">
                     {printerSettings.paperSize} রোল
                   </span>
                 </div>
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 shrink-0">
               <button
                 type="button"
                 onClick={() => setIsPrinterModalOpen(true)}
-                className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors border border-slate-700 cursor-pointer"
+                className="px-2.5 py-1.5 bg-[#0f766e] hover:bg-[#0d9488] text-white rounded-xl text-[11px] font-bold flex items-center gap-1 transition-colors cursor-pointer"
                 title="প্রিন্টার নির্বাচন ও সাইজ পরিবর্তন"
               >
-                <Sliders className="w-3.5 h-3.5 text-amber-400" />
-                <span>এড / সিলেক্ট প্রিন্টার</span>
+                <Sliders className="w-3.5 h-3.5 text-emerald-200" />
+                <span className="hidden sm:inline">সিলেক্ট প্রিন্টার</span>
               </button>
 
               <button
                 type="button"
                 onClick={onClose}
-                className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors cursor-pointer"
+                className="p-1.5 text-emerald-200 hover:text-white rounded-lg hover:bg-white/10 transition-colors cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -384,10 +384,10 @@ export const ThermalTicketModal: React.FC<ThermalTicketModalProps> = ({
           </div>
 
           {/* Copy Selector Tabs */}
-          <div className="px-5 py-2.5 bg-slate-100 border-b border-slate-200 flex items-center justify-between gap-2">
-            <div className="flex items-center gap-1">
+          <div className="shrink-0 px-3 sm:px-4 py-2 bg-[#f0f9f6] border-b border-emerald-200 flex flex-wrap items-center justify-between gap-2">
+            <div className="flex items-center gap-1 flex-wrap">
               {[
-                { id: 'BOTH', label: 'উভয় কপি (যাত্রী + অফিস)' },
+                { id: 'BOTH', label: 'উভয় কপি' },
                 { id: 'PASSENGER', label: 'যাত্রী কপি' },
                 { id: 'OFFICE', label: 'অফিস কপি' },
               ].map((tab) => (
@@ -395,10 +395,10 @@ export const ThermalTicketModal: React.FC<ThermalTicketModalProps> = ({
                   key={tab.id}
                   type="button"
                   onClick={() => setPrintMode(tab.id as PrintMode)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                  className={`px-2.5 py-1.5 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
                     printMode === tab.id
-                      ? 'bg-slate-900 text-white shadow-xs'
-                      : 'bg-white text-slate-600 hover:bg-slate-200 border border-slate-200'
+                      ? 'bg-[#0b2820] text-white shadow-2xs'
+                      : 'bg-white text-slate-700 hover:bg-emerald-50 border border-emerald-200'
                   }`}
                 >
                   {tab.label}
@@ -406,15 +406,15 @@ export const ThermalTicketModal: React.FC<ThermalTicketModalProps> = ({
               ))}
             </div>
 
-            <span className="text-[10px] text-slate-500 font-mono hidden sm:inline">
-              টিকিট নং: {booking.ticketNo}
+            <span className="text-[10px] text-slate-600 font-mono">
+              টিকিট: {booking.ticketNo}
             </span>
           </div>
 
           {/* Printable Ticket Preview Canvas */}
           <div
             id="printable-thermal-ticket"
-            className="p-4 sm:p-6 overflow-y-auto bg-slate-200/60 flex-1 space-y-4"
+            className="p-3 sm:p-5 overflow-y-auto overscroll-contain bg-slate-200/70 flex-1 space-y-4"
           >
             {(printMode === 'BOTH' || printMode === 'PASSENGER') && (
               <div>{renderSingleReceipt('যাত্রী কপি (Passenger Copy)')}</div>
@@ -444,55 +444,49 @@ export const ThermalTicketModal: React.FC<ThermalTicketModalProps> = ({
             )}
           </div>
 
-          {/* Modal Footer */}
-          <div className="p-4 bg-white border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
-            <div className="text-xs text-slate-500 text-center sm:text-left">
+          {/* Sticky Modal Footer */}
+          <div className="shrink-0 px-3 sm:px-4 py-3 bg-[#f0f9f6] border-t border-emerald-200 flex flex-wrap items-center justify-between gap-2 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+            <div className="text-[11px] text-slate-600 hidden sm:block">
               {hasPrinted ? (
-                <span className="flex items-center gap-1 text-emerald-600 font-bold">
+                <span className="flex items-center gap-1 text-emerald-700 font-bold">
                   <CheckCircle className="w-4 h-4" /> প্রিন্ট ট্র্যাক সফল হয়েছে
                 </span>
               ) : (
-                <span className="text-slate-600">
-                  নির্বাচিত প্রিন্টার: <strong>{printerSettings.paperSize}</strong> (
-                  {printerSettings.defaultCopy === 'BOTH'
-                    ? 'উভয় কপি'
-                    : printerSettings.defaultCopy === 'PASSENGER'
-                    ? 'যাত্রী'
-                    : 'অফিস'}
-                  )
+                <span>
+                  প্রিন্টার: <strong>{printerSettings.paperSize}</strong>
                 </span>
               )}
             </div>
 
-            <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+            <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
               <button
                 type="button"
                 onClick={onClose}
-                className="px-3.5 py-2 border border-slate-300 rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-50 cursor-pointer"
+                className="min-h-[44px] px-3.5 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 cursor-pointer"
               >
-                বন্ধ করুন
+                বন্ধ
               </button>
 
               <button
                 type="button"
                 onClick={handleDownloadPDF}
-                className="flex items-center gap-1.5 px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-xs font-bold shadow-xs transition-all cursor-pointer"
+                className="min-h-[44px] flex items-center gap-1.5 px-3.5 py-2 bg-[#0b2820] hover:bg-[#071d17] text-white rounded-xl text-xs font-bold shadow-xs transition-all cursor-pointer"
               >
-                <Download className="w-3.5 h-3.5 text-emerald-400" />
-                <span>বাংলা PDF ডাউনলোড</span>
+                <Download className="w-3.5 h-3.5 text-emerald-300" />
+                <span>PDF ডাউনলোড</span>
               </button>
 
               <button
                 type="button"
                 disabled={isPrinting}
                 onClick={handlePrint}
-                className="flex items-center gap-2 px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-md hover:shadow-lg transition-all cursor-pointer"
+                className="min-h-[44px] flex items-center gap-1.5 px-4 py-2 bg-[#0d9488] hover:bg-[#0f766e] text-white rounded-xl text-xs font-bold shadow-xs transition-all cursor-pointer"
               >
                 <Printer className="w-4 h-4" />
                 <span>
                   {isPrinting
                     ? 'প্রিন্ট হচ্ছে...'
-                    : `এখনই প্রিন্ট করুন (${printerSettings.paperSize})`}
+                    : `প্রিন্ট করুন (${printerSettings.paperSize})`}
                 </span>
               </button>
             </div>

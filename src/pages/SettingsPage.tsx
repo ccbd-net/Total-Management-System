@@ -27,7 +27,7 @@ type LocalBackupStats = Awaited<ReturnType<typeof browserDb.getLocalStorageStats
 export const SettingsPage: React.FC = () => {
   const { user, isMasterAdmin, isSuperAdmin, isCompanyAdmin, updateOwnCredentials } = useAuth();
   const [settings, setSettings] = useState<SystemSettings>({
-    companyName: 'Counter Management System',
+    companyName: 'Vehicles Management System',
     subTitle: 'কাউন্টার বুকিং ও ট্রিপ ইনফরমেশন',
     hotline: '01711-000000',
     defaultFare: 550,
@@ -324,20 +324,24 @@ export const SettingsPage: React.FC = () => {
     : 'এখনো সংরক্ষিত হয়নি';
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6">
-      {/* Header */}
-      <div className="bg-white p-5 rounded-2xl border border-slate-200">
-        <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
-          <Settings className="w-5 h-5 text-emerald-600" />
-          <span>সিস্টেম কনফিগারেশন ও সেটিংস</span>
-        </h2>
-        <p className="text-xs text-slate-500 mt-0.5">
-          প্রতিষ্ঠানের নাম, সহায়তা হটলাইন, সার্বজনীন নোটিশ ও লোকাল স্টোরেজ ব্যাকআপ পরিচালনা করুন
-        </p>
+    <div className="max-w-3xl mx-auto space-y-3">
+      {/* Compact Header */}
+      <div className="bg-white rounded-xl border border-[#a7d7c5] shadow-2xs overflow-hidden">
+        <div className="bg-[#0b2820] px-3 py-2.5 text-white flex items-center gap-2">
+          <Settings className="w-4 h-4 text-emerald-300 shrink-0" />
+          <div className="min-w-0">
+            <h2 className="text-xs sm:text-sm font-bold leading-tight truncate">
+              সিস্টেম কনফিগারেশন ও সেটিংস
+            </h2>
+            <p className="hidden sm:block text-[10px] text-emerald-200 leading-tight truncate">
+              প্রতিষ্ঠানের নাম, সহায়তা হটলাইন, নোটিশ, একাউন্ট নিরাপত্তা ও ব্যাকআপ
+            </p>
+          </div>
+        </div>
       </div>
 
       {successMsg && (
-        <div className="p-3.5 bg-emerald-50 text-emerald-800 rounded-2xl text-xs font-semibold border border-emerald-200 flex items-center justify-between gap-2">
+        <div className="p-2.5 bg-emerald-50 text-emerald-800 rounded-xl text-xs font-semibold border border-emerald-200 flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <CheckCircle className="w-4 h-4 shrink-0 text-emerald-600" />
             <span>{successMsg}</span>
@@ -349,21 +353,26 @@ export const SettingsPage: React.FC = () => {
       )}
 
       {errorMsg && (
-        <div className="p-3.5 bg-red-50 text-red-700 rounded-2xl text-xs font-semibold border border-red-200 flex items-center justify-between gap-2">
+        <div className="p-2.5 bg-rose-50 text-rose-700 rounded-xl text-xs font-semibold border border-rose-200 flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <AlertCircle className="w-4 h-4 shrink-0" />
             <span>{errorMsg}</span>
           </div>
-          <button type="button" onClick={() => setErrorMsg('')} className="text-red-700 hover:text-red-900 cursor-pointer">
+          <button type="button" onClick={() => setErrorMsg('')} className="text-rose-700 hover:text-rose-900 cursor-pointer">
             <X className="w-4 h-4" />
           </button>
         </div>
       )}
 
-      <form onSubmit={handleSave} className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 space-y-5">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <form onSubmit={handleSave} className="bg-white rounded-xl border border-[#a7d7c5] shadow-2xs overflow-hidden">
+        <div className="bg-[#0f766e] px-3 py-2 text-white text-xs font-bold flex items-center gap-1.5">
+          <Settings className="w-3.5 h-3.5" />
+          <span>প্রতিষ্ঠান ও অপারেশনাল সেটিংস</span>
+        </div>
+        <div className="p-3.5 space-y-3.5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1.5">
+            <label className="block text-[11px] font-bold text-slate-700 mb-1">
               প্রতিষ্ঠানের নাম (Company Brand)
             </label>
             <input
@@ -450,31 +459,31 @@ export const SettingsPage: React.FC = () => {
           <button
             type="submit"
             disabled={saving}
-            className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+            className="w-full min-h-[44px] py-2.5 bg-[#0d9488] hover:bg-[#0f766e] text-white rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
           >
             <Save className="w-4 h-4" />
             <span>{saving ? 'সংরক্ষিত হচ্ছে...' : 'সেটিংস সংরক্ষণ করুন'}</span>
           </button>
         )}
+        </div>
       </form>
 
       {/* Own Account Security — Change Login ID & PIN */}
-      <form onSubmit={handleUpdateCredentials} className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 space-y-5">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-4">
-          <div>
-            <h3 className="text-base font-bold text-slate-800 flex items-center gap-2">
-              <KeyRound className="w-5 h-5 text-emerald-600" />
-              <span>একাউন্ট নিরাপত্তা — লগইন আইডি ও পিন পরিবর্তন</span>
-            </h3>
-            <p className="text-xs text-slate-500 mt-1">
-              আপনার ব্যক্তিগত লগইন আইডি ও গোপন পিন যেকোনো সময় পরিবর্তন করুন। পরিবর্তিত তথ্য সম্পূর্ণ এনক্রিপ্টেড ও গোপন থাকবে।
-            </p>
-          </div>
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 text-[11px] font-bold self-start sm:self-center">
-            <Lock className="w-3.5 h-3.5" />
+      <form onSubmit={handleUpdateCredentials} className="bg-white rounded-xl border border-[#a7d7c5] shadow-2xs overflow-hidden">
+        <div className="bg-[#0b2820] px-3 py-2 text-white flex items-center justify-between gap-2">
+          <h3 className="text-xs font-bold flex items-center gap-1.5">
+            <KeyRound className="w-3.5 h-3.5 text-emerald-300" />
+            <span>একাউন্ট নিরাপত্তা — লগইন আইডি ও পিন পরিবর্তন</span>
+          </h3>
+          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-white/15 text-[10px] font-bold">
+            <Lock className="w-3 h-3" />
             <span>সুরক্ষিত</span>
           </span>
         </div>
+        <div className="p-3.5 space-y-3">
+          <p className="text-[11px] text-slate-500">
+            আপনার ব্যক্তিগত লগইন আইডি ও গোপন পিন পরিবর্তন করুন। পরিবর্তিত তথ্য সম্পূর্ণ এনক্রিপ্টেড থাকবে।
+          </p>
 
         {credSuccess && (
           <div className="p-3 bg-emerald-50 text-emerald-800 rounded-xl text-xs font-semibold border border-emerald-200 flex items-center gap-2">
@@ -553,37 +562,30 @@ export const SettingsPage: React.FC = () => {
         <button
           type="submit"
           disabled={updatingCreds}
-          className="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+          className="w-full min-h-[44px] py-2.5 bg-[#0d9488] hover:bg-[#0f766e] text-white rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
         >
-          <KeyRound className="w-4 h-4 text-emerald-400" />
+          <KeyRound className="w-3.5 h-3.5" />
           <span>{updatingCreds ? 'আপডেট হচ্ছে...' : 'লগইন আইডি ও পিন আপডেট করুন'}</span>
         </button>
+        </div>
       </form>
 
       {/* Local Storage & Backup Section */}
       {canManageBackup && (
-        <div className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 space-y-5">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
-            <div>
-              <h3 className="text-base font-bold text-slate-800 flex items-center gap-2">
-                <HardDrive className="w-5 h-5 text-emerald-600" />
-                <span>লোকাল স্টোরেজ ও ব্যাকআপ সংরক্ষণ</span>
-              </h3>
-              <p className="text-xs text-slate-500 mt-1">
-                {isSuperAdmin
-                  ? 'অফলাইন নিরাপত্তার জন্য সব কোম্পানির ডাটা ব্রাউজারের লোকাল স্টোরেজ (LocalStorage + IndexedDB) ও ফাইল ব্যাকআপে সংরক্ষণ করুন।'
-                  : 'অফলাইন নিরাপত্তার জন্য আপনার প্রতিষ্ঠানের সকল ডাটা ব্রাউজারের লোকাল স্টোরেজ (LocalStorage + IndexedDB) ও ফাইল ব্যাকআপে সংরক্ষণ করুন।'}
-              </p>
-            </div>
-            <div className="text-right text-[11px] text-slate-500 tabular-nums shrink-0">
-              <div>শেষ সংরক্ষণ: {formattedLocalTime}</div>
-              <div className="font-semibold text-slate-700 mt-0.5">
-                {localStats?.hasLocalBackup
-                  ? `সাইজ: ${toBengaliDigits(Math.max(1, Math.round((localStats.localStorageBytes || 0) / 1024)))} KB`
-                  : 'লোকাল স্ন্যাপশট নেই'}
-              </div>
-            </div>
+        <div className="bg-white rounded-xl border border-[#a7d7c5] shadow-2xs overflow-hidden">
+          <div className="bg-[#0f766e] px-3 py-2 text-white flex flex-wrap items-center justify-between gap-2">
+            <h3 className="text-xs font-bold flex items-center gap-1.5">
+              <HardDrive className="w-3.5 h-3.5" />
+              <span>লোকাল স্টোরেজ ও ব্যাকআপ সংরক্ষণ</span>
+            </h3>
+            <span className="text-[10px] text-emerald-100 tabular-nums">
+              শেষ: {formattedLocalTime} ·{' '}
+              {localStats?.hasLocalBackup
+                ? `${toBengaliDigits(Math.max(1, Math.round((localStats.localStorageBytes || 0) / 1024)))} KB`
+                : 'স্ন্যাপশট নেই'}
+            </span>
           </div>
+          <div className="p-3.5 space-y-3">
 
           {/* Unboxed Inline Metadata Summary */}
           <div className="text-xs text-slate-600 bg-slate-50 px-4 py-3 rounded-xl border border-slate-200 flex flex-wrap items-center gap-x-2 gap-y-1 tabular-nums">
@@ -655,7 +657,7 @@ export const SettingsPage: React.FC = () => {
               type="button"
               onClick={handleSaveLocalSnapshot}
               disabled={savingLocal}
-              className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-colors whitespace-nowrap cursor-pointer disabled:opacity-50"
+              className="min-h-[44px] px-4 py-2.5 bg-[#0d9488] hover:bg-[#0f766e] text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-colors whitespace-nowrap cursor-pointer disabled:opacity-50"
             >
               <HardDrive className={`w-4 h-4 ${savingLocal ? 'animate-pulse' : ''}`} />
               <span>{savingLocal ? 'জমা হচ্ছে...' : 'লোকাল স্টোরেজে ডাটা জমা করুন'}</span>
@@ -665,9 +667,9 @@ export const SettingsPage: React.FC = () => {
               type="button"
               onClick={handleDownloadBackupJson}
               disabled={exportingJson}
-              className="px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-colors whitespace-nowrap cursor-pointer disabled:opacity-50"
+              className="min-h-[44px] px-4 py-2.5 bg-[#0b2820] hover:bg-[#071d17] text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-colors whitespace-nowrap cursor-pointer disabled:opacity-50"
             >
-              <Download className="w-4 h-4" />
+              <Download className="w-4 h-4 text-emerald-300" />
               <span>{exportingJson ? 'প্রস্তুত হচ্ছে...' : 'ব্যাকআপ ফাইল ডাউনলোড (.JSON)'}</span>
             </button>
 
@@ -700,6 +702,7 @@ export const SettingsPage: React.FC = () => {
                 </button>
               </>
             )}
+          </div>
           </div>
         </div>
       )}

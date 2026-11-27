@@ -24,6 +24,7 @@ import {
   MapPin,
   Download,
   Info,
+  X,
 } from 'lucide-react';
 
 export const SupervisorPanelPage: React.FC = () => {
@@ -153,26 +154,26 @@ export const SupervisorPanelPage: React.FC = () => {
     <div className="space-y-6">
       <div className="space-y-6 print:hidden">
       {/* Top Banner / Header */}
-      <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-indigo-950 text-white p-6 rounded-3xl shadow-lg border border-slate-700/50 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-[#0b2820] text-white p-4 sm:p-5 rounded-xl shadow-2xs border border-[#071d17] flex flex-col md:flex-row md:items-center justify-between gap-3">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-indigo-500/20 text-indigo-300 rounded-full text-xs font-semibold border border-indigo-400/30 mb-2">
-            <ShieldCheck className="w-4 h-4 text-indigo-400" />
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-[#0f766e] text-emerald-100 rounded-md text-[11px] font-semibold mb-1.5">
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-200" />
             <span>সুপারভাইজার ডিউটি ও ট্রিপ ম্যানেজমেন্ট প্যানেল</span>
           </div>
-          <h1 className="text-xl md:text-2xl font-black tracking-tight text-white">
+          <h1 className="text-base sm:text-lg font-black tracking-tight text-white">
             যাত্রী তালিকা ও ট্রিপ মনিটরিং (Waybill Manifest)
           </h1>
-          <p className="text-xs text-slate-300 mt-1">
+          <p className="text-[11px] text-emerald-200 mt-0.5">
             সুপারভাইজারদের দায়িত্বপ্রাপ্ত ট্রিপের যাত্রীদের সিট নম্বর, ফোন, বোর্ডিং পয়েন্ট এবং গাড়ির যাত্রা স্টেটাস পর্যবেক্ষণ করুন।
           </p>
         </div>
 
         {/* Global Action Buttons */}
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
             onClick={fetchSchedules}
-            className="px-3.5 py-2 bg-slate-800/80 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-bold border border-slate-600 transition-colors flex items-center gap-1.5 cursor-pointer"
+            className="px-3 py-2 bg-[#071d17] hover:bg-[#0f766e] text-white rounded-xl text-xs font-bold border border-emerald-700/60 transition-colors flex items-center gap-1.5 cursor-pointer"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
             <span>রিফ্রেশ</span>
@@ -183,17 +184,17 @@ export const SupervisorPanelPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => downloadWaybillPDF(selectedSchedule, scheduleBookings)}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold shadow-md transition-all flex items-center gap-1.5 cursor-pointer"
+                className="px-3.5 py-2 bg-[#0f766e] hover:bg-[#0d9488] text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
                 title="ওয়েবিল চালান পিডিএফ আকারে ডাউনলোড করুন"
               >
-                <Download className="w-4 h-4 text-blue-200" />
-                <span>পিডিএফ ডাউনলোড (PDF)</span>
+                <Download className="w-4 h-4 text-emerald-100" />
+                <span>পিডিএফ ডাউনলোড</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setPrintModalOpen(true)}
-                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold shadow-md transition-all flex items-center gap-1.5 cursor-pointer"
+                className="px-3.5 py-2 bg-[#0d9488] hover:bg-[#0f766e] text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
               >
                 <Printer className="w-4 h-4" />
                 <span>চালান / ওয়েবিল প্রিন্ট</span>
@@ -663,40 +664,23 @@ export const SupervisorPanelPage: React.FC = () => {
 
       {/* Printable Passenger Manifest / Waybill Modal */}
       {printModalOpen && selectedSchedule && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-3xl w-full p-6 max-h-[90vh] overflow-y-auto shadow-2xl space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b">
-              <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                <Printer className="w-5 h-5 text-emerald-600" />
-                <span>যাত্রী চালান ও ওয়েবিল প্রিন্ট প্রিভিউ</span>
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
+          <div className="bg-white rounded-t-2xl sm:rounded-2xl max-w-3xl w-full max-h-[92dvh] sm:max-h-[90dvh] shadow-2xl border border-emerald-200 flex flex-col overflow-hidden">
+            <div className="shrink-0 px-4 py-3 bg-[#0b2820] text-white flex items-center justify-between gap-2 print:hidden">
+              <h3 className="text-sm sm:text-base font-bold flex items-center gap-2 truncate">
+                <Printer className="w-4 h-4 text-emerald-300 shrink-0" />
+                <span className="truncate">যাত্রী চালান ও ওয়েবিল প্রিন্ট প্রিভিউ</span>
               </h3>
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => downloadWaybillPDF(selectedSchedule, scheduleBookings)}
-                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-md cursor-pointer flex items-center gap-1.5"
-                >
-                  <Download className="w-4 h-4 text-blue-200" />
-                  <span>পিডিএফ ডাউনলোড (PDF)</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={handlePrint}
-                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-md cursor-pointer flex items-center gap-1.5"
-                >
-                  <Printer className="w-4 h-4" />
-                  <span>প্রিন্ট করুন</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setPrintModalOpen(false)}
-                  className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold cursor-pointer"
-                >
-                  বন্ধ
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={() => setPrintModalOpen(false)}
+                className="p-1.5 text-emerald-200 hover:text-white hover:bg-white/10 rounded-lg cursor-pointer shrink-0"
+              >
+                <X className="w-5 h-5" />
+              </button>
             </div>
 
+            <div className="flex-1 overflow-y-auto overscroll-contain p-3 sm:p-5">
             {/* Actual Printable Waybill Sheet */}
             <div id="printable-supervisor-waybill" className="p-6 border border-slate-300 rounded-xl bg-white text-slate-900 font-sans space-y-4">
               {/* Waybill Header */}
@@ -810,6 +794,33 @@ export const SupervisorPanelPage: React.FC = () => {
                 <div className="border-t border-slate-400 pt-1">সুপারভাইজার স্বাক্ষর</div>
                 <div className="border-t border-slate-400 pt-1">যানবাহন ইনচার্জ স্বাক্ষর</div>
               </div>
+            </div>
+            </div>
+
+            <div className="shrink-0 px-4 py-3 bg-[#f0f9f6] border-t border-emerald-200 flex flex-wrap items-center justify-end gap-2 pb-[max(0.75rem,env(safe-area-inset-bottom))] print:hidden">
+              <button
+                type="button"
+                onClick={() => setPrintModalOpen(false)}
+                className="min-h-[44px] px-4 py-2 bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 rounded-xl text-xs font-bold cursor-pointer"
+              >
+                বন্ধ করুন
+              </button>
+              <button
+                type="button"
+                onClick={() => downloadWaybillPDF(selectedSchedule, scheduleBookings)}
+                className="min-h-[44px] px-4 py-2 bg-[#0b2820] hover:bg-[#071d17] text-white rounded-xl text-xs font-bold cursor-pointer flex items-center gap-1.5"
+              >
+                <Download className="w-4 h-4 text-emerald-300" />
+                <span>পিডিএফ (PDF)</span>
+              </button>
+              <button
+                type="button"
+                onClick={handlePrint}
+                className="min-h-[44px] px-4 py-2 bg-[#0d9488] hover:bg-[#0f766e] text-white rounded-xl text-xs font-bold cursor-pointer flex items-center gap-1.5"
+              >
+                <Printer className="w-4 h-4" />
+                <span>প্রিন্ট করুন</span>
+              </button>
             </div>
           </div>
         </div>

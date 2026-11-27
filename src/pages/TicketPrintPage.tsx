@@ -64,106 +64,110 @@ export const TicketPrintPage: React.FC = () => {
   });
 
   return (
-    <div className="space-y-6">
-      {/* Top Header Card */}
-      <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
-            <Printer className="w-5 h-5 text-emerald-600" />
-            <span>৫৮ মিমি থার্মাল টিকিট প্রিন্ট ও রিপ্ৰিন্ট হাব</span>
-          </h2>
-          <p className="text-xs text-slate-500 mt-0.5">
-            ইস্যুকৃত সকল টিকিটের তালিকা, যাত্রী কপি, অফিস কপি বা উভয় কপি পুনর্মুদ্রণ করুন
-          </p>
+    <div className="space-y-3">
+      {/* Compact Excel Top Header Card */}
+      <div className="bg-white rounded-xl border border-emerald-300 shadow-2xs overflow-hidden">
+        <div className="bg-[#0b2820] px-3 py-2 text-white flex flex-wrap items-center justify-between gap-2">
+          <div className="flex items-center gap-2 min-w-0">
+            <Printer className="w-4 h-4 shrink-0 text-emerald-300" />
+            <div className="min-w-0">
+              <h2 className="text-xs sm:text-sm font-bold leading-tight truncate">
+                ৫৮ মিমি থার্মাল টিকিট প্রিন্ট ও রিপ্রিন্ট শীট
+              </h2>
+              <p className="hidden sm:block text-[10px] text-emerald-200 leading-tight">
+                ইস্যুকৃত সকল টিকিটের তালিকা, যাত্রী কপি ও অফিস কপি পুনর্মুদ্রণ
+              </p>
+            </div>
+          </div>
+
+          {/* Date Selector, Printer Config & Refresh */}
+          <div className="flex flex-wrap items-center gap-1.5 shrink-0">
+            <button
+              type="button"
+              onClick={() => setIsPrinterModalOpen(true)}
+              className="flex items-center gap-1 px-2.5 py-1 bg-white hover:bg-emerald-50 text-[#0b2820] rounded-lg text-[11px] font-bold transition-all shadow-2xs cursor-pointer"
+            >
+              <Printer className="w-3.5 h-3.5 text-[#0d9488]" />
+              <span>প্রিন্টার</span>
+            </button>
+
+            <div className="flex items-center gap-1 bg-white/95 px-2 py-1 rounded-lg border border-emerald-200 text-[11px] font-bold text-slate-900">
+              <Calendar className="w-3.5 h-3.5 text-[#0f766e]" />
+              <input
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                className="bg-transparent outline-none cursor-pointer text-[11px]"
+              />
+            </div>
+
+            <button
+              type="button"
+              onClick={fetchBookings}
+              className="p-1.5 bg-[#133b30] hover:bg-[#194d3f] text-white rounded-lg transition-colors cursor-pointer"
+              title="রিফ্রেশ"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+            </button>
+          </div>
         </div>
 
-        {/* Date Selector, Printer Config & Refresh */}
-        <div className="flex items-center gap-2.5">
-          <button
-            type="button"
-            onClick={() => setIsPrinterModalOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all shadow-xs"
-          >
-            <Printer className="w-4 h-4 text-emerald-400" />
-            <span>এড / সিলেক্ট প্রিন্টার</span>
-          </button>
-
-          <div className="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-300 text-xs font-semibold">
-            <Calendar className="w-4 h-4 text-emerald-600" />
+        {/* Compact Search Strip */}
+        <div className="p-2 bg-[#f7fcfa] flex items-center gap-2">
+          <div className="relative flex-1">
+            <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-slate-400">
+              <Search className="w-3.5 h-3.5" />
+            </div>
             <input
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              className="bg-transparent outline-none cursor-pointer"
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="টিকিট নম্বর, যাত্রীর নাম, মোবাইল নম্বর অথবা সিট নম্বর দিয়ে খুঁজুন..."
+              className="w-full pl-8 pr-3 py-1.5 bg-white border border-emerald-300 rounded-lg text-xs text-slate-950 focus:ring-2 focus:ring-[#0d9488] outline-none"
             />
           </div>
-
-          <button
-            type="button"
-            onClick={fetchBookings}
-            className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition-colors"
-            title="রিফ্রেশ"
-          >
-            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-          </button>
+          {searchTerm && (
+            <button
+              type="button"
+              onClick={() => setSearchTerm('')}
+              className="text-[11px] text-slate-800 hover:text-slate-950 px-2.5 py-1.5 bg-white border border-slate-300 rounded-lg font-bold cursor-pointer"
+            >
+              ক্লিয়ার
+            </button>
+          )}
         </div>
       </div>
 
-      {/* Search Input Filter */}
-      <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex items-center gap-3">
-        <div className="relative flex-1">
-          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-            <Search className="w-4 h-4" />
-          </div>
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="টিকিট নম্বর, যাত্রীর নাম, মোবাইল নম্বর অথবা সিট নম্বর দিয়ে খুঁজুন..."
-            className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-emerald-500 focus:bg-white outline-none"
-          />
-        </div>
-        {searchTerm && (
-          <button
-            type="button"
-            onClick={() => setSearchTerm('')}
-            className="text-xs text-slate-500 hover:text-slate-800 px-3 py-2 bg-slate-100 rounded-xl font-medium"
-          >
-            ক্লিয়ার
-          </button>
-        )}
-      </div>
-
-      {/* Bookings Table Card */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
-        <div className="p-4 border-b border-slate-200 flex items-center justify-between">
-          <h3 className="font-bold text-sm text-slate-800">
+      {/* Bookings Excel Table Card */}
+      <div className="bg-white rounded-xl border border-emerald-300 shadow-2xs overflow-hidden">
+        <div className="bg-[#0f766e] px-3 py-1.5 text-white flex items-center justify-between">
+          <h3 className="font-bold text-xs">
             টিকিটের তালিকা ({toBengaliDigits(filteredBookings.length)} টি)
           </h3>
-          <span className="text-[11px] text-slate-500">
-            ৫৮ মিমি থার্মাল পিওএস প্রিন্টারের জন্য অপ্টিমাইজড
+          <span className="text-[10px] text-emerald-100">
+            ৫৮ মিমি থার্মাল পিওএস
           </span>
         </div>
 
         {filteredBookings.length === 0 ? (
-          <div className="text-center py-12 text-xs text-slate-400">
+          <div className="text-center py-8 text-xs text-slate-500">
             {searchTerm ? 'কোনো টিকিট খুঁজে পাওয়া যায়নি।' : 'এই তারিখে কোনো বুকিং নেই।'}
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
+            <table className="w-full text-left text-[11px] border-collapse">
               <thead>
-                <tr className="bg-slate-50 text-slate-600 border-b">
-                  <th className="py-3 px-4 font-bold">টিকিট নং</th>
-                  <th className="py-3 px-4 font-bold">কাউন্টার ও অপারেটর</th>
-                  <th className="py-3 px-4 font-bold">ট্রিপ ও সময়</th>
-                  <th className="py-3 px-4 font-bold">যাত্রী ও ফোন</th>
-                  <th className="py-3 px-4 font-bold">আসন</th>
-                  <th className="py-3 px-3 font-bold text-right bg-blue-50/50">সিট ভাড়া</th>
-                  <th className="py-3 px-3 font-bold text-right bg-amber-50/50">মালের ভাড়া</th>
-                  <th className="py-3 px-3 font-bold text-right bg-emerald-50/70">মোট টাকা</th>
-                  <th className="py-3 px-4 font-bold text-center">প্রিন্ট কাউন্ট</th>
-                  <th className="py-3 px-4 font-bold text-right">অ্যাকশন</th>
+                <tr className="bg-[#e6f4ef] text-slate-950 border-b border-emerald-300">
+                  <th className="py-1.5 px-2 font-bold">টিকিট নং</th>
+                  <th className="py-1.5 px-2 font-bold">কাউন্টার ও অপারেটর</th>
+                  <th className="py-1.5 px-2 font-bold">ট্রিপ ও সময়</th>
+                  <th className="py-1.5 px-2 font-bold">যাত্রী ও ফোন</th>
+                  <th className="py-1.5 px-2 font-bold">আসন</th>
+                  <th className="py-1.5 px-2 font-bold text-right bg-cyan-50/70">সিট ভাড়া</th>
+                  <th className="py-1.5 px-2 font-bold text-right bg-amber-50/70">মালের ভাড়া</th>
+                  <th className="py-1.5 px-2 font-bold text-right bg-emerald-50/80">মোট টাকা</th>
+                  <th className="py-1.5 px-2 font-bold text-center">প্রিন্ট</th>
+                  <th className="py-1.5 px-2 font-bold text-right">অ্যাকশন</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">

@@ -883,7 +883,7 @@ apiRouter.post(
     if (!canManageSchedules(req.user)) {
       return res.status(403).json({ error: 'শুধুমাত্র এডমিন বা অনুমোদিত ব্যবহারকারী গাড়ি যুক্ত করতে পারেন।' });
     }
-    const { regNo, seatCapacity, ownerName, ownerPhone, model, notes } = req.body;
+    const { regNo, seatCapacity, ownerName, ownerPhone, driverName, model, notes } = req.body;
     if (!regNo || !regNo.trim()) {
       return res.status(400).json({ error: 'গাড়ির নম্বর আবশ্যক।' });
     }
@@ -907,6 +907,7 @@ apiRouter.post(
       seatCapacity: capacity,
       ownerName: ownerName.trim(),
       ownerPhone: ownerPhone?.trim() || '',
+      driverName: driverName?.trim() || '',
       model: model?.trim() || '',
       status: 'active',
       notes: notes?.trim() || '',
@@ -923,7 +924,7 @@ apiRouter.post(
       actionType: 'CREATE_VEHICLE',
       entityType: 'VEHICLE',
       entityId: newVehicle.id,
-      details: `নতুন গাড়ি "${newVehicle.regNo}" (${newVehicle.seatCapacity} সিট, মালিক: ${newVehicle.ownerName}) যুক্ত করা হয়েছে।`,
+      details: `নতুন গাড়ি "${newVehicle.regNo}" (${newVehicle.seatCapacity} সিট, মালিক: ${newVehicle.ownerName}${newVehicle.driverName ? `, ড্রাইভার: ${newVehicle.driverName}` : ''}) যুক্ত করা হয়েছে।`,
     });
 
     res.json({ success: true, vehicle: newVehicle });
@@ -936,7 +937,7 @@ apiRouter.put(
   requireRole(['super_admin', 'master_admin', 'company_admin', 'moderator']),
   (req: AuthenticatedRequest, res) => {
     const { id } = req.params;
-    const { regNo, seatCapacity, ownerName, ownerPhone, model, status, notes } = req.body;
+    const { regNo, seatCapacity, ownerName, ownerPhone, driverName, model, status, notes } = req.body;
     const vehicle = db.getVehicles().find((v) => v.id === id);
     if (!vehicle) {
       return res.status(404).json({ error: 'গাড়ি পাওয়া যায়নি।' });
@@ -950,6 +951,7 @@ apiRouter.put(
     if (seatCapacity) vehicle.seatCapacity = Number(seatCapacity) as 42 | 46;
     if (ownerName !== undefined) vehicle.ownerName = ownerName.trim();
     if (ownerPhone !== undefined) vehicle.ownerPhone = ownerPhone.trim();
+    if (driverName !== undefined) vehicle.driverName = driverName.trim();
     if (model !== undefined) vehicle.model = model.trim();
     if (status) vehicle.status = status;
     if (notes !== undefined) vehicle.notes = notes.trim();
@@ -963,7 +965,7 @@ apiRouter.put(
       actionType: 'UPDATE_VEHICLE',
       entityType: 'VEHICLE',
       entityId: vehicle.id,
-      details: `গাড়ি "${vehicle.regNo}" (মালিক: ${vehicle.ownerName}) এর তথ্য আপডেট করা হয়েছে।`,
+      details: `গাড়ি "${vehicle.regNo}" (মালিক: ${vehicle.ownerName}${vehicle.driverName ? `, ড্রাইভার: ${vehicle.driverName}` : ''}) এর তথ্য আপডেট করা হয়েছে।`,
     });
 
     res.json({ success: true, vehicle });

@@ -8,9 +8,7 @@ import {
   Laptop,
   Apple,
   HelpCircle,
-  Share2,
-  MoreVertical,
-  PlusSquare,
+  WifiOff,
   Sparkles,
 } from 'lucide-react';
 
@@ -20,14 +18,27 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 export const PWAInstallBanner: React.FC = () => {
-  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(() => {
+    if (typeof window !== 'undefined' && (window as any).__deferredPwaPrompt) {
+      return (window as any).__deferredPwaPrompt as BeforeInstallPromptEvent;
+    }
+    return null;
+  });
   const [isInstalled, setIsInstalled] = useState<boolean>(false);
   const [dismissed, setDismissed] = useState<boolean>(false);
   const [showModal, setShowModal] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<'android' | 'desktop' | 'ios'>('android');
   const [isInIframe, setIsInIframe] = useState<boolean>(false);
+  const [isOnline, setIsOnline] = useState<boolean>(
+    typeof navigator !== 'undefined' ? navigator.onLine : true
+  );
 
   useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
     // Check if in iframe
     try {
       setIsInIframe(window.self !== window.top);
@@ -42,7 +53,6 @@ export const PWAInstallBanner: React.FC = () => {
 
     if (isStandalone) {
       setIsInstalled(true);
-      return;
     }
 
     // Detect device type to select default guide tab
@@ -55,172 +65,195 @@ export const PWAInstallBanner: React.FC = () => {
       setActiveTab('desktop');
     }
 
-    // Capture standard PWA install event
+    // Sync any globally captured prompt or capture future prompt events
+    const syncGlobalPrompt = () => {
+      if ((window as any).__deferredPwaPrompt) {
+        setDeferredPrompt((window as any).__deferredPwaPrompt as BeforeInstallPromptEvent);
+      }
+    };
+
     const handler = (e: Event) => {
       e.preventDefault();
+      (window as any).__deferredPwaPrompt = e;
       setDeferredPrompt(e as BeforeInstallPromptEvent);
     };
 
-    window.addEventListener('beforeinstallprompt', handler);
-
-    window.addEventListener('appinstalled', () => {
+    const handleInstalled = () => {
       setIsInstalled(true);
       setDeferredPrompt(null);
+      (window as any).__deferredPwaPrompt = null;
       setShowModal(false);
-    });
+    };
+
+    syncGlobalPrompt();
+    window.addEventListener('beforeinstallprompt', handler);
+    window.addEventListener('vms-pwa-prompt-ready', syncGlobalPrompt);
+    window.addEventListener('appinstalled', handleInstalled);
 
     return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
       window.removeEventListener('beforeinstallprompt', handler);
+      window.removeEventListener('vms-pwa-prompt-ready', syncGlobalPrompt);
+      window.removeEventListener('appinstalled', handleInstalled);
     };
   }, []);
 
-  if (isInstalled || dismissed) return null;
-
   const handleInstallButtonClick = async () => {
-    if (deferredPrompt) {
+    const promptEvent = deferredPrompt || ((window as any).__deferredPwaPrompt as BeforeInstallPromptEvent | undefined);
+    if (promptEvent) {
       try {
-        await deferredPrompt.prompt();
-        const choice = await deferredPrompt.userChoice;
+        await promptEvent.prompt();
+        const choice = await promptEvent.userChoice;
         if (choice.outcome === 'accepted') {
           setIsInstalled(true);
         }
         setDeferredPrompt(null);
+        (window as any).__deferredPwaPrompt = null;
         return;
       } catch (err) {
         console.warn('Install prompt error:', err);
       }
     }
-    // If prompt is not ready or blocked by browser/iframe, open helpful visual guide
     setShowModal(true);
   };
 
-  const handleOpenDirectWindow = () => {
-    window.open(window.location.href, '_blank', 'noopener,noreferrer');
-  };
+  const directUrl = typeof window !== 'undefined' ? window.location.href : '/';
 
   return (
     <>
-      {/* Top Notification Banner */}
-      <div className="bg-gradient-to-r from-emerald-800 via-teal-900 to-slate-900 text-white px-3 sm:px-5 py-2.5 shadow-md flex items-center justify-between gap-3 text-xs sm:text-sm border-b border-emerald-500/20">
-        <div className="flex items-center gap-2.5 min-w-0">
-          <img
-            src="/logo.png"
-            alt="Data Code"
-            className="w-8 h-8 rounded-xl object-cover border border-emerald-400/40 shrink-0 shadow-inner"
-          />
-          <div className="truncate">
-            <span className="font-bold text-white tracking-wide">
-              অ্যাপ হিসেবে ইনস্টল করুন (PWA):
-            </span>
-            <span className="text-emerald-100 hidden sm:inline ml-1.5 text-xs opacity-90">
-              মোবাইল বা কম্পিউটারে সরাসরি ইনস্টল করে অ্যাপ মোডে দ্রুত ব্যবহার করুন।
-            </span>
+      {/* Offline Mode Bar */}
+      {!isOnline && (
+        <div className="bg-amber-600 text-white px-3 py-1.5 text-[11px] sm:text-xs font-bold flex items-center justify-center gap-1.5 w-full">
+          <WifiOff className="w-3.5 h-3.5 shrink-0" />
+          <span>অফলাইন মোড — ইন্টারনেট সংযোগ বিচ্ছিন্ন রয়েছে, ক্যাশ করা তথ্য প্রদর্শিত হচ্ছে</span>
+        </div>
+      )}
+
+      {/* Top Install Notification Banner */}
+      {!isInstalled && !dismissed && (
+        <div className="bg-[#0b2820] text-white px-3 sm:px-4 py-1.5 shadow-sm flex items-center justify-between gap-2 text-xs border-b border-[#164236] w-full max-w-full overflow-hidden">
+          <div className="flex items-center gap-2 min-w-0 flex-1">
+            <img
+              src="/logo.png"
+              alt="Vehicles Management System"
+              className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg object-cover border border-emerald-400/40 shrink-0"
+            />
+            <div className="min-w-0 truncate">
+              <span className="font-bold text-white tracking-wide text-[11px] sm:text-xs">
+                অ্যাপ ইনস্টল (PWA)
+              </span>
+              <span className="text-emerald-200 hidden md:inline ml-1.5 text-xs">
+                — মোবাইল বা কম্পিউটারে সরাসরি ইনস্টল করে দ্রুত ব্যবহার করুন।
+              </span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-1.5 shrink-0">
+            {isInIframe ? (
+              <a
+                href={directUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-2.5 py-1 bg-white hover:bg-emerald-50 text-[#0b2820] font-extrabold rounded-lg shadow-xs flex items-center gap-1 transition-all text-[11px] whitespace-nowrap"
+                title="অ্যাপটি নতুন ট্যাবে খুলুন"
+              >
+                <ExternalLink className="w-3 h-3 shrink-0" />
+                <span>নতুন ট্যাবে</span>
+              </a>
+            ) : (
+              <button
+                type="button"
+                onClick={handleInstallButtonClick}
+                className="px-2.5 py-1 bg-[#0d9488] hover:bg-[#0f766e] text-white font-extrabold rounded-lg shadow-xs flex items-center gap-1 transition-all text-[11px] cursor-pointer whitespace-nowrap"
+              >
+                <Download className="w-3 h-3 shrink-0" />
+                <span>{deferredPrompt ? 'ইনস্টল করুন' : 'ইনস্টল'}</span>
+              </button>
+            )}
+
+            <button
+              type="button"
+              onClick={() => setShowModal(true)}
+              className="px-2 py-1 bg-[#133b30] hover:bg-[#194d3f] text-emerald-100 rounded-lg transition-colors text-[11px] font-semibold flex items-center gap-1 cursor-pointer"
+              title="ইনস্টল সহায়িকা ও নির্দেশিকা"
+            >
+              <HelpCircle className="w-3.5 h-3.5" />
+              <span className="hidden md:inline">সহায়িকা</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setDismissed(true)}
+              className="p-1 text-emerald-200 hover:text-white hover:bg-[#133b30] rounded-lg transition-colors cursor-pointer"
+              title="ব্যানার বন্ধ করুন"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
           </div>
         </div>
-
-        <div className="flex items-center gap-2 shrink-0">
-          {isInIframe ? (
-            <button
-              type="button"
-              onClick={handleOpenDirectWindow}
-              className="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-lg shadow-sm flex items-center gap-1.5 transition-all text-xs cursor-pointer"
-              title="অ্যাপটি নতুন ট্যাবে খুলুন"
-            >
-              <ExternalLink className="w-3.5 h-3.5" />
-              <span>নতুন ট্যাবে খুলুন</span>
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={handleInstallButtonClick}
-              className="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-lg shadow-sm flex items-center gap-1.5 transition-all text-xs cursor-pointer"
-            >
-              <Download className="w-3.5 h-3.5" />
-              <span>ইনস্টল করুন</span>
-            </button>
-          )}
-
-          <button
-            type="button"
-            onClick={() => setShowModal(true)}
-            className="px-2.5 py-1.5 bg-white/10 hover:bg-white/20 text-emerald-100 hover:text-white rounded-lg transition-colors text-xs font-semibold flex items-center gap-1 cursor-pointer"
-            title="ইনস্টল সহায়িকা ও নির্দেশিকা"
-          >
-            <HelpCircle className="w-3.5 h-3.5" />
-            <span className="hidden md:inline">সহায়িকা</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setDismissed(true)}
-            className="p-1.5 text-slate-300 hover:text-white hover:bg-white/10 rounded-lg transition-colors cursor-pointer"
-            title="ব্যানার বন্ধ করুন"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        </div>
-      </div>
+      )}
 
       {/* Comprehensive PWA Installation Guide Modal */}
       {showModal && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white text-slate-800 rounded-3xl max-w-lg w-full shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
+          <div className="bg-white text-slate-900 rounded-t-2xl sm:rounded-2xl max-w-lg w-full shadow-2xl border border-emerald-200 overflow-hidden flex flex-col max-h-[92dvh] sm:max-h-[88dvh]">
             {/* Modal Header */}
-            <div className="bg-gradient-to-r from-slate-900 via-emerald-950 to-slate-900 text-white p-5 flex items-center justify-between">
-              <div className="flex items-center gap-3">
+            <div className="shrink-0 bg-[#0b2820] text-white p-4 flex items-center justify-between">
+              <div className="flex items-center gap-3 min-w-0">
                 <img
                   src="/logo.png"
-                  alt="Data Code"
-                  className="w-10 h-10 rounded-2xl object-cover border border-emerald-400/40 shrink-0"
+                  alt="Vehicles Management System"
+                  className="w-9 h-9 rounded-xl object-cover border border-emerald-400/40 shrink-0"
                 />
-                <div>
-                  <h3 className="font-bold text-base text-white">অ্যাপ ইনস্টল সহায়িকা (PWA)</h3>
-                  <p className="text-xs text-emerald-300">মোবাইল ও পিসিতে ইনস্টল করার সহজ নিয়ম</p>
+                <div className="min-w-0">
+                  <h3 className="font-bold text-sm sm:text-base text-white truncate">Vehicles Management System (PWA)</h3>
+                  <p className="text-[11px] text-emerald-300 truncate">মোবাইল ও পিসিতে ইনস্টল করার সহজ নিয়ম</p>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => setShowModal(false)}
-                className="p-1.5 text-slate-300 hover:text-white hover:bg-white/10 rounded-xl transition-colors cursor-pointer"
+                className="min-h-[36px] min-w-[36px] flex items-center justify-center text-emerald-200 hover:text-white hover:bg-[#133b30] rounded-lg transition-colors cursor-pointer shrink-0"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {/* Modal Body */}
-            <div className="p-5 max-h-[80vh] overflow-y-auto space-y-4">
+            <div className="flex-1 p-4 overflow-y-auto overscroll-contain space-y-3.5">
               {/* If in iframe alert box */}
               {isInIframe && (
-                <div className="p-3.5 bg-amber-50 border border-amber-200 rounded-2xl text-amber-900 text-xs">
+                <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-900 text-xs">
                   <div className="font-bold flex items-center gap-1.5 text-amber-950 mb-1">
                     <Sparkles className="w-4 h-4 text-amber-600" />
                     <span>প্রিভিউ মোড সতর্কবার্তা:</span>
                   </div>
-                  <p className="leading-relaxed mb-2.5">
-                    আপনি বর্তমানে ব্রাউজারের প্রিভিউ ফ্রেমের ভেতরে আছেন। মোবাইল বা কম্পিউটারে আসল অ্যাপ
-                    হিসেবে ইনস্টল করতে নিচের বাটনে চাপ দিয়ে আলাদা উইন্ডো/ট্যাবে সরাসরি অ্যাপটি খুলুন:
+                  <p className="leading-relaxed mb-2">
+                    আপনি বর্তমানে প্রিভিউ ফ্রেমের ভেতরে আছেন। ক্রোম থেকে সরাসরি অ্যাপ ইনস্টল করতে নিচের বাটনে ট্যাপ করে নতুন ট্যাবে খুলুন:
                   </p>
-                  <button
-                    type="button"
-                    onClick={handleOpenDirectWindow}
-                    className="w-full py-2 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl flex items-center justify-center gap-2 shadow-xs cursor-pointer"
+                  <a
+                    href={directUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full py-2 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-lg flex items-center justify-center gap-2 shadow-xs"
                   >
                     <ExternalLink className="w-4 h-4" />
-                    <span>সরাসরি নতুন ট্যাবে অ্যাপটি খুলুন ↗</span>
-                  </button>
+                    <span>সরাসরি নতুন ট্যাবে অ্যাপটি খুলুন</span>
+                  </a>
                 </div>
               )}
 
               {/* Direct Prompt Button if available */}
               {deferredPrompt && (
-                <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl text-center">
+                <div className="p-3.5 bg-emerald-50 border border-emerald-200 rounded-xl text-center">
                   <p className="text-xs text-emerald-900 font-semibold mb-2">
-                    আপনার ব্রাউজার অ্যাপটি ইনস্টল করার জন্য প্রস্তুত!
+                    আপনার ক্রোম ব্রাউজার অ্যাপটি সরাসরি ইনস্টল করার জন্য প্রস্তুত!
                   </p>
                   <button
                     type="button"
                     onClick={handleInstallButtonClick}
-                    className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl flex items-center justify-center gap-2 shadow-md cursor-pointer text-sm"
+                    className="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg flex items-center justify-center gap-2 shadow-sm cursor-pointer text-xs sm:text-sm"
                   >
                     <Download className="w-4 h-4" />
                     <span>সরাসরি অ্যাপ ইনস্টল করুন</span>
@@ -230,12 +263,12 @@ export const PWAInstallBanner: React.FC = () => {
 
               {/* Device Selector Tabs */}
               <div>
-                <div className="text-xs font-bold text-slate-700 mb-2">আপনার ডিভাইস নির্বাচন করুন:</div>
-                <div className="grid grid-cols-3 gap-2 bg-slate-100 p-1 rounded-xl">
+                <div className="text-xs font-bold text-slate-700 mb-1.5">আপনার ডিভাইস নির্বাচন করুন:</div>
+                <div className="grid grid-cols-3 gap-1.5 bg-slate-100 p-1 rounded-xl">
                   <button
                     type="button"
                     onClick={() => setActiveTab('android')}
-                    className={`py-2 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                    className={`py-1.5 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                       activeTab === 'android'
                         ? 'bg-white text-emerald-700 shadow-xs'
                         : 'text-slate-600 hover:text-slate-900'
@@ -248,7 +281,7 @@ export const PWAInstallBanner: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setActiveTab('desktop')}
-                    className={`py-2 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                    className={`py-1.5 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                       activeTab === 'desktop'
                         ? 'bg-white text-emerald-700 shadow-xs'
                         : 'text-slate-600 hover:text-slate-900'
@@ -261,7 +294,7 @@ export const PWAInstallBanner: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setActiveTab('ios')}
-                    className={`py-2 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                    className={`py-1.5 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                       activeTab === 'ios'
                         ? 'bg-white text-emerald-700 shadow-xs'
                         : 'text-slate-600 hover:text-slate-900'
@@ -275,119 +308,100 @@ export const PWAInstallBanner: React.FC = () => {
 
               {/* Tab Contents */}
               {activeTab === 'android' && (
-                <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 text-xs space-y-3">
-                  <div className="font-bold text-slate-900 text-sm flex items-center gap-2">
+                <div className="bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-xs space-y-2.5">
+                  <div className="font-bold text-slate-900 flex items-center gap-2">
                     <Smartphone className="w-4 h-4 text-emerald-600" />
                     <span>Android Chrome ব্রাউজারে ইনস্টল করার নিয়ম:</span>
                   </div>
-                  <ol className="list-decimal list-inside space-y-2 text-slate-700 leading-relaxed font-medium">
+                  <ol className="space-y-1.5 text-slate-700 leading-relaxed font-medium">
                     <li className="flex items-start gap-1.5">
                       <span className="font-bold">১.</span>
-                      <span>ব্রাউজারের উপরে ডান কোণায় থাকা <strong>৩-ডট (⋮)</strong> মেনু আইকনটিতে ট্যাপ করুন।</span>
+                      <span>প্রথমে উপরের <strong>"নতুন ট্যাবে"</strong> বাটনে চাপ দিয়ে ব্রাউজারের মূল ট্যাবে ওপেন করুন।</span>
                     </li>
                     <li className="flex items-start gap-1.5">
                       <span className="font-bold">২.</span>
-                      <span>মেনু অপশন থেকে <strong>"Add to Home screen" (হোম স্ক্রিনে যোগ করুন)</strong> নির্বাচন করুন।</span>
+                      <span>ব্রাউজারের উপরে ডান কোণায় থাকা <strong>৩-ডট (⋮)</strong> মেনুতে ট্যাপ করে <strong>"Add to Home screen"</strong> বা <strong>"Install app"</strong> নির্বাচন করুন।</span>
                     </li>
                     <li className="flex items-start gap-1.5">
                       <span className="font-bold">৩.</span>
-                      <span>
-                        পপআপে <strong>"Create shortcut"</strong> অপশনের ডান পাশের তীর চিহ্নে <strong>(&gt;)</strong> ট্যাপ করে "Add" চাপুন।
-                      </span>
-                    </li>
-                    <li className="flex items-start gap-1.5">
-                      <span className="font-bold">৪.</span>
-                      <span>
-                        সাথে সাথে আপনার ফোনের হোম স্ক্রিনে অ্যাপের সুন্দর আইকন তৈরি হবে এবং এক ক্লিকেই ফুলস্ক্রিন অ্যাপ মোডে ওপেন হবে।
-                      </span>
+                      <span>পপআপে <strong>"Install"</strong> বাটনে ট্যাপ করুন। হোম স্ক্রিনে সরাসরি VMS অ্যাপ যুক্ত হয়ে যাবে।</span>
                     </li>
                   </ol>
-
-                  <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-[11px] text-emerald-950 font-medium leading-relaxed">
-                    <span className="font-bold text-emerald-800">💡 বিশেষ দ্রষ্টব্য:</span> যদি ক্রোম পপআপে "Install: This app cannot be installed" দেখায়, তবে ঠিক নিচেই থাকা <strong className="text-emerald-700">"Create shortcut" (Shortcuts open in Chrome)</strong> অপশনে চাপ দিন। এটি ফোন স্ক্রিনে অ্যাপ হিসেবেই যুক্ত হয়।
-                  </div>
                 </div>
               )}
 
               {activeTab === 'desktop' && (
-                <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 text-xs space-y-3">
-                  <div className="font-bold text-slate-900 text-sm flex items-center gap-2">
+                <div className="bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-xs space-y-2.5">
+                  <div className="font-bold text-slate-900 flex items-center gap-2">
                     <Laptop className="w-4 h-4 text-teal-600" />
                     <span>Chrome / Microsoft Edge (PC / Mac) এ ইনস্টল:</span>
                   </div>
-                  <ol className="list-decimal list-inside space-y-2 text-slate-700 leading-relaxed font-medium">
+                  <ol className="space-y-1.5 text-slate-700 leading-relaxed font-medium">
                     <li className="flex items-start gap-1.5">
                       <span className="font-bold">১.</span>
-                      <span>ব্রাউজারের এড্রেস বারে (যেখানে লিঙ্ক থাকে) ডান পাশে থাকা <strong>⤓ (ইনস্টল) বা ⊕</strong> আইকনে ক্লিক করুন।</span>
+                      <span>ব্রাউজারের এড্রেস বারে ডান পাশে থাকা <strong>⤓ (Install)</strong> আইকনে ক্লিক করুন।</span>
                     </li>
                     <li className="flex items-start gap-1.5">
                       <span className="font-bold">২.</span>
-                      <span>অথবা ব্রাউজারের ৩-ডট মেনু ➔ <strong>"Save and share"</strong> ➔ <strong>"Install Cloud Counter Management System"</strong> এ ক্লিক করুন।</span>
-                    </li>
-                    <li className="flex items-start gap-1.5">
-                      <span className="font-bold">৩.</span>
-                      <span><strong>"Install"</strong> কনফার্ম করুন। এটি আলাদা উইন্ডোতে ফুলস্ক্রিন সফটওয়্যার হিসেবে চালু হবে।</span>
+                      <span>অথবা ৩-ডট মেনু ➔ <strong>"Cast, save, and share"</strong> ➔ <strong>"Install Vehicles Management System"</strong> এ ক্লিক করুন।</span>
                     </li>
                   </ol>
                 </div>
               )}
 
               {activeTab === 'ios' && (
-                <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 text-xs space-y-3">
-                  <div className="font-bold text-slate-900 text-sm flex items-center gap-2">
+                <div className="bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-xs space-y-2.5">
+                  <div className="font-bold text-slate-900 flex items-center gap-2">
                     <Apple className="w-4 h-4 text-slate-800" />
                     <span>iPhone / iPad (Safari) ব্রাউজারে ইনস্টল:</span>
                   </div>
-                  <ol className="list-decimal list-inside space-y-2 text-slate-700 leading-relaxed font-medium">
+                  <ol className="space-y-1.5 text-slate-700 leading-relaxed font-medium">
                     <li className="flex items-start gap-1.5">
                       <span className="font-bold">১.</span>
-                      <span>অ্যাপটি অবশ্যই অ্যাপল <strong>Safari (সাফারি)</strong> ব্রাউজারে ওপেন করুন।</span>
+                      <span><strong>Safari</strong> ব্রাউজারে ওপেন করে নিচের <strong>Share (↑)</strong> আইকনে ট্যাপ করুন।</span>
                     </li>
                     <li className="flex items-start gap-1.5">
                       <span className="font-bold">২.</span>
-                      <span>সাফারি ব্রাউজারের নিচে থাকা <strong>শেয়ার (Share)</strong> আইকনে (একটি চারকোনা বক্স থেকে উপরের দিকে তীর) ট্যাপ করুন।</span>
-                    </li>
-                    <li className="flex items-start gap-1.5">
-                      <span className="font-bold">৩.</span>
-                      <span>নিচে স্ক্রোল করে <strong>"Add to Home Screen" (হোম স্ক্রিনে যোগ করুন)</strong> অপশনটি ট্যাপ করুন এবং উপরে ডানে <strong>"Add"</strong> দিন।</span>
+                      <span>নিচে স্ক্রোল করে <strong>"Add to Home Screen"</strong> নির্বাচন করে <strong>"Add"</strong> চাপুন।</span>
                     </li>
                   </ol>
                 </div>
               )}
 
               {/* Advantages */}
-              <div className="bg-emerald-50/60 border border-emerald-100 rounded-2xl p-3.5 text-[11px] text-emerald-950">
+              <div className="bg-emerald-50/60 border border-emerald-100 rounded-xl p-3 text-[11px] text-emerald-950">
                 <div className="font-bold mb-1 flex items-center gap-1.5 text-emerald-800">
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
                   <span>PWA ইনস্টল করার সুবিধাসমূহ:</span>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-slate-700">
-                  <div>✓ কোনো ব্রাউজার ইউআরএল বার ছাড়া ফুল স্ক্রিন মোড</div>
-                  <div>✓ দ্রুত টিকিট বুকিং ও প্রিন্ট কার্যক্ষমতা</div>
-                  <div>✓ ক্যাশ করা পেজ দিয়ে তাৎক্ষণিক লোডিং</div>
-                  <div>✓ মোবাইল হোম স্ক্রিন থেকে এক ক্লিকে সরাসরি চালু</div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 text-slate-700">
+                  <div>✓ ব্রাউজার বার ছাড়া ফুল-স্ক্রিন অ্যাপ মোড</div>
+                  <div>✓ দ্রুত টিকিট বুকিং ও প্রিন্ট</div>
+                  <div>✓ অফলাইন ও দ্রুত ক্যাশ লোডিং</div>
+                  <div>✓ হোম স্ক্রিন থেকে এক-ক্লিক ওপেন</div>
                 </div>
               </div>
             </div>
 
             {/* Modal Footer */}
-            <div className="bg-slate-50 p-4 border-t border-slate-100 flex items-center justify-between">
+            <div className="shrink-0 bg-[#f0f9f6] px-4 py-3 border-t border-emerald-200 flex items-center justify-between gap-2 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
               <button
                 type="button"
                 onClick={() => setShowModal(false)}
-                className="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl text-xs transition-colors cursor-pointer"
+                className="min-h-[44px] px-4 py-2 bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 font-bold rounded-xl text-xs transition-colors cursor-pointer"
               >
                 বন্ধ করুন
               </button>
 
-              <button
-                type="button"
-                onClick={handleOpenDirectWindow}
-                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition-colors flex items-center gap-1.5 cursor-pointer shadow-sm"
+              <a
+                href={directUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="min-h-[44px] px-4 py-2 bg-[#0d9488] hover:bg-[#0f766e] text-white font-bold rounded-xl text-xs transition-colors flex items-center gap-1.5 shadow-xs"
               >
                 <ExternalLink className="w-3.5 h-3.5" />
-                <span>নতুন উইন্ডোতে খুলুন</span>
-              </button>
+                <span>নতুন ট্যাবে খুলুন</span>
+              </a>
             </div>
           </div>
         </div>

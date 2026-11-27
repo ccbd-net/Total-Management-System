@@ -15,6 +15,7 @@ import {
   TrendingUp,
   RefreshCw,
   ArrowUpRight,
+  TableProperties,
 } from 'lucide-react';
 
 export const DashboardPage: React.FC<{ onNavigateTo: (tab: any) => void }> = ({ onNavigateTo }) => {
@@ -65,7 +66,6 @@ export const DashboardPage: React.FC<{ onNavigateTo: (tab: any) => void }> = ({ 
     setWeekStartDate(getWeekStartSaturday(newDate));
   };
 
-  // Real-time synchronization
   useDataSync(
     useCallback(() => {
       fetchAnalytics(selectedDate);
@@ -76,25 +76,41 @@ export const DashboardPage: React.FC<{ onNavigateTo: (tab: any) => void }> = ({ 
   const currentWeekStart = getWeekStartSaturday(getTodayDhakaDate());
   const isCurrentWeek = weekStartDate === currentWeekStart;
 
+  const vehicleRows = summary?.vehicleWiseCollections || [];
+  const totalVehicleUp = vehicleRows.reduce((acc, v) => acc + (v.upCollection || 0), 0);
+  const totalVehicleDown = vehicleRows.reduce((acc, v) => acc + (v.downCollection || 0), 0);
+  const totalVehicleAll = vehicleRows.reduce((acc, v) => acc + (v.total || 0), 0);
+
+  const counterRows = summary?.counterWiseSales || [];
+  const totalCounterSeats = counterRows.reduce((acc, c) => acc + (c.seatsSold || 0), 0);
+  const totalCounterRev = counterRows.reduce((acc, c) => acc + (c.totalRevenue || 0), 0);
+
   return (
-    <div className="space-y-6">
-      {/* Top Bar: Title & Date Selector */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs">
-        <div>
-          <h2 className="text-lg font-bold text-slate-800">অপারেশন ড্যাশবোর্ড ও বিশ্লেষণ</h2>
-          <p className="text-xs text-slate-500 mt-0.5">
-            আজকের সার্বিক বুকিং, আসন বিক্রয়, রাজস্ব কালেকশন ও গাড়ির ট্রিপ অগ্রগতি
-          </p>
+    <div className="space-y-3">
+      {/* Compact Excel Top Control Bar */}
+      <div className="flex flex-wrap items-center justify-between gap-2 bg-white px-3 py-2 rounded-xl border border-emerald-200 shadow-2xs">
+        <div className="flex items-center gap-2 min-w-0">
+          <div className="w-7 h-7 rounded-lg bg-[#0b2820] text-emerald-300 flex items-center justify-center shrink-0">
+            <TableProperties className="w-4 h-4" />
+          </div>
+          <div className="min-w-0">
+            <h2 className="text-xs sm:text-sm font-bold text-slate-950 truncate">
+              অপারেশন ড্যাশবোর্ড ও হিসাব শীট
+            </h2>
+            <p className="hidden sm:block text-[10px] text-slate-600 leading-tight">
+              দৈনিক বুকিং, আসন বিক্রয়, রাজস্ব ও গাড়ির ট্রিপ সামারি
+            </p>
+          </div>
         </div>
 
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-300 text-xs">
-            <Calendar className="w-4 h-4 text-emerald-600" />
+        <div className="flex items-center gap-1.5 shrink-0">
+          <div className="flex items-center gap-1.5 bg-[#f0f9f6] px-2.5 py-1 rounded-lg border border-emerald-300 text-[11px]">
+            <Calendar className="w-3.5 h-3.5 text-[#0f766e] shrink-0" />
             <input
               type="date"
               value={selectedDate}
               onChange={(e) => handleDateChange(e.target.value)}
-              className="bg-transparent font-semibold text-slate-700 outline-none cursor-pointer"
+              className="bg-transparent font-bold text-slate-950 outline-none cursor-pointer text-[11px]"
             />
           </div>
 
@@ -104,116 +120,324 @@ export const DashboardPage: React.FC<{ onNavigateTo: (tab: any) => void }> = ({ 
               fetchAnalytics(selectedDate);
               fetchWeeklyTrends(weekStartDate);
             }}
-            className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition-colors"
+            className="p-1.5 bg-[#ecfdf5] hover:bg-[#d1fae5] border border-emerald-300 text-[#0b2820] rounded-lg transition-colors cursor-pointer"
             title="রিফ্রেশ করুন"
           >
-            <RefreshCw className={`w-4 h-4 ${loading || weeklyLoading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`w-3.5 h-3.5 ${loading || weeklyLoading ? 'animate-spin' : ''}`} />
           </button>
         </div>
       </div>
 
-      {/* KPI Metrics Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
-        {/* Total Bookings */}
-        <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-col justify-between">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-semibold text-slate-500">মোট বুকিং</span>
-            <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
-              <Ticket className="w-4 h-4" />
+      {/* Excel-Sheet KPI Matrix with Clean Deep Forest & Emerald Headers */}
+      <div className="bg-emerald-200 border border-emerald-300 rounded-xl overflow-hidden shadow-2xs">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-px">
+          {/* 1. Total Bookings */}
+          <div className="bg-white flex flex-col">
+            <div className="bg-[#0b2820] px-2.5 py-1 flex items-center justify-between gap-1 text-white">
+              <span className="text-[10px] font-bold truncate">মোট বুকিং</span>
+              <Ticket className="w-3 h-3 shrink-0 text-emerald-300" />
+            </div>
+            <div className="px-2.5 py-1.5 flex items-baseline justify-between gap-1">
+              <span className="text-sm sm:text-base font-black text-slate-950 tabular-nums">
+                {toBengaliDigits(summary?.totalBookings || 0)}
+              </span>
+              <span className="text-[10px] text-slate-600 truncate">টি অর্ডার</span>
             </div>
           </div>
-          <div>
-            <div className="text-xl sm:text-2xl font-black text-slate-900 tabular-nums">
-              {toBengaliDigits(summary?.totalBookings || 0)}
-            </div>
-            <span className="text-[11px] text-slate-400">টি সফল অর্ডার</span>
-          </div>
-        </div>
 
-        {/* Seats Sold */}
-        <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-col justify-between">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-semibold text-slate-500">বিক্রিত আসন</span>
-            <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
-              <Armchair className="w-4 h-4" />
+          {/* 2. Seats Sold */}
+          <div className="bg-white flex flex-col">
+            <div className="bg-[#0f766e] px-2.5 py-1 flex items-center justify-between gap-1 text-white">
+              <span className="text-[10px] font-bold truncate">বিক্রিত আসন</span>
+              <Armchair className="w-3 h-3 shrink-0 text-emerald-100" />
+            </div>
+            <div className="px-2.5 py-1.5 flex items-baseline justify-between gap-1">
+              <span className="text-sm sm:text-base font-black text-slate-950 tabular-nums">
+                {toBengaliDigits(summary?.seatsSold || 0)}
+              </span>
+              <span className="text-[10px] text-slate-600 truncate">টি আসন</span>
             </div>
           </div>
-          <div>
-            <div className="text-xl sm:text-2xl font-black text-emerald-700 tabular-nums">
-              {toBengaliDigits(summary?.seatsSold || 0)}
-            </div>
-            <span className="text-[11px] text-slate-400">টি আসন নিশ্চিত</span>
-          </div>
-        </div>
 
-        {/* Total Collections */}
-        <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-col justify-between col-span-2 sm:col-span-1">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-semibold text-slate-500">মোট রাজস্ব আদায়</span>
-            <div className="w-8 h-8 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center">
-              <BadgeDollarSign className="w-4 h-4" />
+          {/* 3. Total Collections */}
+          <div className="bg-white flex flex-col">
+            <div className="bg-[#0b2820] px-2.5 py-1 flex items-center justify-between gap-1 text-white">
+              <span className="text-[10px] font-bold truncate">মোট রাজস্ব</span>
+              <BadgeDollarSign className="w-3 h-3 shrink-0 text-emerald-300" />
+            </div>
+            <div className="px-2.5 py-1.5">
+              <div className="text-sm sm:text-base font-black text-[#0f766e] tabular-nums leading-tight">
+                {formatTaka(summary?.totalCollections || 0)}
+              </div>
+              <div className="text-[9.5px] text-slate-600 tabular-nums truncate">
+                সিট: {formatTaka(summary?.totalSeatCollections || 0)} · মাল: {formatTaka(summary?.totalCargoCollections || 0)}
+              </div>
             </div>
           </div>
-          <div>
-            <div className="text-xl sm:text-2xl font-black text-teal-800 tabular-nums">
-              {formatTaka(summary?.totalCollections || 0)}
-            </div>
-            <span className="text-[11px] text-slate-500 block">
-              সিট: {formatTaka(summary?.totalSeatCollections || 0)} | মাল: {formatTaka(summary?.totalCargoCollections || 0)}
-            </span>
-          </div>
-        </div>
 
-        {/* Active Trips */}
-        <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-col justify-between">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-semibold text-slate-500">সক্রিয় ট্রিপ</span>
-            <div className="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
-              <Bus className="w-4 h-4" />
+          {/* 4. Active Trips */}
+          <div className="bg-white flex flex-col">
+            <div className="bg-[#0f766e] px-2.5 py-1 flex items-center justify-between gap-1 text-white">
+              <span className="text-[10px] font-bold truncate">সক্রিয় ট্রিপ</span>
+              <Bus className="w-3 h-3 shrink-0 text-emerald-100" />
+            </div>
+            <div className="px-2.5 py-1.5 flex items-baseline justify-between gap-1">
+              <span className="text-sm sm:text-base font-black text-slate-950 tabular-nums">
+                {toBengaliDigits(summary?.activeTrips || 0)}
+              </span>
+              <span className="text-[10px] text-slate-600 truncate">টি শিডিউল</span>
             </div>
           </div>
-          <div>
-            <div className="text-xl sm:text-2xl font-black text-slate-900 tabular-nums">
-              {toBengaliDigits(summary?.activeTrips || 0)}
-            </div>
-            <span className="text-[11px] text-slate-400">টি বাস শিডিউল</span>
-          </div>
-        </div>
 
-        {/* Ticket Sales */}
-        <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-col justify-between">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-semibold text-slate-500">টিকিট সেলস</span>
-            <div className="w-8 h-8 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
-              <TrendingUp className="w-4 h-4" />
+          {/* 5. Ticket Sales */}
+          <div className="bg-white flex flex-col">
+            <div className="bg-[#0b2820] px-2.5 py-1 flex items-center justify-between gap-1 text-white">
+              <span className="text-[10px] font-bold truncate">টিকিট সেলস</span>
+              <TrendingUp className="w-3 h-3 shrink-0 text-emerald-300" />
+            </div>
+            <div className="px-2.5 py-1.5 flex items-baseline justify-between gap-1">
+              <span className="text-sm sm:text-base font-black text-slate-950 tabular-nums">
+                {toBengaliDigits(summary?.ticketSales || 0)}
+              </span>
+              <span className="text-[10px] text-slate-600 truncate">টি ভাউচার</span>
             </div>
           </div>
-          <div>
-            <div className="text-xl sm:text-2xl font-black text-slate-900 tabular-nums">
-              {toBengaliDigits(summary?.ticketSales || 0)}
-            </div>
-            <span className="text-[11px] text-slate-400">টি ভাউচার</span>
-          </div>
-        </div>
 
-        {/* Unreconciled Trips */}
-        <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-col justify-between">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-semibold text-slate-500">অসমন্বিত ট্রিপ</span>
-            <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
-              <AlertCircle className="w-4 h-4" />
+          {/* 6. Unreconciled Trips */}
+          <div className="bg-white flex flex-col">
+            <div className={`${(summary?.unreconciledTrips || 0) > 0 ? 'bg-amber-700' : 'bg-[#0f766e]'} px-2.5 py-1 flex items-center justify-between gap-1 text-white`}>
+              <span className="text-[10px] font-bold truncate">অসমন্বিত ট্রিপ</span>
+              <AlertCircle className="w-3 h-3 shrink-0 opacity-90" />
             </div>
-          </div>
-          <div>
-            <div className="text-xl sm:text-2xl font-black text-amber-700 tabular-nums">
-              {toBengaliDigits(summary?.unreconciledTrips || 0)}
+            <div className="px-2.5 py-1.5 flex items-baseline justify-between gap-1">
+              <span className={`text-sm sm:text-base font-black tabular-nums ${(summary?.unreconciledTrips || 0) > 0 ? 'text-amber-700' : 'text-slate-950'}`}>
+                {toBengaliDigits(summary?.unreconciledTrips || 0)}
+              </span>
+              <span className="text-[10px] text-slate-600 truncate">সমন্বয় বাকি</span>
             </div>
-            <span className="text-[11px] text-slate-400">সমন্বয় বাকি</span>
           </div>
         </div>
       </div>
 
-      {/* Weekly Ticket Sales & Fuel Expense Trends (Recharts) */}
+      {/* Compact Action Bar */}
+      <div className="grid grid-cols-3 gap-2">
+        <button
+          type="button"
+          onClick={() => onNavigateTo('seat_booking')}
+          className="px-2.5 py-2 bg-[#0d9488] hover:bg-[#0f766e] text-white rounded-xl shadow-2xs transition-colors flex items-center justify-between gap-1.5 cursor-pointer"
+        >
+          <div className="min-w-0 text-left">
+            <div className="text-[9px] sm:text-[10px] text-emerald-100 leading-none truncate">সরাসরি বুকিং</div>
+            <div className="text-[11px] sm:text-xs font-bold mt-0.5 truncate">সিট বুকিং</div>
+          </div>
+          <Armchair className="w-4 h-4 shrink-0 text-white" />
+        </button>
+
+        <button
+          type="button"
+          onClick={() => onNavigateTo('daily_schedules')}
+          className="px-2.5 py-2 bg-[#0b2820] hover:bg-[#133b30] text-white rounded-xl shadow-2xs transition-colors flex items-center justify-between gap-1.5 cursor-pointer"
+        >
+          <div className="min-w-0 text-left">
+            <div className="text-[9px] sm:text-[10px] text-emerald-300 leading-none truncate">শিডিউল তালিকা</div>
+            <div className="text-[11px] sm:text-xs font-bold mt-0.5 truncate">ট্রিপ শিডিউল</div>
+          </div>
+          <Bus className="w-4 h-4 shrink-0 text-emerald-300" />
+        </button>
+
+        <button
+          type="button"
+          onClick={() => onNavigateTo('ticket_print')}
+          className="px-2.5 py-2 bg-white hover:bg-[#ecfdf5] text-[#0b2820] border border-emerald-300 rounded-xl shadow-2xs transition-colors flex items-center justify-between gap-1.5 cursor-pointer"
+        >
+          <div className="min-w-0 text-left">
+            <div className="text-[9px] sm:text-[10px] text-[#0f766e] leading-none truncate">রিসিট ও প্রিন্ট</div>
+            <div className="text-[11px] sm:text-xs font-bold mt-0.5 truncate">টিকিট প্রিন্ট</div>
+          </div>
+          <Ticket className="w-4 h-4 shrink-0 text-[#0d9488]" />
+        </button>
+      </div>
+
+      {/* Excel-Sheet Analytics Tables Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+        {/* Table 1: Vehicle-Wise Up/Down Collections */}
+        <div className="bg-white border border-emerald-300 rounded-xl overflow-hidden shadow-2xs flex flex-col">
+          <div className="bg-[#0b2820] px-3 py-2 flex items-center justify-between gap-2 text-white">
+            <div>
+              <h3 className="font-bold text-xs">গাড়ি-ভিত্তিক আপ ও ডাউন রাজস্ব</h3>
+              <p className="text-[10px] text-emerald-200 leading-tight">প্রতিটি গাড়ির আপ এবং ডাউন কালেকশন শীট</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => onNavigateTo('reconciliation')}
+              className="text-[11px] font-bold text-[#0b2820] hover:bg-emerald-50 flex items-center gap-0.5 px-2.5 py-1 bg-white rounded-lg shrink-0 cursor-pointer shadow-2xs"
+            >
+              <span>সমন্বয়</span>
+              <ArrowUpRight className="w-3 h-3 text-[#0d9488]" />
+            </button>
+          </div>
+
+          <div className="overflow-x-auto flex-1">
+            <table className="w-full border-collapse text-[11px] tabular-nums">
+              <thead>
+                <tr className="bg-[#e6f4ef] text-slate-950 border-b border-emerald-300">
+                  <th className="py-1.5 px-2 text-center font-bold border-r border-emerald-200 w-8">#</th>
+                  <th className="py-1.5 px-2 text-left font-bold border-r border-emerald-200">গাড়ির নম্বর</th>
+                  <th className="py-1.5 px-2 text-right font-bold border-r border-emerald-200 text-slate-950">আপ (৳)</th>
+                  <th className="py-1.5 px-2 text-right font-bold border-r border-emerald-200 text-[#0f766e]">ডাউন (৳)</th>
+                  <th className="py-1.5 px-2 text-right font-bold text-slate-950">মোট (৳)</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-emerald-100">
+                {vehicleRows.length > 0 ? (
+                  vehicleRows.map((veh, idx) => (
+                    <tr
+                      key={`${veh.regNo}-${idx}`}
+                      className="even:bg-[#f4fbf8] hover:bg-[#dcf5ec] transition-colors"
+                    >
+                      <td className="py-1.5 px-2 text-center text-slate-600 border-r border-emerald-100">
+                        {toBengaliDigits(idx + 1)}
+                      </td>
+                      <td className="py-1.5 px-2 font-bold text-slate-950 border-r border-emerald-100 whitespace-nowrap">
+                        {veh.regNo}
+                      </td>
+                      <td className="py-1.5 px-2 text-right font-semibold text-slate-900 border-r border-emerald-100 whitespace-nowrap">
+                        {formatTaka(veh.upCollection)}
+                      </td>
+                      <td className="py-1.5 px-2 text-right font-semibold text-[#0f766e] border-r border-emerald-100 whitespace-nowrap">
+                        {formatTaka(veh.downCollection)}
+                      </td>
+                      <td className="py-1.5 px-2 text-right font-black text-slate-950 whitespace-nowrap">
+                        {formatTaka(veh.total)}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={5} className="py-5 text-center text-[11px] text-slate-500">
+                      এই তারিখে কোনো ট্রিপ তথ্য পাওয়া যায়নি
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+              {vehicleRows.length > 0 && (
+                <tfoot>
+                  <tr className="bg-[#e6f4ef] border-t border-emerald-300 font-bold text-slate-950">
+                    <td colSpan={2} className="py-1.5 px-2 text-right border-r border-emerald-200">
+                      সর্বমোট ({toBengaliDigits(vehicleRows.length)} গাড়ি)
+                    </td>
+                    <td className="py-1.5 px-2 text-right text-slate-950 border-r border-emerald-200 whitespace-nowrap">
+                      {formatTaka(totalVehicleUp)}
+                    </td>
+                    <td className="py-1.5 px-2 text-right text-[#0f766e] border-r border-emerald-200 whitespace-nowrap">
+                      {formatTaka(totalVehicleDown)}
+                    </td>
+                    <td className="py-1.5 px-2 text-right font-black text-slate-950 whitespace-nowrap">
+                      {formatTaka(totalVehicleAll)}
+                    </td>
+                  </tr>
+                </tfoot>
+              )}
+            </table>
+          </div>
+        </div>
+
+        {/* Table 2: Counter-Wise Seat Sales & Revenue */}
+        <div className="bg-white border border-emerald-300 rounded-xl overflow-hidden shadow-2xs flex flex-col">
+          <div className="bg-[#0f766e] px-3 py-2 flex items-center justify-between gap-2 text-white">
+            <div>
+              <h3 className="font-bold text-xs">কাউন্টার-ভিত্তিক বিক্রয় ও রাজস্ব</h3>
+              <p className="text-[10px] text-emerald-100 leading-tight">প্রতিটি কাউন্টারের আসন সংখ্যা ও মোট আদায়</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => onNavigateTo('counters')}
+              className="text-[11px] font-bold text-[#0b2820] hover:bg-emerald-50 flex items-center gap-0.5 px-2.5 py-1 bg-white rounded-lg shrink-0 cursor-pointer shadow-2xs"
+            >
+              <span>কাউন্টার</span>
+              <ArrowUpRight className="w-3 h-3 text-[#0d9488]" />
+            </button>
+          </div>
+
+          <div className="overflow-x-auto flex-1">
+            <table className="w-full border-collapse text-[11px] tabular-nums">
+              <thead>
+                <tr className="bg-[#e6f4ef] text-slate-950 border-b border-emerald-300">
+                  <th className="py-1.5 px-2 text-center font-bold border-r border-emerald-200 w-8">#</th>
+                  <th className="py-1.5 px-2 text-left font-bold border-r border-emerald-200">কাউন্টার</th>
+                  <th className="py-1.5 px-2 text-center font-bold border-r border-emerald-200">কোড</th>
+                  <th className="py-1.5 px-2 text-right font-bold border-r border-emerald-200">সিট</th>
+                  <th className="py-1.5 px-2 text-right font-bold border-r border-emerald-200">মোট টাকা</th>
+                  <th className="py-1.5 px-2 text-right font-bold w-11">%</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-emerald-100">
+                {counterRows.length > 0 ? (
+                  counterRows.map((cnt, idx) => {
+                    const totalRev = summary?.totalCollections || 1;
+                    const revShare = Math.round((cnt.totalRevenue / totalRev) * 100);
+                    return (
+                      <tr
+                        key={cnt.counterId ? cnt.counterId : `${cnt.counterCode}-${cnt.counterName}-${idx}`}
+                        className="even:bg-[#f4fbf8] hover:bg-[#dcf5ec] transition-colors"
+                      >
+                        <td className="py-1.5 px-2 text-center text-slate-600 border-r border-emerald-100">
+                          {toBengaliDigits(idx + 1)}
+                        </td>
+                        <td className="py-1.5 px-2 font-bold text-slate-950 border-r border-emerald-100">
+                          <div className="flex items-center gap-1.5 min-w-0">
+                            <span
+                              className="w-2.5 h-2.5 rounded-full shrink-0 border border-black/15"
+                              style={{ backgroundColor: cnt.seatColor }}
+                            />
+                            <span className="truncate">{cnt.counterName}</span>
+                          </div>
+                        </td>
+                        <td className="py-1.5 px-2 text-center text-slate-700 border-r border-emerald-100 whitespace-nowrap">
+                          {cnt.counterCode}
+                        </td>
+                        <td className="py-1.5 px-2 text-right font-semibold text-slate-950 border-r border-emerald-100 whitespace-nowrap">
+                          {toBengaliDigits(cnt.seatsSold)}
+                        </td>
+                        <td className="py-1.5 px-2 text-right font-bold text-slate-950 border-r border-emerald-100 whitespace-nowrap">
+                          {formatTaka(cnt.totalRevenue)}
+                        </td>
+                        <td className="py-1.5 px-2 text-right text-slate-700 whitespace-nowrap">
+                          {toBengaliDigits(revShare)}%
+                        </td>
+                      </tr>
+                    );
+                  })
+                ) : (
+                  <tr>
+                    <td colSpan={6} className="py-5 text-center text-[11px] text-slate-500">
+                      এই তারিখে কোনো কাউন্টার বিক্রয় পাওয়া যায়নি
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+              {counterRows.length > 0 && (
+                <tfoot>
+                  <tr className="bg-[#e6f4ef] border-t border-emerald-300 font-bold text-slate-950">
+                    <td colSpan={3} className="py-1.5 px-2 text-right border-r border-emerald-200">
+                      সর্বমোট ({toBengaliDigits(counterRows.length)} কাউন্টার)
+                    </td>
+                    <td className="py-1.5 px-2 text-right border-r border-emerald-200 whitespace-nowrap">
+                      {toBengaliDigits(totalCounterSeats)}
+                    </td>
+                    <td className="py-1.5 px-2 text-right font-black border-r border-emerald-200 whitespace-nowrap">
+                      {formatTaka(totalCounterRev)}
+                    </td>
+                    <td className="py-1.5 px-2 text-right text-slate-800">১০০%</td>
+                  </tr>
+                </tfoot>
+              )}
+            </table>
+          </div>
+        </div>
+      </div>
+
+      {/* Weekly Ticket Sales & Fuel Expense Trends (Compact Excel Card) */}
       <WeeklyTrendsChart
         data={weeklyTrends}
         loading={weeklyLoading}
@@ -225,181 +449,6 @@ export const DashboardPage: React.FC<{ onNavigateTo: (tab: any) => void }> = ({ 
         isCurrentWeek={isCurrentWeek}
         onNavigateTo={onNavigateTo}
       />
-
-      {/* Main Charts & Analytics Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Vehicle Wise Up/Down Collections Chart */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
-          <div className="flex items-center justify-between mb-4 pb-2 border-b">
-            <div>
-              <h3 className="font-bold text-sm text-slate-800">গাড়ি-ভিত্তিক আপ ও ডাউন ট্রিপ রাজস্ব</h3>
-              <p className="text-xs text-slate-500">প্রতিটি গাড়ির আপ এবং ডাউন কালেকশন তুলনা</p>
-            </div>
-            <button
-              onClick={() => onNavigateTo('reconciliation')}
-              className="text-xs font-semibold text-blue-600 hover:text-blue-800 flex items-center gap-1"
-            >
-              <span>হিসাব সমন্বয় দেখুন</span>
-              <ArrowUpRight className="w-3.5 h-3.5" />
-            </button>
-          </div>
-
-          <div className="space-y-4">
-            {summary?.vehicleWiseCollections && summary.vehicleWiseCollections.length > 0 ? (
-              summary.vehicleWiseCollections.map((veh, idx) => {
-                const maxCol = Math.max(
-                  1,
-                  ...summary.vehicleWiseCollections.map((v) => v.total)
-                );
-                const percent = Math.min(100, Math.round((veh.total / maxCol) * 100));
-
-                return (
-                  <div key={`${veh.regNo}-${idx}`} className="p-3 bg-slate-50 rounded-xl border border-slate-200/80">
-                    <div className="flex items-center justify-between text-xs mb-1.5 font-bold">
-                      <span className="text-slate-800">{veh.regNo}</span>
-                      <span className="text-emerald-700">{formatTaka(veh.total)}</span>
-                    </div>
-
-                    {/* Progress Bar Split into Up & Down */}
-                    <div className="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden flex">
-                      <div
-                        className="bg-blue-600 h-full"
-                        style={{
-                          width: `${veh.total > 0 ? (veh.upCollection / veh.total) * percent : 0}%`,
-                        }}
-                        title={`আপ কালেকশন: ৳${veh.upCollection}`}
-                      />
-                      <div
-                        className="bg-emerald-500 h-full"
-                        style={{
-                          width: `${veh.total > 0 ? (veh.downCollection / veh.total) * percent : 0}%`,
-                        }}
-                        title={`ডাউন কালেকশন: ৳${veh.downCollection}`}
-                      />
-                    </div>
-
-                    <div className="flex items-center justify-between text-[11px] text-slate-500 mt-2">
-                      <div className="flex items-center gap-1">
-                        <span className="w-2 h-2 rounded-full bg-blue-600" />
-                        <span>আপ ট্রিপ: {formatTaka(veh.upCollection)}</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                        <span>ডাউন ট্রিপ: {formatTaka(veh.downCollection)}</span>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })
-            ) : (
-              <div className="text-center py-8 text-xs text-slate-400">
-                এই তারিখে কোনো ট্রিপ তথ্য পাওয়া যায়নি
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Counter Wise Seat Sales & Revenue */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
-          <div className="flex items-center justify-between mb-4 pb-2 border-b">
-            <div>
-              <h3 className="font-bold text-sm text-slate-800">কাউন্টার-ভিত্তিক আসন বিক্রয় ও রাজস্ব</h3>
-              <p className="text-xs text-slate-500">কোন কাউন্টার কতটি আসন বুক করেছে ও মোট রাজস্ব</p>
-            </div>
-            <button
-              onClick={() => onNavigateTo('counters')}
-              className="text-xs font-semibold text-blue-600 hover:text-blue-800 flex items-center gap-1"
-            >
-              <span>কাউন্টার তালিকা</span>
-              <ArrowUpRight className="w-3.5 h-3.5" />
-            </button>
-          </div>
-
-          <div className="space-y-3">
-            {summary?.counterWiseSales && summary.counterWiseSales.length > 0 ? (
-              summary.counterWiseSales.map((cnt, idx) => {
-                const totalRev = summary.totalCollections || 1;
-                const revShare = Math.round((cnt.totalRevenue / totalRev) * 100);
-
-                return (
-                  <div
-                    key={cnt.counterId ? cnt.counterId : `${cnt.counterCode}-${cnt.counterName}-${idx}`}
-                    className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 flex items-center justify-between gap-3"
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <span
-                        className="w-4 h-4 rounded-full shrink-0 shadow-xs"
-                        style={{ backgroundColor: cnt.seatColor }}
-                      />
-                      <div>
-                        <div className="text-xs font-bold text-slate-800">{cnt.counterName}</div>
-                        <div className="text-[11px] text-slate-500">
-                          কোড: {cnt.counterCode} | বিক্রিত সিট:{' '}
-                          <strong className="text-slate-700">{toBengaliDigits(cnt.seatsSold)} টি</strong>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="text-right">
-                      <div className="text-xs font-bold text-slate-900">{formatTaka(cnt.totalRevenue)}</div>
-                      <div className="text-[10px] text-slate-400 font-medium">{toBengaliDigits(revShare)}% শেয়ার</div>
-                    </div>
-                  </div>
-                );
-              })
-            ) : (
-              <div className="text-center py-8 text-xs text-slate-400">
-                এই তারিখে কোনো কাউন্টার বিক্রয় পাওয়া যায়নি
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Quick Access Action Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <button
-          type="button"
-          onClick={() => onNavigateTo('seat_booking')}
-          className="p-4 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-2xl shadow-md hover:shadow-lg transition-all text-left flex items-center justify-between group"
-        >
-          <div>
-            <div className="text-xs text-emerald-100 font-medium">সরাসরি বুকিং</div>
-            <div className="text-base font-bold mt-0.5">নতুন সিট বুকিং করুন</div>
-          </div>
-          <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center text-white group-hover:scale-110 transition-transform">
-            <Armchair className="w-5 h-5" />
-          </div>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => onNavigateTo('daily_schedules')}
-          className="p-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-2xl shadow-md hover:shadow-lg transition-all text-left flex items-center justify-between group"
-        >
-          <div>
-            <div className="text-xs text-blue-100 font-medium">শিডিউল তালিকা</div>
-            <div className="text-base font-bold mt-0.5">আপ ও ডাউন ট্রিপ দেখুন</div>
-          </div>
-          <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center text-white group-hover:scale-110 transition-transform">
-            <Bus className="w-5 h-5" />
-          </div>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => onNavigateTo('ticket_print')}
-          className="p-4 bg-gradient-to-r from-slate-800 to-slate-900 text-white rounded-2xl shadow-md hover:shadow-lg transition-all text-left flex items-center justify-between group"
-        >
-          <div>
-            <div className="text-xs text-slate-300 font-medium">রিসিট ও প্রিন্ট</div>
-            <div className="text-base font-bold mt-0.5">৫৮ মিমি টিকিট প্রিন্ট করুন</div>
-          </div>
-          <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center text-white group-hover:scale-110 transition-transform">
-            <Ticket className="w-5 h-5" />
-          </div>
-        </button>
-      </div>
     </div>
   );
 };

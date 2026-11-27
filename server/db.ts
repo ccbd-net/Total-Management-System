@@ -105,7 +105,7 @@ function getInitialDatabase(): DatabaseSchema {
   ];
 
   const settings: SystemSettings = {
-    companyName: 'Counter Management System',
+    companyName: 'Vehicles Management System',
     subTitle: 'কাউন্টার বুকিং ও ট্রিপ ইনফরমেশন',
     hotline: '01711-000000',
     defaultFare: 550,
@@ -187,7 +187,7 @@ class Database {
           });
 
           parsed.settings = {
-            companyName: parsed.settings?.companyName || 'Counter Management System',
+            companyName: parsed.settings?.companyName || 'Vehicles Management System',
             subTitle: parsed.settings?.subTitle || 'কাউন্টার বুকিং ও ট্রিপ ইনফরমেশন',
             hotline: parsed.settings?.hotline || '01711-000000',
             defaultFare: parsed.settings?.defaultFare ?? 550,

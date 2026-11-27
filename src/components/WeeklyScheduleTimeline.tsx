@@ -509,28 +509,29 @@ export const WeeklyScheduleTimeline: React.FC<WeeklyScheduleTimelineProps> = ({
 
       {/* Quick Reassignment Modal (Date, Vehicle, Time, Supervisor, Fare) */}
       {modalTrip && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-200 mb-4">
-              <div>
-                <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
-                  <ArrowRightLeft className="w-4 h-4 text-indigo-600" />
-                  <span>ট্রিপ পুনর্বিন্যাস ({modalTrip.tripNo})</span>
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
+          <div className="bg-white rounded-t-2xl sm:rounded-2xl max-w-lg w-full shadow-2xl border border-emerald-200 max-h-[92dvh] sm:max-h-[88dvh] flex flex-col overflow-hidden">
+            <div className="shrink-0 px-4 py-3 bg-[#0b2820] text-white flex items-center justify-between gap-2">
+              <div className="min-w-0">
+                <h3 className="text-sm sm:text-base font-black flex items-center gap-2 truncate">
+                  <ArrowRightLeft className="w-4 h-4 text-emerald-300 shrink-0" />
+                  <span className="truncate">ট্রিপ পুনর্বিন্যাস ({modalTrip.tripNo})</span>
                 </h3>
-                <p className="text-xs text-slate-500 mt-0.5">
+                <p className="text-[11px] text-emerald-200 truncate">
                   ট্রিপের তারিখ, গাড়ি, ছাড়ার সময় অথবা সুপারভাইজার দ্রুত পরিবর্তন করুন
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => setModalTrip(null)}
-                className="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg cursor-pointer"
+                className="p-1.5 text-emerald-200 hover:text-white hover:bg-white/10 rounded-lg cursor-pointer shrink-0"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <form onSubmit={handleModalSubmit} className="space-y-4">
+            <form onSubmit={handleModalSubmit} className="flex-1 flex flex-col min-h-0 overflow-hidden">
+              <div className="flex-1 overflow-y-auto overscroll-contain p-4 space-y-3.5 text-slate-900">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1">
@@ -626,18 +627,20 @@ export const WeeklyScheduleTimeline: React.FC<WeeklyScheduleTimelineProps> = ({
                 />
               </div>
 
-              <div className="pt-3 border-t border-slate-200 flex items-center justify-end gap-2">
+              </div>
+
+              <div className="shrink-0 px-4 py-3 bg-[#f0f9f6] border-t border-emerald-200 flex items-center justify-end gap-2 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
                 <button
                   type="button"
                   onClick={() => setModalTrip(null)}
-                  className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold cursor-pointer"
+                  className="min-h-[44px] px-4 py-2 bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 rounded-xl text-xs font-bold cursor-pointer"
                 >
                   বাতিল
                 </button>
                 <button
                   type="submit"
                   disabled={savingModal}
-                  className="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-md flex items-center gap-1.5 cursor-pointer"
+                  className="min-h-[44px] px-5 py-2 bg-[#0d9488] hover:bg-[#0f766e] text-white rounded-xl text-xs font-bold shadow-xs flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
                 >
                   {savingModal ? (
                     <>

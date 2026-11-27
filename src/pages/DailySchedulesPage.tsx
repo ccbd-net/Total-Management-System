@@ -49,6 +49,7 @@ import {
   TrendingUp,
   Forward,
   MessageCircle,
+  X,
 } from 'lucide-react';
 
 export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: string) => void }> = ({
@@ -787,101 +788,99 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
   };
 
   return (
-    <div className="space-y-6">
-      <div className="space-y-6 print:hidden">
-      {/* Top Header Card */}
-      <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold">
-              <CalendarDays className="w-5 h-5" />
-            </div>
-            <div>
-              <h2 className="text-lg font-black text-slate-800">
-                দৈনিক ও তারিখভিত্তিক ট্রিপ শিডিউল এবং গাড়ি পর্যবেক্ষণ
+    <div className="space-y-3">
+      <div className="space-y-3 print:hidden">
+      {/* Compact Excel Top Header Card */}
+      <div className="bg-white rounded-xl border border-emerald-200 shadow-2xs overflow-hidden">
+        <div className="bg-[#0b2820] px-3 py-2 text-white flex flex-col md:flex-row md:items-center justify-between gap-2">
+          <div className="flex items-center gap-2 min-w-0">
+            <CalendarDays className="w-4 h-4 shrink-0 text-emerald-300" />
+            <div className="min-w-0">
+              <h2 className="text-xs sm:text-sm font-bold leading-tight truncate text-white">
+                দৈনিক ট্রিপ শিডিউল ও গাড়ি পর্যবেক্ষণ শীট
               </h2>
-              <p className="text-xs text-slate-500 mt-0.5">
-                আপ ও ডাউন ট্রিপে অংশগ্রহণকারী গাড়ির হিসাব, মাল্টি-ট্রিপ ট্র্যাকিং এবং পূর্ণাঙ্গ প্রিন্ট ও এক্সেল রিপোর্ট
+              <p className="hidden sm:block text-[10px] text-emerald-200/80 leading-tight">
+                আপ ও ডাউন ট্রিপ হিসাব, মাল্টি-ট্রিপ ট্র্যাকিং, প্রিন্ট ও এক্সেল রিপোর্ট
               </p>
             </div>
           </div>
-        </div>
 
-        {/* Global Action Buttons */}
-        <div className="flex flex-wrap items-center gap-2">
-          {canManageTrips && (
+          {/* Global Action Buttons */}
+          <div className="flex flex-wrap items-center gap-1.5 shrink-0">
+            {canManageTrips && (
+              <button
+                type="button"
+                onClick={() => setShowForwardModal(true)}
+                className="px-2.5 py-1 bg-[#0d9488] hover:bg-[#0f766e] text-white rounded-lg text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer shadow-2xs border border-emerald-400/30"
+                title="গতকালের আপ ট্রিপ আজকের বা নির্ধারিত তারিখে ফরোয়ার্ড করুন"
+              >
+                <Forward className="w-3.5 h-3.5" />
+                <span>আপ ট্রিপ ফরোয়ার্ড</span>
+              </button>
+            )}
+
             <button
               type="button"
-              onClick={() => setShowForwardModal(true)}
-              className="px-3.5 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-black transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
-              title="গতকালের আপ ট্রিপ আজকের বা নির্ধারিত তারিখে ফরোয়ার্ড করুন"
+              onClick={fetchSchedules}
+              className="p-1.5 bg-white/15 hover:bg-white/25 text-white rounded-lg transition-colors cursor-pointer"
+              title="রিফ্রেশ"
             >
-              <Forward className="w-4 h-4" />
-              <span>গতকালের আপ ট্রিপ ফরোয়ার্ড</span>
+              <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
             </button>
-          )}
 
-          <button
-            type="button"
-            onClick={fetchSchedules}
-            className="p-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition-colors"
-            title="রিফ্রেশ"
-          >
-            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-          </button>
+            <button
+              type="button"
+              onClick={() => downloadDailyTripsPDF(schedules, dateMode === 'single' ? date : `${startDate}_to_${endDate}`)}
+              className="px-2.5 py-1 bg-[#071d17] hover:bg-[#134235] text-white rounded-lg text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer shadow-2xs border border-emerald-500/30"
+              title="শুধু ডাটা টেবিল পিডিএফ ডাউনলোড"
+            >
+              <Download className="w-3.5 h-3.5 text-emerald-300" />
+              <span>PDF</span>
+            </button>
 
-          <button
-            type="button"
-            onClick={() => downloadDailyTripsPDF(schedules, dateMode === 'single' ? date : `${startDate}_to_${endDate}`)}
-            className="px-3.5 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
-            title="শুধু ডাটা টেবিল পিডিএফ ডাউনলোড"
-          >
-            <Download className="w-4 h-4 text-emerald-400" />
-            <span>টেবিল PDF</span>
-          </button>
+            <button
+              type="button"
+              onClick={handleExportCSV}
+              className="px-2.5 py-1 bg-white hover:bg-emerald-50 text-emerald-950 rounded-lg text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer"
+            >
+              <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-700" />
+              <span>CSV</span>
+            </button>
 
-          <button
-            type="button"
-            onClick={handleExportCSV}
-            className="px-3.5 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
-          >
-            <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
-            <span>এক্সেল (.CSV)</span>
-          </button>
+            <button
+              type="button"
+              onClick={() => setShowWhatsAppModal(true)}
+              className="px-2.5 py-1 bg-[#0f766e] hover:bg-[#0d9488] text-white rounded-lg text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer shadow-2xs"
+              title="মালিকদের মোবাইলে হোয়াটসঅ্যাপে হিসাব পাঠান"
+            >
+              <MessageCircle className="w-3.5 h-3.5" />
+              <span>WA মালিক</span>
+            </button>
 
-          <button
-            type="button"
-            onClick={() => setShowWhatsAppModal(true)}
-            className="px-3.5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
-            title="মালিকদের মোবাইলে হোয়াটসঅ্যাপে হিসাব পাঠান"
-          >
-            <MessageCircle className="w-4 h-4" />
-            <span>হোয়াটসঅ্যাপ (মালিক)</span>
-          </button>
+            <button
+              type="button"
+              onClick={handlePrint}
+              className="px-2.5 py-1 bg-white hover:bg-slate-100 text-slate-900 rounded-lg text-[11px] font-bold shadow-2xs transition-all flex items-center gap-1 cursor-pointer"
+              title="শুধু টেবিল প্রিন্ট"
+            >
+              <Printer className="w-3.5 h-3.5 text-[#0f766e]" />
+              <span>প্রিন্ট</span>
+            </button>
 
-          <button
-            type="button"
-            onClick={handlePrint}
-            className="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-xs transition-all flex items-center gap-1.5 cursor-pointer"
-            title="শুধু টেবিল প্রিন্ট"
-          >
-            <Printer className="w-4 h-4" />
-            <span>শুধু টেবিল প্রিন্ট</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setShowReportModal(true)}
-            className="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-md transition-all flex items-center gap-1.5 cursor-pointer"
-          >
-            <Printer className="w-4 h-4" />
-            <span>প্রিন্ট ভিউ</span>
-          </button>
+            <button
+              type="button"
+              onClick={() => setShowReportModal(true)}
+              className="px-2.5 py-1 bg-[#0d9488] hover:bg-[#0f766e] text-white rounded-lg text-[11px] font-bold shadow-2xs transition-all flex items-center gap-1 cursor-pointer"
+            >
+              <Printer className="w-3.5 h-3.5" />
+              <span>প্রিভিউ</span>
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Advanced Filter Bar (Single Date vs Date Range, Direction, Vehicle, Search) */}
-      <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-xs space-y-4">
+      <div className="bg-white p-3 rounded-xl border border-slate-300 shadow-2xs space-y-2.5">
         <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-100">
           {/* Mode Switch: Single Date vs Date-to-Date */}
           <div className="flex items-center gap-2">
@@ -1783,210 +1782,212 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
 
       {/* Return Trip Quick Modal (ফিরতি ট্রিপ তৈরি) */}
       {returnModalTrip && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-lg w-full max-h-[92vh] overflow-y-auto p-6 shadow-2xl border border-slate-200">
-            <div className="flex items-center justify-between pb-3 border-b">
-              <div>
-                <h3 className="text-base font-black text-slate-900">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
+          <div className="bg-white rounded-t-2xl sm:rounded-2xl max-w-lg w-full max-h-[92dvh] sm:max-h-[88dvh] shadow-2xl border border-emerald-200 flex flex-col overflow-hidden">
+            <div className="shrink-0 px-4 py-3 bg-[#0b2820] text-white flex items-center justify-between gap-2">
+              <div className="min-w-0">
+                <h3 className="text-sm sm:text-base font-black text-white truncate">
                   ফিরতি ট্রিপ তৈরি (ডাউন ট্রিপ)
                 </h3>
-                <p className="text-xs text-slate-500 mt-0.5">
-                  গাড়ি: <strong className="text-slate-900 font-mono">{returnModalTrip.vehicleRegNo}</strong> · আপ ট্রিপ: {returnModalTrip.tripNo} ({returnModalTrip.routeName})
+                <p className="text-[11px] text-emerald-200/80 mt-0.5 truncate">
+                  গাড়ি: <strong className="text-white font-mono">{returnModalTrip.vehicleRegNo}</strong> · আপ ট্রিপ: {returnModalTrip.tripNo} ({returnModalTrip.routeName})
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => setReturnModalTrip(null)}
-                className="text-slate-400 hover:text-slate-600 p-1 cursor-pointer text-lg font-bold"
+                className="text-emerald-100 hover:text-white hover:bg-white/15 p-1.5 rounded-lg cursor-pointer shrink-0"
               >
-                ✕
+                <X className="w-4 h-4" />
               </button>
             </div>
 
-            <form onSubmit={handleCreateReturnTrip} className="space-y-4 mt-4">
-              {/* 1. Return Route Selector (Essential because a bus can return via a different route) */}
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  ১. ফিরতি রুট নির্বাচন করুন (রুট নং অনুযায়ী) *
-                </label>
-                {routesList.filter((r) => r.status === 'active').length > 0 ? (
-                  <select
-                    value={returnRouteId}
-                    onChange={(e) => {
-                      const nextId = e.target.value;
-                      setReturnRouteId(nextId);
-                      const chosen = routesList.find((r) => r.id === nextId);
-                      if (chosen?.baseFare) {
-                        setReturnFare(chosen.baseFare);
-                      }
-                    }}
-                    className="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-800 outline-none focus:bg-white focus:ring-2 focus:ring-blue-500"
-                    required
-                  >
-                    <option value="">রুট নির্বাচন করুন</option>
-                    {routesList.some((r) => r.status === 'active' && r.direction === 'DOWN') && (
-                      <optgroup label="ডাউন রুটসমূহ (ঢাকা ➜ মাদারীপুর)">
-                        {routesList
-                          .filter((r) => r.status === 'active' && r.direction === 'DOWN')
-                          .map((r) => (
-                            <option key={r.id} value={r.id}>
-                              {r.routeNumber ? `${toBengaliDigits(r.routeNumber)} নং রুট — ` : ''}{r.name} {r.baseFare ? `(৳${toBengaliDigits(r.baseFare)})` : ''}
-                            </option>
-                          ))}
-                      </optgroup>
-                    )}
-                    {routesList.some((r) => r.status === 'active' && r.direction !== 'DOWN') && (
-                      <optgroup label="অন্যান্য সক্রিয় রুট (রুট পরিবর্তন হলে)">
-                        {routesList
-                          .filter((r) => r.status === 'active' && r.direction !== 'DOWN')
-                          .map((r) => (
-                            <option key={r.id} value={r.id}>
-                              {r.routeNumber ? `${toBengaliDigits(r.routeNumber)} নং রুট — ` : ''}{r.name} ({r.direction === 'UP' ? 'আপ' : r.direction})
-                            </option>
-                          ))}
-                      </optgroup>
-                    )}
-                  </select>
-                ) : (
-                  <div className="p-2.5 bg-amber-50 border border-amber-200 rounded-xl text-[11px] text-amber-800">
-                    কোনো ডাউন রুট পাওয়া যায়নি; রুট ম্যানেজমেন্ট থেকে রুট যোগ করুন।
-                  </div>
-                )}
-              </div>
-
-              {/* 2. Return Date with Calendar & Quick Day Buttons */}
-              <div>
-                <div className="flex items-center justify-between mb-1">
-                  <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
-                    <Calendar className="w-3.5 h-3.5 text-blue-600" />
-                    <span>২. ফিরতি ট্রিপের তারিখ *</span>
-                  </label>
-                  <div className="flex items-center gap-1.5">
-                    <button
-                      type="button"
-                      onClick={() => setReturnDate(getTodayDhakaDate())}
-                      className={`px-2 py-0.5 rounded-lg text-[10px] font-bold border transition-colors cursor-pointer ${
-                        returnDate === getTodayDhakaDate()
-                          ? 'bg-blue-600 text-white border-blue-600'
-                          : 'bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200'
-                      }`}
-                    >
-                      আজকে
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setReturnDate(addDaysToDateStr(getTodayDhakaDate(), 1))}
-                      className={`px-2 py-0.5 rounded-lg text-[10px] font-bold border transition-colors cursor-pointer ${
-                        returnDate === addDaysToDateStr(getTodayDhakaDate(), 1)
-                          ? 'bg-blue-600 text-white border-blue-600'
-                          : 'bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200'
-                      }`}
-                    >
-                      আগামীকাল
-                    </button>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2 bg-slate-50 px-3 py-2 rounded-xl border border-slate-300">
-                  <Calendar className="w-4 h-4 text-blue-600 shrink-0" />
-                  <input
-                    type="date"
-                    value={returnDate}
-                    onChange={(e) => setReturnDate(e.target.value)}
-                    className="w-full bg-transparent text-xs font-bold text-slate-800 outline-none cursor-pointer"
-                    required
-                  />
-                  <span className="text-[11px] font-semibold text-slate-500 whitespace-nowrap shrink-0">
-                    {formatBengaliDate(returnDate)}
-                  </span>
-                </div>
-              </div>
-
-              {/* 3. Departure Time with Digital Clock */}
-              <DigitalClockPicker
-                value={returnTime}
-                onChange={setReturnTime}
-                label="৩. ফিরতি ছাড়ার সময় ও তারিখ নির্ধারণের ঘড়ি"
-              />
-
-              {/* 4. Supervisor & Driver */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <form onSubmit={handleCreateReturnTrip} className="flex-1 flex flex-col min-h-0 overflow-hidden">
+              <div className="flex-1 overflow-y-auto overscroll-contain p-4 space-y-3.5 text-slate-900">
+                {/* 1. Return Route Selector */}
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
-                    সুপারভাইজার
+                  <label className="block text-xs font-bold text-slate-800 mb-1">
+                    ১. ফিরতি রুট নির্বাচন করুন (রুট নং অনুযায়ী) *
                   </label>
-                  {supervisorsList.length > 0 ? (
+                  {routesList.filter((r) => r.status === 'active').length > 0 ? (
                     <select
-                      value={returnSupervisor}
-                      onChange={(e) => setReturnSupervisor(e.target.value)}
-                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 outline-none focus:bg-white focus:ring-1 focus:ring-blue-500"
+                      value={returnRouteId}
+                      onChange={(e) => {
+                        const nextId = e.target.value;
+                        setReturnRouteId(nextId);
+                        const chosen = routesList.find((r) => r.id === nextId);
+                        if (chosen?.baseFare) {
+                          setReturnFare(chosen.baseFare);
+                        }
+                      }}
+                      className="w-full px-3 py-2.5 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs font-bold text-slate-900 outline-none focus:bg-white focus:ring-2 focus:ring-emerald-600"
+                      required
                     >
-                      <option value="">সুপারভাইজার নির্বাচন করুন</option>
-                      {supervisorsList.map((sup) => (
-                        <option key={sup.id} value={sup.name}>
-                          {sup.name}
-                        </option>
-                      ))}
+                      <option value="">রুট নির্বাচন করুন</option>
+                      {routesList.some((r) => r.status === 'active' && r.direction === 'DOWN') && (
+                        <optgroup label="ডাউন রুটসমূহ (ঢাকা ➜ মাদারীপুর)">
+                          {routesList
+                            .filter((r) => r.status === 'active' && r.direction === 'DOWN')
+                            .map((r) => (
+                              <option key={r.id} value={r.id}>
+                                {r.routeNumber ? `${toBengaliDigits(r.routeNumber)} নং রুট — ` : ''}{r.name} {r.baseFare ? `(৳${toBengaliDigits(r.baseFare)})` : ''}
+                              </option>
+                            ))}
+                        </optgroup>
+                      )}
+                      {routesList.some((r) => r.status === 'active' && r.direction !== 'DOWN') && (
+                        <optgroup label="অন্যান্য সক্রিয় রুট (রুট পরিবর্তন হলে)">
+                          {routesList
+                            .filter((r) => r.status === 'active' && r.direction !== 'DOWN')
+                            .map((r) => (
+                              <option key={r.id} value={r.id}>
+                                {r.routeNumber ? `${toBengaliDigits(r.routeNumber)} নং রুট — ` : ''}{r.name} ({r.direction === 'UP' ? 'আপ' : r.direction})
+                              </option>
+                            ))}
+                        </optgroup>
+                      )}
                     </select>
                   ) : (
+                    <div className="p-2.5 bg-amber-50 border border-amber-200 rounded-xl text-[11px] text-amber-800">
+                      কোনো ডাউন রুট পাওয়া যায়নি; রুট ম্যানেজমেন্ট থেকে রুট যোগ করুন।
+                    </div>
+                  )}
+                </div>
+
+                {/* 2. Return Date with Calendar & Quick Day Buttons */}
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                      <Calendar className="w-3.5 h-3.5 text-[#0d9488]" />
+                      <span>২. ফিরতি ট্রিপের তারিখ *</span>
+                    </label>
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => setReturnDate(getTodayDhakaDate())}
+                        className={`px-2 py-0.5 rounded-lg text-[10px] font-bold border transition-colors cursor-pointer ${
+                          returnDate === getTodayDhakaDate()
+                            ? 'bg-[#0d9488] text-white border-[#0d9488]'
+                            : 'bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200'
+                        }`}
+                      >
+                        আজকে
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setReturnDate(addDaysToDateStr(getTodayDhakaDate(), 1))}
+                        className={`px-2 py-0.5 rounded-lg text-[10px] font-bold border transition-colors cursor-pointer ${
+                          returnDate === addDaysToDateStr(getTodayDhakaDate(), 1)
+                            ? 'bg-[#0d9488] text-white border-[#0d9488]'
+                            : 'bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200'
+                        }`}
+                      >
+                        আগামীকাল
+                      </button>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 bg-[#f4fbf8] px-3 py-2 rounded-xl border border-emerald-200">
+                    <Calendar className="w-4 h-4 text-[#0d9488] shrink-0" />
                     <input
-                      type="text"
-                      value={returnSupervisor}
-                      onChange={(e) => setReturnSupervisor(e.target.value)}
-                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 outline-none focus:bg-white"
-                      placeholder="সুপারভাইজারের নাম"
+                      type="date"
+                      value={returnDate}
+                      onChange={(e) => setReturnDate(e.target.value)}
+                      className="w-full bg-transparent text-xs font-bold text-slate-900 outline-none cursor-pointer"
                       required
                     />
-                  )}
+                    <span className="text-[11px] font-semibold text-slate-600 whitespace-nowrap shrink-0">
+                      {formatBengaliDate(returnDate)}
+                    </span>
+                  </div>
                 </div>
 
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
-                    ড্রাইভার
-                  </label>
-                  {driversList.length > 0 ? (
-                    <select
-                      value={returnDriver}
-                      onChange={(e) => setReturnDriver(e.target.value)}
-                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 outline-none focus:bg-white focus:ring-1 focus:ring-blue-500"
-                    >
-                      <option value="">ড্রাইভার নির্বাচন করুন</option>
-                      {driversList.map((drv) => (
-                        <option key={drv.id} value={drv.name}>
-                          {drv.name}
-                        </option>
-                      ))}
-                    </select>
-                  ) : (
-                    <input
-                      type="text"
-                      value={returnDriver}
-                      onChange={(e) => setReturnDriver(e.target.value)}
-                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 outline-none focus:bg-white"
-                      placeholder="ড্রাইভারের নাম"
-                    />
-                  )}
+                {/* 3. Departure Time with Digital Clock */}
+                <DigitalClockPicker
+                  value={returnTime}
+                  onChange={setReturnTime}
+                  label="৩. ফিরতি ছাড়ার সময় ও তারিখ নির্ধারণের ঘড়ি"
+                />
+
+                {/* 4. Supervisor & Driver */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-800 mb-1">
+                      সুপারভাইজার
+                    </label>
+                    {supervisorsList.length > 0 ? (
+                      <select
+                        value={returnSupervisor}
+                        onChange={(e) => setReturnSupervisor(e.target.value)}
+                        className="w-full px-3 py-2 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs font-bold text-slate-900 outline-none focus:bg-white focus:ring-1 focus:ring-emerald-600"
+                      >
+                        <option value="">সুপারভাইজার নির্বাচন করুন</option>
+                        {supervisorsList.map((sup) => (
+                          <option key={sup.id} value={sup.name}>
+                            {sup.name}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <input
+                        type="text"
+                        value={returnSupervisor}
+                        onChange={(e) => setReturnSupervisor(e.target.value)}
+                        className="w-full px-3 py-2 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs font-bold text-slate-900 outline-none focus:bg-white"
+                        placeholder="সুপারভাইজারের নাম"
+                        required
+                      />
+                    )}
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-800 mb-1">
+                      ড্রাইভার
+                    </label>
+                    {driversList.length > 0 ? (
+                      <select
+                        value={returnDriver}
+                        onChange={(e) => setReturnDriver(e.target.value)}
+                        className="w-full px-3 py-2 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs font-bold text-slate-900 outline-none focus:bg-white focus:ring-1 focus:ring-emerald-600"
+                      >
+                        <option value="">ড্রাইভার নির্বাচন করুন</option>
+                        {driversList.map((drv) => (
+                          <option key={drv.id} value={drv.name}>
+                            {drv.name}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <input
+                        type="text"
+                        value={returnDriver}
+                        onChange={(e) => setReturnDriver(e.target.value)}
+                        className="w-full px-3 py-2 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs font-bold text-slate-900 outline-none focus:bg-white"
+                        placeholder="ড্রাইভারের নাম"
+                      />
+                    )}
+                  </div>
+                </div>
+
+                <div className="bg-emerald-50 p-3 rounded-xl border border-emerald-200 text-xs text-emerald-950 space-y-1">
+                  <div className="font-bold">১টি পূর্ণাঙ্গ ট্রিপ হিসাব</div>
+                  <p className="text-[11px] text-emerald-900">
+                    এই ডাউন ট্রিপটি তৈরি হলে পূর্ববর্তী আপ ট্রিপের সাথে সংযুক্ত হয়ে যাবে এবং ওই গাড়ির ১টি পূর্ণাঙ্গ ট্রিপ হিসেবে কাউন্ট হবে।
+                  </p>
                 </div>
               </div>
 
-              <div className="bg-blue-50 p-3 rounded-2xl border border-blue-200 text-xs text-blue-900 space-y-1">
-                <div className="font-bold">১টি পূর্ণাঙ্গ ট্রিপ হিসাব</div>
-                <p className="text-[11px] text-blue-800">
-                  এই ডাউন ট্রিপটি তৈরি হলে পূর্ববর্তী আপ ট্রিপের সাথে সংযুক্ত হয়ে যাবে এবং ওই গাড়ির ১টি পূর্ণাঙ্গ ট্রিপ হিসেবে কাউন্ট হবে।
-                </p>
-              </div>
-
-              <div className="flex items-center justify-end gap-2 pt-2 border-t">
+              <div className="shrink-0 px-4 py-3 bg-[#f0f9f6] border-t border-emerald-200 flex items-center justify-end gap-2 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
                 <button
                   type="button"
                   onClick={() => setReturnModalTrip(null)}
-                  className="px-4 py-2 border rounded-xl text-xs text-slate-600 font-semibold cursor-pointer"
+                  className="px-4 py-2.5 min-h-[44px] bg-white hover:bg-slate-100 border border-slate-300 rounded-xl text-xs text-slate-700 font-bold cursor-pointer"
                 >
                   বাতিল
                 </button>
                 <button
                   type="submit"
                   disabled={creatingReturn}
-                  className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-black shadow-md transition-all cursor-pointer flex items-center gap-1.5"
+                  className="flex-1 sm:flex-none px-5 py-2.5 min-h-[44px] bg-[#0d9488] hover:bg-[#0f766e] text-white rounded-xl text-xs font-black shadow-md transition-all cursor-pointer flex items-center justify-center gap-1.5"
                 >
                   {creatingReturn ? (
                     <>
@@ -2008,105 +2009,118 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
 
       {/* Edit Schedule Modal (Using DigitalClockPicker!) */}
       {editingSchedule && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-lg w-full max-h-[92vh] overflow-y-auto p-6 shadow-2xl border border-slate-200">
-            <h3 className="text-base font-bold text-slate-900 mb-1">
-              ট্রিপ তথ্য পরিবর্তন ({editingSchedule.tripNo})
-            </h3>
-            <p className="text-xs text-slate-500 mb-4">
-              পরিবর্তনটি পরিবর্তনের ইতিহাসে (Audit Log) সংরক্ষিত হবে এবং সকল বুকিং কাউন্টারে তাৎক্ষণিক আপডেট হবে।
-            </p>
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
+          <div className="bg-white rounded-t-2xl sm:rounded-2xl max-w-lg w-full max-h-[92dvh] sm:max-h-[88dvh] shadow-2xl border border-emerald-200 flex flex-col overflow-hidden">
+            <div className="shrink-0 px-4 py-3 bg-[#0b2820] text-white flex items-center justify-between gap-2">
+              <div className="min-w-0">
+                <h3 className="text-sm sm:text-base font-bold text-white truncate">
+                  ট্রিপ তথ্য পরিবর্তন ({editingSchedule.tripNo})
+                </h3>
+                <p className="text-[11px] text-emerald-200/80 truncate">
+                  পরিবর্তনটি পরিবর্তনের ইতিহাসে (Audit Log) সংরক্ষিত হবে
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setEditingSchedule(null)}
+                className="p-1.5 text-emerald-100 hover:text-white hover:bg-white/15 rounded-lg cursor-pointer shrink-0"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
 
-            <form onSubmit={handleSaveEdit} className="space-y-4">
-              {/* Auto Digital Clock Picker Component */}
-              <DigitalClockPicker
-                value={editTime}
-                onChange={setEditTime}
-                label="ছাড়ার সময় নির্ধারণ (অটো ডিজিটাল ঘড়ি)"
-              />
+            <form onSubmit={handleSaveEdit} className="flex-1 flex flex-col min-h-0 overflow-hidden">
+              <div className="flex-1 overflow-y-auto overscroll-contain p-4 space-y-3.5 text-slate-900">
+                {/* Auto Digital Clock Picker Component */}
+                <DigitalClockPicker
+                  value={editTime}
+                  onChange={setEditTime}
+                  label="ছাড়ার সময় নির্ধারণ (অটো ডিজিটাল ঘড়ি)"
+                />
 
-              {routesList.filter((r) => r.status === 'active').length > 0 && (
+                {routesList.filter((r) => r.status === 'active').length > 0 && (
+                  <div>
+                    <label className="block text-xs font-bold text-slate-800 mb-1">রুট পরিবর্তন</label>
+                    <select
+                      value={editRouteId}
+                      onChange={(e) => setEditRouteId(e.target.value)}
+                      className="w-full px-3 py-2 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs font-bold text-slate-900 outline-none focus:bg-white"
+                    >
+                      <option value="">বর্তমান রুট ({editingSchedule.routeName})</option>
+                      {routesList
+                        .filter((r) => r.status === 'active')
+                        .map((r) => (
+                          <option key={r.id} value={r.id}>
+                            {r.routeNumber ? `${toBengaliDigits(r.routeNumber)} নং রুট — ` : ''}{r.name} ({r.direction === 'UP' ? 'আপ' : 'ডাউন'})
+                          </option>
+                        ))}
+                    </select>
+                  </div>
+                )}
+
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">রুট পরিবর্তন</label>
-                  <select
-                    value={editRouteId}
-                    onChange={(e) => setEditRouteId(e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs font-bold text-slate-800 outline-none focus:bg-white"
-                  >
-                    <option value="">বর্তমান রুট ({editingSchedule.routeName})</option>
-                    {routesList
-                      .filter((r) => r.status === 'active')
-                      .map((r) => (
-                        <option key={r.id} value={r.id}>
-                          {r.routeNumber ? `${toBengaliDigits(r.routeNumber)} নং রুট — ` : ''}{r.name} ({r.direction === 'UP' ? 'আপ' : 'ডাউন'})
+                  <label className="block text-xs font-bold text-slate-800 mb-1">সুপারভাইজার</label>
+                  {supervisorsList.length > 0 ? (
+                    <select
+                      value={editSupervisor ?? ''}
+                      onChange={(e) => setEditSupervisor(e.target.value)}
+                      className="w-full px-3 py-2 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs font-bold text-slate-900 outline-none focus:bg-white"
+                      required
+                    >
+                      <option value="">সুপারভাইজার নির্বাচন করুন</option>
+                      {supervisorsList.map((sup) => (
+                        <option key={sup.id} value={sup.name}>
+                          {sup.name}
                         </option>
                       ))}
-                  </select>
+                    </select>
+                  ) : (
+                    <input
+                      type="text"
+                      value={editSupervisor ?? ''}
+                      onChange={(e) => setEditSupervisor(e.target.value)}
+                      className="w-full px-3 py-2 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs text-slate-900 outline-none focus:bg-white"
+                      required
+                    />
+                  )}
                 </div>
-              )}
 
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">সুপারভাইজার</label>
-                {supervisorsList.length > 0 ? (
-                  <select
-                    value={editSupervisor ?? ''}
-                    onChange={(e) => setEditSupervisor(e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs font-bold text-slate-800 outline-none focus:bg-white"
-                    required
-                  >
-                    <option value="">সুপারভাইজার নির্বাচন করুন</option>
-                    {supervisorsList.map((sup) => (
-                      <option key={sup.id} value={sup.name}>
-                        {sup.name}
-                      </option>
-                    ))}
-                  </select>
-                ) : (
+                <div>
+                  <label className="block text-xs font-bold text-slate-800 mb-1">ভাড়া (৳)</label>
                   <input
-                    type="text"
-                    value={editSupervisor ?? ''}
-                    onChange={(e) => setEditSupervisor(e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs outline-none focus:bg-white"
+                    type="number"
+                    value={editFare ?? ''}
+                    onChange={(e) => setEditFare(Number(e.target.value))}
+                    className="w-full px-3 py-2 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs text-slate-900 font-bold outline-none focus:bg-white"
                     required
                   />
-                )}
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-800 mb-1">
+                    পরিবর্তনের কারণ (কাউন্টারদের সতর্কতা দেখাতে)
+                  </label>
+                  <textarea
+                    value={editReason ?? ''}
+                    onChange={(e) => setEditReason(e.target.value)}
+                    placeholder="যেমন: ট্রাফিক জ্যাম বা যান্ত্রিক কারণে সময় পরিবর্তন করা হয়েছে।"
+                    className="w-full px-3 py-2 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs text-slate-900 outline-none focus:bg-white"
+                    rows={2}
+                  />
+                </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">ভাড়া (৳)</label>
-                <input
-                  type="number"
-                  value={editFare ?? ''}
-                  onChange={(e) => setEditFare(Number(e.target.value))}
-                  className="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs outline-none focus:bg-white"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  পরিবর্তনের কারণ (কাউন্টারদের সতর্কতা দেখাতে)
-                </label>
-                <textarea
-                  value={editReason ?? ''}
-                  onChange={(e) => setEditReason(e.target.value)}
-                  placeholder="যেমন: ট্রাফিক জ্যাম বা যান্ত্রিক কারণে সময় পরিবর্তন করা হয়েছে।"
-                  className="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs outline-none focus:bg-white"
-                  rows={2}
-                />
-              </div>
-
-              <div className="flex items-center justify-end gap-2 pt-3 border-t">
+              <div className="shrink-0 px-4 py-3 bg-[#f0f9f6] border-t border-emerald-200 flex items-center justify-end gap-2 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
                 <button
                   type="button"
                   onClick={() => setEditingSchedule(null)}
-                  className="px-4 py-2 border rounded-xl text-xs text-slate-600 font-semibold cursor-pointer"
+                  className="px-4 py-2.5 min-h-[44px] bg-white hover:bg-slate-100 border border-slate-300 rounded-xl text-xs text-slate-700 font-bold cursor-pointer"
                 >
                   বাতিল
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-md cursor-pointer"
+                  className="flex-1 sm:flex-none px-5 py-2.5 min-h-[44px] bg-[#0d9488] hover:bg-[#0f766e] text-white rounded-xl text-xs font-bold shadow-md cursor-pointer"
                 >
                   সংরক্ষণ করুন
                 </button>
@@ -2119,41 +2133,51 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
 
       {/* PDF & Printable Table-Only Report Modal */}
       {showReportModal ? (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-6xl w-full p-5 max-h-[92vh] overflow-y-auto shadow-2xl space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b print:hidden">
-              <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                <Printer className="w-5 h-5 text-indigo-600" />
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
+          <div className="bg-white rounded-t-2xl sm:rounded-2xl max-w-6xl w-full max-h-[92dvh] sm:max-h-[90dvh] shadow-2xl border border-emerald-200 flex flex-col overflow-hidden">
+            <div className="shrink-0 px-4 py-3 bg-[#0b2820] text-white flex flex-wrap items-center justify-between gap-2 print:hidden">
+              <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-2">
+                <Printer className="w-4 h-4 text-emerald-300" />
                 <span>দৈনিক ট্রিপ ও ফিরতি লগ — শুধু টেবিল প্রিভিউ</span>
               </h3>
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => downloadDailyTripsPDF(schedules, dateMode === 'single' ? date : `${startDate}_to_${endDate}`)}
-                  className="px-3.5 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-xs font-bold shadow-xs cursor-pointer flex items-center gap-1.5"
-                >
-                  <Download className="w-4 h-4 text-emerald-400" />
-                  <span>টেবিল PDF</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={handlePrint}
-                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-md cursor-pointer flex items-center gap-1.5"
-                >
-                  <Printer className="w-4 h-4" />
-                  <span>শুধু টেবিল প্রিন্ট</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setShowReportModal(false)}
-                  className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold cursor-pointer"
-                >
-                  বন্ধ
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={() => setShowReportModal(false)}
+                className="p-1.5 text-emerald-100 hover:text-white hover:bg-white/15 rounded-lg cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
             </div>
 
-            {renderPrintableTripReport()}
+            <div className="flex-1 overflow-y-auto overscroll-contain p-4">
+              {renderPrintableTripReport()}
+            </div>
+
+            <div className="shrink-0 px-4 py-3 bg-[#f0f9f6] border-t border-emerald-200 flex flex-wrap items-center justify-end gap-2 print:hidden pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+              <button
+                type="button"
+                onClick={() => setShowReportModal(false)}
+                className="px-4 py-2 min-h-[44px] bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 rounded-xl text-xs font-bold cursor-pointer"
+              >
+                বন্ধ
+              </button>
+              <button
+                type="button"
+                onClick={() => downloadDailyTripsPDF(schedules, dateMode === 'single' ? date : `${startDate}_to_${endDate}`)}
+                className="px-4 py-2 min-h-[44px] bg-[#0b2820] hover:bg-[#134235] text-white rounded-xl text-xs font-bold shadow-xs cursor-pointer flex items-center gap-1.5"
+              >
+                <Download className="w-4 h-4 text-emerald-300" />
+                <span>টেবিল PDF</span>
+              </button>
+              <button
+                type="button"
+                onClick={handlePrint}
+                className="px-4 py-2 min-h-[44px] bg-[#0d9488] hover:bg-[#0f766e] text-white rounded-xl text-xs font-bold shadow-md cursor-pointer flex items-center gap-1.5"
+              >
+                <Printer className="w-4 h-4" />
+                <span>শুধু টেবিল প্রিন্ট</span>
+              </button>
+            </div>
           </div>
         </div>
       ) : (

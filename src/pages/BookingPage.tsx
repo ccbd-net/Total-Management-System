@@ -241,56 +241,58 @@ export const BookingPage: React.FC = () => {
   const routeGroups = groupSchedulesByRouteNumber(schedules);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-3">
       {/* Top Controls: Date, Direction & Schedule Selector */}
-      <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs space-y-4">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b pb-4">
-          <div>
-            <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
-              <Armchair className="w-5 h-5 text-emerald-600" />
-              <span>লাইভ বাস সিট বুকিং সিস্টেম</span>
-            </h2>
-            <p className="text-xs text-slate-500 mt-0.5">
-              ট্রিপ নির্বাচন করে ইন্টারঅ্যাক্টিভ বাস ম্যাপ থেকে আসন বুকিং ও তাৎক্ষণিক টিকিট প্রিন্ট করুন
-            </p>
+      <div className="bg-white rounded-xl border border-emerald-300 shadow-2xs overflow-hidden">
+        <div className="bg-[#0b2820] px-3 py-2 text-white flex flex-col md:flex-row md:items-center justify-between gap-2">
+          <div className="flex items-center gap-2 min-w-0">
+            <Armchair className="w-4 h-4 shrink-0 text-emerald-300" />
+            <div className="min-w-0">
+              <h2 className="text-xs sm:text-sm font-bold leading-tight truncate">
+                লাইভ বাস সিট বুকিং ও টিকিটিং শীট
+              </h2>
+              <p className="hidden sm:block text-[10px] text-emerald-200 leading-tight">
+                ট্রিপ নির্বাচন করে ইন্টারঅ্যাক্টিভ ম্যাপ থেকে আসন বুকিং ও তাৎক্ষণিক প্রিন্ট করুন
+              </p>
+            </div>
           </div>
 
           {/* Up / Down Tabs & Date */}
-          <div className="flex flex-wrap items-center gap-2.5">
+          <div className="flex flex-wrap items-center gap-1.5 shrink-0">
             {/* Direction Tabs */}
-            <div className="flex bg-slate-100 p-1 rounded-xl text-xs font-bold border border-slate-200">
+            <div className="flex bg-[#071d17] p-0.5 rounded-lg text-[11px] font-bold border border-[#1a4d3e]">
               <button
                 type="button"
                 onClick={() => setDirection('UP')}
-                className={`px-3 py-1.5 rounded-lg transition-all whitespace-nowrap shrink-0 ${
+                className={`px-2.5 py-1 rounded-md transition-all whitespace-nowrap shrink-0 cursor-pointer ${
                   direction === 'UP'
-                    ? 'bg-blue-600 text-white shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900'
+                    ? 'bg-[#0d9488] text-white shadow-2xs'
+                    : 'text-emerald-100 hover:text-white'
                 }`}
               >
-                আপ ট্রিপ (মাদারীপুর ➜ ঢাকা)
+                আপ (মাদারীপুর ➜ ঢাকা)
               </button>
               <button
                 type="button"
                 onClick={() => setDirection('DOWN')}
-                className={`px-3 py-1.5 rounded-lg transition-all whitespace-nowrap shrink-0 ${
+                className={`px-2.5 py-1 rounded-md transition-all whitespace-nowrap shrink-0 cursor-pointer ${
                   direction === 'DOWN'
-                    ? 'bg-emerald-600 text-white shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900'
+                    ? 'bg-[#0d9488] text-white shadow-2xs'
+                    : 'text-emerald-100 hover:text-white'
                 }`}
               >
-                ডাউন ট্রিপ (ঢাকা ➜ মাদারীপুর)
+                ডাউন (ঢাকা ➜ মাদারীপুর)
               </button>
             </div>
 
-            {/* Date Selector (Defaults to Today) */}
-            <div className="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-300 text-xs font-semibold">
-              <Calendar className="w-4 h-4 text-emerald-600" />
+            {/* Date Selector */}
+            <div className="flex items-center gap-1 bg-white/95 px-2 py-1 rounded-lg border border-emerald-200 text-[11px] font-bold text-slate-900">
+              <Calendar className="w-3.5 h-3.5 text-[#0f766e]" />
               <input
                 type="date"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                className="bg-transparent outline-none cursor-pointer"
+                className="bg-transparent outline-none cursor-pointer text-[11px]"
               />
             </div>
 
@@ -298,9 +300,9 @@ export const BookingPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setDate(todayDhaka)}
-                className="px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-xl text-xs font-bold transition-colors whitespace-nowrap shrink-0"
+                className="px-2 py-1 bg-white hover:bg-emerald-50 text-[#0b2820] rounded-lg text-[11px] font-bold transition-colors whitespace-nowrap shrink-0 cursor-pointer"
               >
-                আজকের তারিখ
+                আজ
               </button>
             )}
 
@@ -310,35 +312,35 @@ export const BookingPage: React.FC = () => {
                 fetchSchedules();
                 if (selectedScheduleId) fetchScheduleDetails(selectedScheduleId);
               }}
-              className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition-colors"
+              className="p-1.5 bg-[#133b30] hover:bg-[#194d3f] text-white rounded-lg transition-colors cursor-pointer"
               title="রিফ্রেশ"
             >
-              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
             </button>
           </div>
         </div>
 
         {/* Excel-Sheet Style Trip Schedule Table (Grouped by Route 1/2/3 & Sorted by Time) */}
-        <div className="space-y-3">
+        <div className="p-2.5 sm:p-3 space-y-2.5">
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <div className="flex items-center gap-2 text-xs font-bold text-slate-800">
-              <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
+            <div className="flex items-center gap-1.5 text-xs font-bold text-slate-800">
+              <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600" />
               <span>
                 নির্ধারিত ট্রিপ তালিকা ({formatBengaliDate(date)} · {toBengaliDigits(schedules.length)} টি ট্রিপ)
               </span>
             </div>
-            <span className="text-[11px] text-slate-500">
-              রুট নং (১, ২, ৩...) ও ছাড়ার সময় অনুযায়ী সাজানো · বুকিং করতে সারিতে ক্লিক করুন
+            <span className="text-[10px] text-slate-500">
+              রুট নং ও ছাড়ার সময় অনুযায়ী সাজানো · বুকিং করতে সারিতে ক্লিক করুন
             </span>
           </div>
 
           {schedules.length === 0 ? (
-            <div className="p-5 bg-slate-50 rounded-xl text-center text-xs text-slate-500 border border-slate-200">
+            <div className="p-4 bg-slate-50 rounded-xl text-center text-xs text-slate-500 border border-slate-200">
               নির্বাচিত তারিখ ({formatBengaliDate(date)}) এ কোনো{' '}
               {direction === 'UP' ? 'আপ ট্রিপ' : 'ডাউন ট্রিপ'} শিডিউল পাওয়া যায়নি। শিডিউল মেকার থেকে ট্রিপ যোগ করুন।
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-2.5">
               {routeGroups.map((group) => (
                 <div
                   key={`${direction}-${group.routeName}`}
@@ -346,30 +348,24 @@ export const BookingPage: React.FC = () => {
                 >
                   {/* Route Header Strip */}
                   <div
-                    className={`px-3.5 py-2 border-b border-slate-300 flex flex-wrap items-center justify-between gap-2 text-xs ${
-                      direction === 'UP'
-                        ? 'bg-blue-50/90 text-blue-950'
-                        : 'bg-emerald-50/90 text-emerald-950'
+                    className={`px-3 py-1.5 flex flex-wrap items-center justify-between gap-2 text-xs text-white ${
+                      direction === 'UP' ? 'bg-[#0b2820]' : 'bg-[#0f766e]'
                     }`}
                   >
                     <div className="flex items-center gap-2 font-bold">
-                      <span
-                        className={`px-2 py-0.5 rounded text-[11px] font-black text-white tabular-nums ${
-                          direction === 'UP' ? 'bg-blue-700' : 'bg-emerald-700'
-                        }`}
-                      >
+                      <span className="px-2 py-0.5 rounded bg-white/25 text-white text-[10px] font-black tabular-nums">
                         {toBengaliDigits(group.routeNumber)} নং রুট
                       </span>
                       <span>{group.routeName}</span>
                     </div>
-                    <span className="text-[11px] font-semibold text-slate-600 tabular-nums">
-                      মোট {toBengaliDigits(group.trips.length)} টি ট্রিপ · সময়ানুসারে ক্রমিক
+                    <span className="text-[10px] font-semibold text-white/90 tabular-nums">
+                      মোট {toBengaliDigits(group.trips.length)} টি ট্রিপ
                     </span>
                   </div>
 
                   {/* Excel Grid Table */}
                   <div className="overflow-x-auto">
-                    <table className="w-full border-collapse text-left text-xs">
+                    <table className="w-full border-collapse text-left text-[11px]">
                       <thead>
                         <tr className="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold text-[11px]">
                           <th className="py-2 px-2.5 border-r border-slate-300 text-center w-12">ক্রম</th>

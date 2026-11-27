@@ -617,167 +617,152 @@ export const FuelManagementPage: React.FC = () => {
   };
 
   return (
-    <div className="p-3 sm:p-5 max-w-7xl mx-auto space-y-5 text-slate-800 font-sans">
-      <div className="space-y-5 print:hidden">
+    <div className="space-y-3 text-slate-800">
+      <div className="space-y-3 print:hidden">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed top-5 right-5 z-50 bg-emerald-700 text-white px-4 py-2.5 rounded-xl shadow-lg flex items-center gap-2 border border-emerald-500 animate-in fade-in slide-in-from-top-2">
-          <CheckCircle2 className="w-5 h-5 text-emerald-300" />
-          <span className="font-semibold text-sm">{toastMessage}</span>
+        <div className="fixed top-5 right-5 z-50 bg-[#0b2820] border border-emerald-400/30 text-white px-4 py-2 rounded-xl shadow-lg flex items-center gap-2">
+          <CheckCircle2 className="w-4 h-4 text-emerald-300" />
+          <span className="font-bold text-xs">{toastMessage}</span>
         </div>
       )}
 
-      {/* Top Header & Breadcrumb */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 pb-3">
-        <div>
-          <div className="text-xs text-slate-500 font-medium flex items-center gap-2 mb-1">
-            <span>ওয়্যার্কস্পেস</span>
-            <span>/</span>
-            <span className="text-slate-800 font-semibold">ফুয়েল লগ</span>
-            <span className="text-slate-300">|</span>
-            <span className="text-slate-600 font-mono text-[11px]">{currentTimeBST}</span>
-            <span className="text-slate-300">|</span>
-            <span className="px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 font-bold text-[10px]">বাংলা</span>
-            <span className="px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 font-semibold text-[10px]">
-              {user?.role === 'super_admin'
-                ? 'সুপার এডমিন'
-                : user?.role === 'company_admin'
-                ? 'মাস্টার এডমিন'
-                : user?.role === 'fuel_manager'
-                ? 'ফুয়েল ম্যানেজার'
-                : user?.role === 'moderator'
-                ? 'মডারেটর'
-                : 'মাস্টার এডমিন'}
-            </span>
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 flex items-center gap-2.5">
-            <Fuel className="w-7 h-7 text-blue-600 shrink-0" />
-            <span>ফুয়েল লগ</span>
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-            তেলের ব্যবহার ও খরচের সঠিক হিসাব।
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => {
-              setRefreshing(true);
-              fetchFuelData();
-            }}
-            disabled={refreshing}
-            className="p-2 rounded-lg border border-slate-300 hover:bg-slate-50 text-slate-600 transition-colors"
-            title="রিফ্রেশ করুন"
-          >
-            <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
-          </button>
-          <button
-            onClick={handleOpenNewEntryModal}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-lg flex items-center gap-1.5 shadow-sm transition-colors"
-          >
-            <Plus className="w-4 h-4" />
-            <span>+ ফুয়েল এন্ট্রি</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Date Filter & Export Bar */}
-      <div className="bg-white rounded-xl border border-slate-200 p-3 shadow-xs flex flex-wrap items-center justify-between gap-3">
-        <div className="flex flex-wrap items-center gap-2.5">
-          <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-700">
-            <Calendar className="w-4 h-4 text-slate-400" />
-            <input
-              type="date"
-              value={startDate}
-              onChange={(e) => {
-                setStartDate(e.target.value);
-                setQuickFilter('custom');
-              }}
-              className="bg-transparent border-none text-xs focus:outline-hidden font-medium"
-            />
-            <span className="text-slate-400 font-bold">থেকে</span>
-            <input
-              type="date"
-              value={endDate}
-              onChange={(e) => {
-                setEndDate(e.target.value);
-                setQuickFilter('custom');
-              }}
-              className="bg-transparent border-none text-xs focus:outline-hidden font-medium"
-            />
-          </div>
-
-          <select
-            value={quickFilter}
-            onChange={(e) => handleQuickFilterChange(e.target.value)}
-            className="text-xs bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-slate-700 font-semibold focus:outline-hidden"
-          >
-            <option value="today">আজ</option>
-            <option value="yesterday">গতকাল</option>
-            <option value="week">এই সপ্তাহ</option>
-            <option value="month">এই মাস</option>
-            <option value="all">সকল</option>
-          </select>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-1.5">
-          <button
-            type="button"
-            onClick={() => setShowWhatsAppModal(true)}
-            className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer"
-            title="মালিকদের হোয়াটসঅ্যাপে পাঠান"
-          >
-            <MessageCircle className="w-3.5 h-3.5" />
-            <span>হোয়াটসঅ্যাপ (মালিক)</span>
-          </button>
-          <button
-            type="button"
-            onClick={handlePrint}
-            className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg flex items-center gap-1 border border-slate-300 transition-colors cursor-pointer"
-            title="শুধু টেবিল প্রিন্ট করুন"
-          >
-            <Printer className="w-3.5 h-3.5 text-slate-600" />
-            <span>শুধু টেবিল প্রিন্ট</span>
-          </button>
-          <button
-            type="button"
-            onClick={handleDownloadPDF}
-            className="px-3 py-1.5 bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold rounded-lg flex items-center gap-1 border border-slate-700 transition-colors cursor-pointer"
-            title="শুধু টেবিল পিডিএফ ডাউনলোড"
-          >
-            <Download className="w-3.5 h-3.5 text-emerald-400" />
-            <span>টেবিল PDF</span>
-          </button>
-          <button
-            type="button"
-            onClick={handleShare}
-            className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs rounded-lg border border-slate-300 transition-colors cursor-pointer"
-            title="শেয়ার"
-          >
-            <Share2 className="w-3.5 h-3.5" />
-          </button>
-        </div>
-      </div>
-
-      {/* "তেলের নির্ধারিত হিসাব" Configuration Card */}
-      <div className="bg-amber-50/80 border border-amber-200/90 rounded-xl p-3.5 sm:p-4 shadow-xs">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-100 border border-amber-300 flex items-center justify-center shrink-0 text-amber-700">
-              <Fuel className="w-5 h-5" />
-            </div>
-            <div>
-              <h2 className="text-sm font-bold text-slate-900">তেলের নির্ধারিত হিসাব</h2>
-              <p className="text-xs text-slate-500">
-                সকল সমন্বিত ট্রিপে তেলের প্রাক্কলন ও মূল্য গণনায় ব্যবহৃত হবে।
+      {/* Compact Excel Top Header Card */}
+      <div className="bg-white rounded-xl border border-emerald-200 shadow-2xs overflow-hidden">
+        <div className="bg-[#0b2820] px-3 py-2 text-white flex flex-wrap items-center justify-between gap-2">
+          <div className="flex items-center gap-2 min-w-0">
+            <Fuel className="w-4 h-4 shrink-0 text-emerald-300" />
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h1 className="text-xs sm:text-sm font-bold leading-tight text-white">ফুয়েল লগ ও ডিজেল হিসাব শীট</h1>
+                <span className="text-[10px] font-mono bg-white/15 px-1.5 py-0.5 rounded">{currentTimeBST}</span>
+              </div>
+              <p className="hidden sm:block text-[10px] text-emerald-200/80 leading-tight">
+                তেলের ব্যবহার, মাইলেজ ও খরচের সঠিক হিসাব
               </p>
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-1.5 shrink-0">
+            <button
+              onClick={() => {
+                setRefreshing(true);
+                fetchFuelData();
+              }}
+              disabled={refreshing}
+              className="p-1.5 rounded-lg bg-white/15 hover:bg-white/25 text-white transition-colors cursor-pointer"
+              title="রিফ্রেশ করুন"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin' : ''}`} />
+            </button>
+            <button
+              onClick={handleOpenNewEntryModal}
+              className="px-2.5 py-1 bg-[#0d9488] hover:bg-[#0f766e] text-white font-extrabold text-[11px] rounded-lg flex items-center gap-1 shadow-2xs transition-colors cursor-pointer border border-emerald-400/30"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>ফুয়েল এন্ট্রি</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Compact Date Filter & Export Bar */}
+        <div className="p-2.5 bg-slate-50 flex flex-wrap items-center justify-between gap-2">
+          <div className="flex flex-wrap items-center gap-1.5">
+            <div className="flex items-center gap-1 bg-white border border-slate-300 rounded-lg px-2 py-1 text-[11px] text-slate-700">
+              <Calendar className="w-3.5 h-3.5 text-rose-500" />
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => {
+                  setStartDate(e.target.value);
+                  setQuickFilter('custom');
+                }}
+                className="bg-transparent border-none text-[11px] focus:outline-hidden font-bold"
+              />
+              <span className="text-slate-400 font-bold">–</span>
+              <input
+                type="date"
+                value={endDate}
+                onChange={(e) => {
+                  setEndDate(e.target.value);
+                  setQuickFilter('custom');
+                }}
+                className="bg-transparent border-none text-[11px] focus:outline-hidden font-bold"
+              />
+            </div>
+
+            <select
+              value={quickFilter}
+              onChange={(e) => handleQuickFilterChange(e.target.value)}
+              className="text-[11px] bg-white border border-slate-300 rounded-lg px-2 py-1 text-slate-700 font-bold focus:outline-hidden"
+            >
+              <option value="today">আজ</option>
+              <option value="yesterday">গতকাল</option>
+              <option value="week">এই সপ্তাহ</option>
+              <option value="month">এই মাস</option>
+              <option value="all">সকল</option>
+            </select>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-1.5">
+            <button
+              type="button"
+              onClick={() => setShowWhatsAppModal(true)}
+              className="px-2.5 py-1 bg-[#0d9488] hover:bg-[#0f766e] text-white text-[11px] font-bold rounded-lg flex items-center gap-1 transition-colors cursor-pointer"
+              title="মালিকদের হোয়াটসঅ্যাপে পাঠান"
+            >
+              <MessageCircle className="w-3 h-3" />
+              <span>WA মালিক</span>
+            </button>
+            <button
+              type="button"
+              onClick={handlePrint}
+              className="px-2.5 py-1 bg-white hover:bg-slate-100 text-slate-800 text-[11px] font-bold rounded-lg flex items-center gap-1 border border-slate-300 transition-colors cursor-pointer"
+              title="শুধু টেবিল প্রিন্ট করুন"
+            >
+              <Printer className="w-3 h-3 text-blue-600" />
+              <span>প্রিন্ট</span>
+            </button>
+            <button
+              type="button"
+              onClick={handleDownloadPDF}
+              className="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 text-white text-[11px] font-bold rounded-lg flex items-center gap-1 transition-colors cursor-pointer"
+              title="শুধু টেবিল পিডিএফ ডাউনলোড"
+            >
+              <Download className="w-3 h-3 text-cyan-400" />
+              <span>PDF</span>
+            </button>
+            <button
+              type="button"
+              onClick={handleShare}
+              className="p-1.5 bg-white hover:bg-slate-100 text-slate-600 rounded-lg border border-slate-300 transition-colors cursor-pointer"
+              title="শেয়ার"
+            >
+              <Share2 className="w-3 h-3" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* "তেলের নির্ধারিত হিসাব" Compact Config Strip */}
+      <div className="bg-white border border-emerald-200 rounded-xl overflow-hidden shadow-2xs">
+        <div className="p-2.5 sm:px-3 flex flex-col md:flex-row md:items-center justify-between gap-2.5 bg-[#f4fbf8]">
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-lg bg-[#0b2820] text-emerald-300 flex items-center justify-center shrink-0">
+              <Fuel className="w-4 h-4" />
+            </div>
             <div>
-              <label className="block text-[11px] text-slate-600 font-semibold mb-1">
-                কমন মাইলেজ (কিমি/লিটার)
+              <h2 className="text-xs font-bold text-slate-900">তেলের নির্ধারিত হিসাব</h2>
+              <p className="text-[10px] text-slate-600">
+                সকল সমন্বিত ট্রিপে তেলের প্রাক্কলন ও মূল্য গণনায় ব্যবহৃত
+              </p>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-end gap-2">
+            <div>
+              <label className="block text-[10px] text-slate-700 font-bold mb-0.5">
+                মাইলেজ (কিমি/লি.)
               </label>
               <input
                 type="number"
@@ -785,13 +770,13 @@ export const FuelManagementPage: React.FC = () => {
                 min="1"
                 value={tempMileage}
                 onChange={(e) => setTempMileage(parseFloat(e.target.value) || 0)}
-                className="w-28 sm:w-32 bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-sm font-bold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-amber-400"
+                className="w-24 bg-white border border-emerald-200 rounded-lg px-2 py-1 text-xs font-bold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-emerald-600"
               />
             </div>
 
             <div>
-              <label className="block text-[11px] text-slate-600 font-semibold mb-1">
-                তেলের মূল্য (৳ / লিটার)
+              <label className="block text-[10px] text-slate-700 font-bold mb-0.5">
+                মূল্য (৳/লি.)
               </label>
               <input
                 type="number"
@@ -799,44 +784,38 @@ export const FuelManagementPage: React.FC = () => {
                 min="1"
                 value={tempFuelPrice}
                 onChange={(e) => setTempFuelPrice(parseFloat(e.target.value) || 0)}
-                className="w-32 sm:w-36 bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-sm font-bold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-amber-400"
+                className="w-24 bg-white border border-emerald-200 rounded-lg px-2 py-1 text-xs font-bold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-emerald-600"
               />
             </div>
 
-            <div className="pt-5 sm:pt-4">
-              <button
-                onClick={handleSaveSettings}
-                disabled={settingsSaving}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-lg shadow-xs transition-colors flex items-center gap-1.5"
-              >
-                {settingsSaving ? (
-                  <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                ) : (
-                  <Save className="w-3.5 h-3.5" />
-                )}
-                <span>সংরক্ষণ</span>
-              </button>
-            </div>
+            <button
+              onClick={handleSaveSettings}
+              disabled={settingsSaving}
+              className="px-3 py-1.5 bg-[#0d9488] hover:bg-[#0f766e] text-white font-bold text-[11px] rounded-lg shadow-2xs transition-colors flex items-center gap-1 cursor-pointer"
+            >
+              {settingsSaving ? (
+                <RefreshCw className="w-3 h-3 animate-spin" />
+              ) : (
+                <Save className="w-3 h-3" />
+              )}
+              <span>সংরক্ষণ</span>
+            </button>
           </div>
         </div>
       </div>
 
       {/* Section 1: "সমন্বিত ট্রিপ — তেল দেওয়া বাকি" */}
-      <div className="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
-        <div className="p-3.5 sm:p-4 border-b border-slate-200 bg-slate-50/70 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-          <div>
-            <div className="flex items-center gap-2">
-              <h2 className="text-base font-extrabold text-slate-900">
-                সমন্বিত ট্রিপ — তেল দেওয়া বাকি
-              </h2>
-              <span className="px-2 py-0.5 rounded-full bg-slate-200 text-slate-700 text-xs font-bold font-mono">
-                {toBengaliDigits(pendingTrips.length)}
-              </span>
-            </div>
-            <p className="text-xs text-slate-500 mt-0.5">
-              শুধু লিটার বসান; টাকা ও অতিরিক্ত তেল অটো হিসাব হবে।
-            </p>
+      <div className="bg-white rounded-xl border border-emerald-200 shadow-2xs overflow-hidden">
+        <div className="bg-[#0b2820] px-3 py-2 text-white flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <h2 className="text-xs font-bold">সমন্বিত ট্রিপ — তেল দেওয়া বাকি</h2>
+            <span className="px-1.5 py-0.2 rounded bg-white/20 text-white text-[10px] font-bold font-mono">
+              {toBengaliDigits(pendingTrips.length)}
+            </span>
           </div>
+          <span className="hidden sm:inline text-[10px] text-emerald-200/90">
+            লিটার বসালে টাকা অটো হিসাব হবে
+          </span>
         </div>
 
         <div className="overflow-x-auto">
@@ -908,23 +887,23 @@ export const FuelManagementPage: React.FC = () => {
       </div>
 
       {/* Section 2: "ফুয়েল এন্ট্রি" Table (Saved Entries) */}
-      <div className="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
-        <div className="p-3.5 sm:p-4 border-b border-slate-200 bg-slate-50/70 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="bg-white rounded-xl border border-emerald-200 shadow-2xs overflow-hidden">
+        <div className="bg-[#0f766e] px-3 py-2 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <h2 className="text-base font-extrabold text-slate-900">ফুয়েল এন্ট্রি</h2>
-            <span className="px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 text-xs font-bold font-mono">
+            <h2 className="text-xs font-bold">ফুয়েল এন্ট্রি লগ শীট</h2>
+            <span className="px-1.5 py-0.2 rounded bg-white/25 text-white text-[10px] font-bold font-mono">
               {toBengaliDigits(filteredFuelEntries.length)}
             </span>
           </div>
 
           <div className="relative w-full sm:w-64">
-            <Search className="w-4 h-4 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
+            <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               placeholder="গাড়ি বা নাম দিয়ে খুঁজুন..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-8 pr-3 py-1.5 text-xs bg-white border border-slate-300 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+              className="w-full pl-8 pr-2.5 py-1 text-[11px] bg-white/95 text-slate-800 border border-white/60 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-white/70"
             />
           </div>
         </div>
@@ -1135,235 +1114,248 @@ export const FuelManagementPage: React.FC = () => {
       {/* "নতুন ফুয়েল এন্ট্রি" Modal (Exact match with Screenshot 1) */}
       {/* ======================================================== */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-3 backdrop-blur-xs overflow-y-auto">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-200 animate-in fade-in zoom-in-95 my-8">
-            {/* Modal Header */}
-            <div className="p-4 border-b border-slate-200 flex items-center justify-between">
-              <h3 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
-                <Fuel className="w-5 h-5 text-blue-600" />
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 p-0 sm:p-4 backdrop-blur-xs">
+          <div className="bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden border border-emerald-200 flex flex-col max-h-[92dvh] sm:max-h-[88dvh]">
+            {/* Sticky Modal Header */}
+            <div className="shrink-0 px-4 py-3 bg-[#0b2820] text-white flex items-center justify-between gap-2">
+              <h3 className="text-sm sm:text-base font-extrabold text-white flex items-center gap-2">
+                <Fuel className="w-4 h-4 text-emerald-300" />
                 <span>{editingEntryId ? 'ফুয়েল এন্ট্রি পরিবর্তন করুন' : 'নতুন ফুয়েল এন্ট্রি'}</span>
               </h3>
               <button
+                type="button"
                 onClick={() => setIsModalOpen(false)}
-                className="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+                className="p-1.5 rounded-lg text-emerald-100 hover:text-white hover:bg-white/15 transition-colors cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            {/* Modal Form */}
-            <form onSubmit={handleSaveModalEntry} className="p-4 sm:p-5 space-y-4 text-xs text-slate-700">
-              {/* Row 1: Date & Time */}
-              <div className="grid grid-cols-2 gap-3">
+            {/* Modal Form with scrollable body + sticky bottom footer */}
+            <form onSubmit={handleSaveModalEntry} className="flex-1 flex flex-col min-h-0 overflow-hidden text-xs text-slate-900">
+              <div className="flex-1 overflow-y-auto overscroll-contain p-4 space-y-3.5">
+                {/* Row 1: Date & Time */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block font-bold text-slate-800 mb-1">তারিখ</label>
+                    <input
+                      type="date"
+                      value={formDate}
+                      onChange={(e) => setFormDate(e.target.value)}
+                      className="w-full bg-[#f4fbf8] border border-emerald-200 rounded-lg px-3 py-2 text-xs font-bold text-slate-900 focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-emerald-600"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-bold text-slate-800 mb-1">সময়</label>
+                    <input
+                      type="text"
+                      value={formTime}
+                      onChange={(e) => setFormTime(e.target.value)}
+                      placeholder="e.g. 7:14 PM"
+                      className="w-full bg-[#f4fbf8] border border-emerald-200 rounded-lg px-3 py-2 text-xs font-bold text-slate-900 focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-emerald-600"
+                      required
+                    />
+                  </div>
+                </div>
+
+                {/* Row 2: Bengali Day Name */}
+                <div className="bg-[#f4fbf8] border border-emerald-200 rounded-lg px-3 py-1.5 font-bold text-slate-800 text-xs">
+                  বার: {getBengaliDayOfWeek(formDate)}
+                </div>
+
+                {/* Row 3: Vehicle Number */}
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">তারিখ</label>
-                  <input
-                    type="date"
-                    value={formDate}
-                    onChange={(e) => setFormDate(e.target.value)}
-                    className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-bold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+                  <label className="block font-bold text-slate-800 mb-1">গাড়ি নাম্বার</label>
+                  <select
+                    value={formVehicleRegNo}
+                    onChange={(e) => setFormVehicleRegNo(e.target.value)}
+                    className="w-full bg-[#f4fbf8] border border-emerald-200 rounded-lg px-3 py-2 text-xs font-bold text-slate-900 focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-emerald-600"
                     required
-                  />
+                  >
+                    {vehiclesList.length > 0 ? (
+                      vehiclesList.map((v) => (
+                        <option key={v.id} value={v.regNo}>
+                          {v.regNo}
+                        </option>
+                      ))
+                    ) : (
+                      <option value={formVehicleRegNo}>{formVehicleRegNo}</option>
+                    )}
+                  </select>
                 </div>
+
+                {/* Row 4 & 5: Supervisor & Driver */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block font-bold text-slate-800 mb-1">সুপারভাইজার</label>
+                    <select
+                      value={formSupervisor}
+                      onChange={(e) => setFormSupervisor(e.target.value)}
+                      className="w-full bg-[#f4fbf8] border border-emerald-200 rounded-lg px-3 py-2 text-xs font-bold text-slate-900 focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-emerald-600"
+                      required
+                    >
+                      {supervisorsList.length > 0 ? (
+                        supervisorsList.map((s, idx) => (
+                          <option key={idx} value={s}>
+                            {s}
+                          </option>
+                        ))
+                      ) : (
+                        <option value={formSupervisor}>{formSupervisor}</option>
+                      )}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block font-bold text-slate-800 mb-1">ড্রাইভার</label>
+                    <select
+                      value={formDriver}
+                      onChange={(e) => setFormDriver(e.target.value)}
+                      className="w-full bg-[#f4fbf8] border border-emerald-200 rounded-lg px-3 py-2 text-xs font-bold text-slate-900 focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-emerald-600"
+                      required
+                    >
+                      {driversList.length > 0 ? (
+                        driversList.map((d, idx) => (
+                          <option key={idx} value={d}>
+                            {d}
+                          </option>
+                        ))
+                      ) : (
+                        <option value={formDriver}>{formDriver}</option>
+                      )}
+                    </select>
+                  </div>
+                </div>
+
+                {/* Row 6: 4 Boxes in 2x2 grid */}
+                <div className="grid grid-cols-2 gap-2.5">
+                  {/* Box 1: Full Route */}
+                  <div className="bg-[#f4fbf8] rounded-lg p-2.5 border border-emerald-200">
+                    <span className="text-[10px] text-slate-500 block font-semibold mb-0.5">
+                      পূর্ণ রুট
+                    </span>
+                    <span className="font-extrabold text-slate-900 text-xs truncate block">
+                      {formRoute}
+                    </span>
+                  </div>
+
+                  {/* Box 2: Total Km */}
+                  <div className="bg-[#f4fbf8] rounded-lg p-2.5 border border-emerald-200">
+                    <span className="text-[10px] text-slate-500 block font-semibold mb-0.5">
+                      মোট কিমি
+                    </span>
+                    <span className="font-extrabold text-slate-900 text-xs block font-mono">
+                      {toBengaliDigits(formTotalKm)}
+                    </span>
+                  </div>
+
+                  {/* Box 3: Mileage */}
+                  <div className="bg-[#f4fbf8] rounded-lg p-2.5 border border-emerald-200">
+                    <span className="text-[10px] text-slate-500 block font-semibold mb-0.5">
+                      মাইলেজ
+                    </span>
+                    <input
+                      type="number"
+                      step="0.1"
+                      min="1"
+                      value={formMileage}
+                      onChange={(e) => setFormMileage(parseFloat(e.target.value) || 1)}
+                      className="w-full bg-white border border-emerald-200 rounded px-2 py-0.5 font-mono font-bold text-xs text-slate-900"
+                    />
+                  </div>
+
+                  {/* Box 4: Expected Fuel */}
+                  <div className="bg-[#f4fbf8] rounded-lg p-2.5 border border-emerald-200">
+                    <span className="text-[10px] text-slate-500 block font-semibold mb-0.5">
+                      নির্ধারিত ফুয়েল
+                    </span>
+                    <span className="font-extrabold text-slate-900 text-xs block font-mono">
+                      {toBengaliDigits(computedExpectedLiters)} লিটার
+                    </span>
+                  </div>
+                </div>
+
+                {/* Row 7: Actual Fuel Given (Input field) */}
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">সময়</label>
-                  <input
-                    type="text"
-                    value={formTime}
-                    onChange={(e) => setFormTime(e.target.value)}
-                    placeholder="e.g. 7:14 PM"
-                    className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-bold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
-                    required
-                  />
-                </div>
-              </div>
-
-              {/* Row 2: Bengali Day Name */}
-              <div className="bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 font-bold text-slate-800 text-xs">
-                বার: {getBengaliDayOfWeek(formDate)}
-              </div>
-
-              {/* Row 3: Vehicle Number */}
-              <div>
-                <label className="block font-semibold text-slate-700 mb-1">গাড়ি নাম্বার</label>
-                <select
-                  value={formVehicleRegNo}
-                  onChange={(e) => setFormVehicleRegNo(e.target.value)}
-                  className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-bold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
-                  required
-                >
-                  {vehiclesList.length > 0 ? (
-                    vehiclesList.map((v) => (
-                      <option key={v.id} value={v.regNo}>
-                        {v.regNo}
-                      </option>
-                    ))
-                  ) : (
-                    <option value={formVehicleRegNo}>{formVehicleRegNo}</option>
-                  )}
-                </select>
-              </div>
-
-              {/* Row 4: Supervisor */}
-              <div>
-                <label className="block font-semibold text-slate-700 mb-1">সুপারভাইজার</label>
-                <select
-                  value={formSupervisor}
-                  onChange={(e) => setFormSupervisor(e.target.value)}
-                  className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-bold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
-                  required
-                >
-                  {supervisorsList.length > 0 ? (
-                    supervisorsList.map((s, idx) => (
-                      <option key={idx} value={s}>
-                        {s}
-                      </option>
-                    ))
-                  ) : (
-                    <option value={formSupervisor}>{formSupervisor}</option>
-                  )}
-                </select>
-              </div>
-
-              {/* Row 5: Driver */}
-              <div>
-                <label className="block font-semibold text-slate-700 mb-1">ড্রাইভার</label>
-                <select
-                  value={formDriver}
-                  onChange={(e) => setFormDriver(e.target.value)}
-                  className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-bold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
-                  required
-                >
-                  {driversList.length > 0 ? (
-                    driversList.map((d, idx) => (
-                      <option key={idx} value={d}>
-                        {d}
-                      </option>
-                    ))
-                  ) : (
-                    <option value={formDriver}>{formDriver}</option>
-                  )}
-                </select>
-              </div>
-
-              {/* Row 6: 4 Boxes in 2x2 grid */}
-              <div className="grid grid-cols-2 gap-2.5">
-                {/* Box 1: Full Route */}
-                <div className="bg-slate-100 rounded-lg p-2.5 border border-slate-200">
-                  <span className="text-[10px] text-slate-500 block font-semibold mb-0.5">
-                    পূর্ণ রুট
-                  </span>
-                  <span className="font-extrabold text-slate-900 text-xs truncate block">
-                    {formRoute}
-                  </span>
-                </div>
-
-                {/* Box 2: Total Km */}
-                <div className="bg-slate-100 rounded-lg p-2.5 border border-slate-200">
-                  <span className="text-[10px] text-slate-500 block font-semibold mb-0.5">
-                    মোট কিমি
-                  </span>
-                  <span className="font-extrabold text-slate-900 text-xs block font-mono">
-                    {toBengaliDigits(formTotalKm)}
-                  </span>
-                </div>
-
-                {/* Box 3: Mileage */}
-                <div className="bg-slate-100 rounded-lg p-2.5 border border-slate-200">
-                  <span className="text-[10px] text-slate-500 block font-semibold mb-0.5">
-                    মাইলেজ
-                  </span>
+                  <label className="block font-bold text-slate-900 mb-1">
+                    তেলের পরিমাণ (লিটার) *
+                  </label>
                   <input
                     type="number"
                     step="0.1"
-                    min="1"
-                    value={formMileage}
-                    onChange={(e) => setFormMileage(parseFloat(e.target.value) || 1)}
-                    className="w-full bg-white border border-slate-300 rounded px-2 py-0.5 font-mono font-bold text-xs"
+                    min="0.1"
+                    placeholder="তেলের পরিমাণ লিখুন..."
+                    value={formActualLiters}
+                    onChange={(e) => setFormActualLiters(e.target.value)}
+                    className="w-full bg-white border-2 border-[#0d9488] rounded-xl px-3.5 py-2.5 text-sm font-extrabold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-emerald-600"
+                    autoFocus
+                    required
                   />
                 </div>
 
-                {/* Box 4: Expected Fuel */}
-                <div className="bg-slate-100 rounded-lg p-2.5 border border-slate-200">
-                  <span className="text-[10px] text-slate-500 block font-semibold mb-0.5">
-                    নির্ধারিত ফুয়েল
-                  </span>
-                  <span className="font-extrabold text-slate-900 text-xs block font-mono">
-                    {toBengaliDigits(computedExpectedLiters)} লিটার
-                  </span>
+                {/* Row 8: Auto Calculation Card */}
+                <div className="bg-[#f4fbf8] border border-emerald-200 rounded-xl p-3 grid grid-cols-3 gap-2 text-center">
+                  <div>
+                    <span className="text-[10.5px] text-slate-500 block font-semibold">
+                      নির্ধারিত মূল্য
+                    </span>
+                    <span className="text-sm font-extrabold text-slate-900 font-mono">
+                      {formatTaka(computedExpectedCost)}
+                    </span>
+                  </div>
+
+                  <div>
+                    <span className="text-[10.5px] text-slate-500 block font-semibold">
+                      প্রদানকৃত মূল্য
+                    </span>
+                    <span className="text-sm font-extrabold text-[#0f766e] font-mono">
+                      {formatTaka(computedTotalMoney)}
+                    </span>
+                  </div>
+
+                  <div>
+                    <span className="text-[10.5px] text-slate-500 block font-semibold">
+                      +/- মূল্য
+                    </span>
+                    <span
+                      className={`inline-block px-2 py-0.5 rounded-md text-xs font-mono font-bold border ${
+                        computedCostDifference > 0
+                          ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                          : computedCostDifference < 0
+                          ? 'bg-rose-50 text-rose-700 border-rose-200'
+                          : 'bg-slate-100 text-slate-700 border-slate-200'
+                      }`}
+                    >
+                      {formatSignedFuelCostDiff(computedCostDifference)}
+                    </span>
+                  </div>
                 </div>
+
+                {modalError && (
+                  <div className="p-2.5 bg-rose-50 border border-rose-200 rounded-lg text-xs font-semibold text-rose-700">
+                    {modalError}
+                  </div>
+                )}
               </div>
 
-              {/* Row 7: Actual Fuel Given (Input field) */}
-              <div>
-                <label className="block font-bold text-slate-900 mb-1">
-                  তেলের পরিমাণ (লিটার)
-                </label>
-                <input
-                  type="number"
-                  step="0.1"
-                  min="0.1"
-                  placeholder="তেলের পরিমাণ লিখুন..."
-                  value={formActualLiters}
-                  onChange={(e) => setFormActualLiters(e.target.value)}
-                  className="w-full bg-white border-2 border-blue-400 rounded-xl px-3.5 py-2.5 text-sm font-extrabold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-blue-600"
-                  autoFocus
-                  required
-                />
+              {/* Sticky Footer Buttons */}
+              <div className="shrink-0 px-4 py-3 bg-[#f0f9f6] border-t border-emerald-200 flex items-center justify-end gap-2 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+                <button
+                  type="button"
+                  onClick={() => setIsModalOpen(false)}
+                  className="px-4 py-2.5 min-h-[44px] bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 rounded-xl text-xs font-bold cursor-pointer"
+                >
+                  বাতিল
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 sm:flex-none px-5 py-2.5 min-h-[44px] bg-[#0d9488] hover:bg-[#0f766e] text-white font-extrabold text-xs rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <Check className="w-4 h-4" />
+                  <span>এন্ট্রি সংরক্ষণ করুন</span>
+                </button>
               </div>
-
-              {/* Row 8: Auto Calculation Card */}
-              <div className="bg-slate-100/90 border border-slate-200 rounded-xl p-3 grid grid-cols-3 gap-2 text-center">
-                <div>
-                  <span className="text-[10.5px] text-slate-500 block font-semibold">
-                    নির্ধারিত মূল্য
-                  </span>
-                  <span className="text-sm font-extrabold text-slate-800 font-mono">
-                    {formatTaka(computedExpectedCost)}
-                  </span>
-                </div>
-
-                <div>
-                  <span className="text-[10.5px] text-slate-500 block font-semibold">
-                    প্রদানকৃত মূল্য
-                  </span>
-                  <span className="text-sm font-extrabold text-blue-800 font-mono">
-                    {formatTaka(computedTotalMoney)}
-                  </span>
-                </div>
-
-                <div>
-                  <span className="text-[10.5px] text-slate-500 block font-semibold">
-                    +/- মূল্য
-                  </span>
-                  <span
-                    className={`inline-block px-2 py-0.5 rounded-md text-xs font-mono font-bold border ${
-                      computedCostDifference > 0
-                        ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                        : computedCostDifference < 0
-                        ? 'bg-rose-50 text-rose-700 border-rose-200'
-                        : 'bg-blue-50 text-blue-700 border-blue-200'
-                    }`}
-                  >
-                    {formatSignedFuelCostDiff(computedCostDifference)}
-                  </span>
-                </div>
-              </div>
-
-              {modalError && (
-                <div className="p-2.5 bg-rose-50 border border-rose-200 rounded-lg text-xs font-semibold text-rose-700">
-                  {modalError}
-                </div>
-              )}
-
-              {/* Submit Button */}
-              <button
-                type="submit"
-                className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-sm rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
-              >
-                <Check className="w-4 h-4" />
-                <span>এন্ট্রি সংরক্ষণ করুন</span>
-              </button>
             </form>
           </div>
         </div>

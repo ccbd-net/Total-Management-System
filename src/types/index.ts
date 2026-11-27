@@ -109,6 +109,7 @@ export interface Vehicle {
   seatCapacity: SeatCapacity;
   ownerName: string; // গাড়ি মালিকের নাম
   ownerPhone?: string; // মালিকের ফোন নম্বর
+  driverName?: string; // ড্রাইভারের নাম
   model?: string; // ঐচ্ছিক
   status: 'active' | 'maintenance' | 'inactive';
   notes?: string;

@@ -1,8 +1,8 @@
 {
   "id": "/",
-  "name": "Counter Management System",
-  "short_name": "CMS Counter",
-  "description": "কাউন্টার ম্যানেজমেন্ট সিস্টেম - Powered by Data&Code",
+  "name": "Vehicles Management System",
+  "short_name": "VMS",
+  "description": "Vehicles Management System - Powered by Data&Code",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
@@ -24,7 +24,7 @@
       "purpose": "any"
     },
     {
-      "src": "/pwa-512x512.png",
+      "src": "/pwa-maskable-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"

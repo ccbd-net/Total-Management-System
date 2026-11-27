@@ -130,7 +130,7 @@ export const AiSummaryPage: React.FC = () => {
             </div>
             <div>
               <h3 className="font-bold text-base text-slate-900">
-                Counter Management System — এক্সিকিউটিভ এআই দৈনিক প্রতিবেদন ({formatBengaliDate(date)})
+                Vehicles Management System — এক্সিকিউটিভ এআই দৈনিক প্রতিবেদন ({formatBengaliDate(date)})
               </h3>
               <div className="flex items-center gap-2 text-xs text-slate-400 mt-0.5">
                 <span>মডেল ইঞ্জিন: <strong>{source}</strong></span>
@@ -171,7 +171,7 @@ export const AiSummaryPage: React.FC = () => {
         )}
 
         <div className="mt-8 pt-4 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
-          <span>* এআই রিপোর্টটি Counter Management System এর লাইভ ডাটাবেজ মেট্রিক্স থেকে স্বয়ংক্রিয়ভাবে প্রক্রিয়াজাত।</span>
+          <span>* এআই রিপোর্টটি Vehicles Management System এর লাইভ ডাটাবেজ মেট্রিক্স থেকে স্বয়ংক্রিয়ভাবে প্রক্রিয়াজাত।</span>
           <span className="font-semibold text-emerald-600">সুরক্ষিত ও পরীক্ষিত</span>
         </div>
       </div>

@@ -34,6 +34,7 @@ import {
   TrendingUp,
   Award,
   MessageCircle,
+  X,
 } from 'lucide-react';
 
 export interface DatabaseRow {
@@ -892,184 +893,186 @@ export const DatabasePage: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="space-y-6 print:hidden">
-      {/* Top Header Card */}
-      <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-emerald-950 text-white p-6 rounded-3xl shadow-lg border border-slate-700/50 flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-500/20 text-emerald-300 rounded-full text-xs font-semibold border border-emerald-400/30 mb-2">
-            <Database className="w-4 h-4 text-emerald-400" />
-            <span>সিস্টেম ডাটাবেইজ ও ট্রিপ সমন্বয় রেজিস্টার</span>
+    <div className="space-y-3">
+      <div className="space-y-3 print:hidden">
+      {/* Compact Header Card */}
+      <div className="bg-white rounded-xl border border-emerald-200 shadow-2xs overflow-hidden">
+        <div className="bg-[#0b2820] px-3 py-2 text-white flex flex-col md:flex-row md:items-center justify-between gap-2">
+          <div className="flex items-center gap-2 min-w-0">
+            <Database className="w-4 h-4 shrink-0 text-emerald-300" />
+            <div className="min-w-0">
+              <h1 className="text-xs sm:text-sm font-bold leading-tight truncate text-white">
+                ডাটাবেইজ — ট্রিপ সমন্বয়, নাইট হোল্ড ও পুর্নাঙ্গ রিপোর্ট
+              </h1>
+              <p className="hidden sm:block text-[10px] text-emerald-200/80 leading-tight truncate">
+                আপ ও ডাউন ট্রিপ সমন্বয়, নাইট হোল্ড হিসাব, সময় ব্যবধান ও দূরত্ব রেজিস্টার
+              </p>
+            </div>
           </div>
-          <h1 className="text-xl md:text-2xl font-black tracking-tight text-white">
-            ডাটাবেইজ — ট্রিপ সমন্বয়, নাইট হোল্ড ও পুর্নাঙ্গ রিপোর্ট
-          </h1>
-          <p className="text-xs text-slate-300 mt-1 max-w-2xl leading-relaxed">
-            মুল লক্ষ্য: আপ ও ডাউন ট্রিপ মিলে কয়টি ট্রিপ হলো তার নির্ভুল হিসাব। নাইট হোল্ড ট্রিপের ফিরতি দিনে ট্রিপ কাউন্ট, আপ-ডাউন সময় ব্যবধান, কিমি দূরত্ব এবং সিট ও ভাড়া সমষ্টিক হিসাব।
-          </p>
-        </div>
 
-        {/* Global Action Buttons */}
+          {/* Global Action Buttons */}
+          <div className="flex flex-wrap items-center gap-1.5 shrink-0">
+            <button
+              type="button"
+              onClick={fetchData}
+              className="p-1.5 bg-white/15 hover:bg-white/25 text-white rounded-lg transition-colors cursor-pointer"
+              title="রিফ্রেশ"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setShowWhatsAppModal(true)}
+              className="px-2.5 py-1 bg-[#0d9488] hover:bg-[#0f766e] text-white rounded-lg text-[11px] font-bold shadow-2xs transition-all flex items-center gap-1 cursor-pointer border border-emerald-400/30"
+              title="মালিকদের মোবাইল নম্বরে হোয়াটসঅ্যাপে রিপোর্ট পাঠান"
+            >
+              <MessageCircle className="w-3.5 h-3.5" />
+              <span>WA মালিক</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={handleExportCSV}
+              className="px-2.5 py-1 bg-white hover:bg-emerald-50 text-emerald-950 rounded-lg text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer"
+              title="এক্সেল ডাউনলোড"
+            >
+              <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-700" />
+              <span>Excel</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={handleDownloadPDF}
+              className="px-2.5 py-1 bg-[#071d17] hover:bg-[#134235] text-white rounded-lg text-[11px] font-bold shadow-2xs transition-all flex items-center gap-1 cursor-pointer border border-emerald-500/30"
+              title="শুধু ডাটা টেবিল পিডিএফ ডাউনলোড করুন"
+            >
+              <Download className="w-3.5 h-3.5 text-emerald-300" />
+              <span>PDF</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={handlePrint}
+              className="px-2.5 py-1 bg-[#0f766e] hover:bg-[#0d9488] text-white rounded-lg text-[11px] font-bold shadow-2xs transition-all flex items-center gap-1 cursor-pointer"
+              title="শুধু ডাটা টেবিল প্রিন্ট / সেভ PDF"
+            >
+              <Printer className="w-3.5 h-3.5" />
+              <span>প্রিন্ট</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={handleGenerateAi}
+              className="px-2.5 py-1 bg-[#0d9488] hover:bg-[#0f766e] text-white rounded-lg text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer"
+              title="এআই বিশ্লেষণ"
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>ইনসাইটস</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Excel-Sheet 6-Column KPI Summary Matrix */}
+      <div className="bg-emerald-200 border border-emerald-200 rounded-xl overflow-hidden shadow-2xs">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-px">
+          {/* Full Trips Count */}
+          <div className="bg-white flex flex-col">
+            <div className="bg-[#0b2820] px-2.5 py-1 flex items-center justify-between gap-1 text-white">
+              <span className="text-[10px] font-bold truncate">আজকের পূর্ণাঙ্গ ট্রিপ</span>
+              <Award className="w-3 h-3 shrink-0 opacity-90 text-emerald-300" />
+            </div>
+            <div className="px-2.5 py-1.5 flex items-baseline justify-between gap-1">
+              <span className="text-sm sm:text-base font-black text-slate-900 tabular-nums">
+                {toBengaliDigits(stats.fullTrips)}
+              </span>
+              <span className="text-[10px] text-slate-500 truncate">টি ট্রিপ</span>
+            </div>
+          </div>
+
+          {/* Night Hold Trips */}
+          <div className="bg-white flex flex-col">
+            <div className="bg-[#0f766e] px-2.5 py-1 flex items-center justify-between gap-1 text-white">
+              <span className="text-[10px] font-bold truncate">নাইট হোল্ড ট্রিপ</span>
+              <Moon className="w-3 h-3 shrink-0 opacity-90" />
+            </div>
+            <div className="px-2.5 py-1.5 flex items-baseline justify-between gap-1">
+              <span className="text-sm sm:text-base font-black text-slate-900 tabular-nums">
+                {toBengaliDigits(stats.nightHoldTrips)}
+              </span>
+              <span className="text-[10px] text-slate-500 truncate">টি ফিরতি</span>
+            </div>
+          </div>
+
+          {/* Total Booked Seats */}
+          <div className="bg-white flex flex-col">
+            <div className="bg-[#0d9488] px-2.5 py-1 flex items-center justify-between gap-1 text-white">
+              <span className="text-[10px] font-bold truncate">মোট সিট বুকিং</span>
+              <User className="w-3 h-3 shrink-0 opacity-90" />
+            </div>
+            <div className="px-2.5 py-1.5 flex items-baseline justify-between gap-1">
+              <span className="text-sm sm:text-base font-black text-slate-900 tabular-nums">
+                {toBengaliDigits(stats.totalSeats)}
+              </span>
+              <span className="text-[10px] text-slate-500 truncate">টি আসন</span>
+            </div>
+          </div>
+
+          {/* Total Revenue */}
+          <div className="bg-white flex flex-col">
+            <div className="bg-[#0b2820] px-2.5 py-1 flex items-center justify-between gap-1 text-white">
+              <span className="text-[10px] font-bold truncate">মোট আদায়</span>
+              <TrendingUp className="w-3 h-3 shrink-0 opacity-90 text-emerald-300" />
+            </div>
+            <div className="px-2.5 py-1.5">
+              <div className="text-sm sm:text-base font-black text-emerald-800 tabular-nums leading-tight">
+                {formatTaka(stats.totalFare)}
+              </div>
+              <div className="text-[9.5px] text-slate-500 tabular-nums truncate">
+                সিট: {formatTaka(stats.totalSeatFare)} · মাল: {formatTaka(stats.totalCargoFare)}
+              </div>
+            </div>
+          </div>
+
+          {/* Total Distance */}
+          <div className="bg-white flex flex-col">
+            <div className="bg-[#0f766e] px-2.5 py-1 flex items-center justify-between gap-1 text-white">
+              <span className="text-[10px] font-bold truncate">মোট দূরত্ব</span>
+              <RouteIcon className="w-3 h-3 shrink-0 opacity-90" />
+            </div>
+            <div className="px-2.5 py-1.5 flex items-baseline justify-between gap-1">
+              <span className="text-sm sm:text-base font-black text-slate-900 tabular-nums">
+                {toBengaliDigits(stats.totalDistance)}
+              </span>
+              <span className="text-[10px] text-slate-500 truncate">কিমি</span>
+            </div>
+          </div>
+
+          {/* Pending Trips */}
+          <div className="bg-white flex flex-col">
+            <div className={`${stats.pendingTrips === 0 ? 'bg-[#0d9488]' : 'bg-amber-700'} px-2.5 py-1 flex items-center justify-between gap-1 text-white`}>
+              <span className="text-[10px] font-bold truncate">ফিরতি অপেক্ষমাণ</span>
+              <Clock className="w-3 h-3 shrink-0 opacity-90" />
+            </div>
+            <div className="px-2.5 py-1.5 flex items-baseline justify-between gap-1">
+              <span className={`text-sm sm:text-base font-black tabular-nums ${stats.pendingTrips === 0 ? 'text-emerald-800' : 'text-rose-700'}`}>
+                {toBengaliDigits(stats.pendingTrips)}
+              </span>
+              <span className="text-[10px] text-slate-500 truncate">
+                {stats.pendingTrips === 0 ? 'সমন্বিত' : 'বাকি'}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Compact Filter Bar */}
+      <div className="bg-white p-2.5 rounded-xl border border-slate-300 shadow-2xs flex flex-wrap items-center justify-between gap-2">
         <div className="flex flex-wrap items-center gap-2">
-          <button
-            type="button"
-            onClick={fetchData}
-            className="p-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl transition-colors border border-slate-600 cursor-pointer"
-            title="রিফ্রেশ"
-          >
-            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setShowWhatsAppModal(true)}
-            className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold shadow-md transition-all flex items-center gap-1.5 cursor-pointer"
-            title="মালিকদের মোবাইল নম্বরে হোয়াটসঅ্যাপে রিপোর্ট পাঠান"
-          >
-            <MessageCircle className="w-4 h-4" />
-            <span>হোয়াটসঅ্যাপ (মালিক)</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={handleExportCSV}
-            className="px-3.5 py-2 bg-emerald-600/30 hover:bg-emerald-600/50 text-emerald-300 border border-emerald-500/40 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
-            title="এক্সেল ডাউনলোড"
-          >
-            <FileSpreadsheet className="w-4 h-4 text-emerald-400" />
-            <span>এক্সেল (.CSV)</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={handleDownloadPDF}
-            className="px-3.5 py-2 bg-slate-700 hover:bg-slate-600 text-white border border-slate-500 rounded-xl text-xs font-bold shadow-md transition-all flex items-center gap-1.5 cursor-pointer"
-            title="শুধু ডাটা টেবিল পিডিএফ ডাউনলোড করুন"
-          >
-            <Download className="w-4 h-4 text-emerald-400" />
-            <span>টেবিল PDF</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={handlePrint}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold shadow-md transition-all flex items-center gap-1.5 cursor-pointer"
-            title="শুধু ডাটা টেবিল প্রিন্ট / সেভ PDF"
-          >
-            <Printer className="w-4 h-4" />
-            <span>শুধু টেবিল প্রিন্ট</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={handleGenerateAi}
-            className="px-3.5 py-2 bg-purple-600/40 hover:bg-purple-600/60 text-purple-200 border border-purple-400/30 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
-            title="এআই বিশ্লেষণ"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-purple-300" />
-            <span>এআই ইনসাইটস</span>
-          </button>
-        </div>
-      </div>
-
-      {/* KPI Summary Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-        {/* Full Trips Count - PRIMARY OBJECTIVE */}
-        <div className="bg-emerald-50 border border-emerald-300 p-3.5 rounded-2xl shadow-xs">
-          <div className="flex items-center justify-between text-emerald-800 text-[11px] font-bold">
-            <span>আজকের পূর্ণাঙ্গ ট্রিপ</span>
-            <Award className="w-4 h-4 text-emerald-600" />
-          </div>
-          <div className="text-2xl font-black text-emerald-950 mt-1">
-            {toBengaliDigits(stats.fullTrips)} <span className="text-xs font-medium">টি</span>
-          </div>
-          <div className="text-[10px] text-emerald-700 mt-0.5">
-            আপ+ডাউন মিলে ১ ট্রিপ কাউন্ট
-          </div>
-        </div>
-
-        {/* Night Hold Trips */}
-        <div className="bg-purple-50 border border-purple-300 p-3.5 rounded-2xl shadow-xs">
-          <div className="flex items-center justify-between text-purple-800 text-[11px] font-bold">
-            <span>নাইট হোল্ড ট্রিপ</span>
-            <Moon className="w-4 h-4 text-purple-600" />
-          </div>
-          <div className="text-2xl font-black text-purple-950 mt-1">
-            {toBengaliDigits(stats.nightHoldTrips)} <span className="text-xs font-medium">টি</span>
-          </div>
-          <div className="text-[10px] text-purple-700 mt-0.5">
-            আজ সম্পন্ন ফিরতি ট্রিপ
-          </div>
-        </div>
-
-        {/* Total Booked Seats */}
-        <div className="bg-blue-50 border border-blue-300 p-3.5 rounded-2xl shadow-xs">
-          <div className="flex items-center justify-between text-blue-800 text-[11px] font-bold">
-            <span>মোট সিট বুকিং</span>
-            <User className="w-4 h-4 text-blue-600" />
-          </div>
-          <div className="text-2xl font-black text-blue-950 mt-1">
-            {toBengaliDigits(stats.totalSeats)} <span className="text-xs font-medium">টি</span>
-          </div>
-          <div className="text-[10px] text-blue-700 mt-0.5">
-            আপ ও ডাউন উভয় ট্রিপ
-          </div>
-        </div>
-
-        {/* Total Revenue */}
-        <div className="bg-amber-50 border border-amber-300 p-3.5 rounded-2xl shadow-xs">
-          <div className="flex items-center justify-between text-amber-800 text-[11px] font-bold">
-            <span>মোট আদায় (সিট + মাল)</span>
-            <TrendingUp className="w-4 h-4 text-amber-600" />
-          </div>
-          <div className="text-xl font-black text-amber-950 mt-1 tabular-nums">
-            {formatTaka(stats.totalFare)}
-          </div>
-          <div className="text-[10px] text-amber-800 mt-0.5 font-semibold">
-            সিট: {formatTaka(stats.totalSeatFare)} | মাল: {formatTaka(stats.totalCargoFare)}
-          </div>
-        </div>
-
-        {/* Total Distance */}
-        <div className="bg-indigo-50 border border-indigo-300 p-3.5 rounded-2xl shadow-xs">
-          <div className="flex items-center justify-between text-indigo-800 text-[11px] font-bold">
-            <span>মোট অতিক্রান্ত দূরত্ব</span>
-            <RouteIcon className="w-4 h-4 text-indigo-600" />
-          </div>
-          <div className="text-2xl font-black text-indigo-950 mt-1">
-            {toBengaliDigits(stats.totalDistance)} <span className="text-xs font-medium">কিমি</span>
-          </div>
-          <div className="text-[10px] text-indigo-700 mt-0.5">
-            আপ রুট + ডাউন রুট কিমি
-          </div>
-        </div>
-
-        {/* Pending Trips */}
-        <div className={`p-3.5 rounded-2xl border shadow-xs transition-colors ${
-          stats.pendingTrips === 0 ? 'bg-emerald-50 border-emerald-300' : 'bg-slate-100 border-slate-300'
-        }`}>
-          <div className="flex items-center justify-between text-[11px] font-bold">
-            <span className={stats.pendingTrips === 0 ? 'text-emerald-800' : 'text-slate-700'}>
-              ফিরতি অপেক্ষমাণ
-            </span>
-            <Clock className={`w-4 h-4 ${stats.pendingTrips === 0 ? 'text-emerald-600' : 'text-slate-500'}`} />
-          </div>
-          <div className={`text-2xl font-black mt-1 ${stats.pendingTrips === 0 ? 'text-emerald-950' : 'text-slate-800'}`}>
-            {toBengaliDigits(stats.pendingTrips)} <span className="text-xs font-medium">টি</span>
-          </div>
-          <div className={`text-[10px] mt-0.5 ${stats.pendingTrips === 0 ? 'text-emerald-700 font-bold' : 'text-slate-500'}`}>
-            {stats.pendingTrips === 0 ? 'সকল ট্রিপ সমন্বিত (কোনো অপেক্ষমাণ নেই)' : 'ডাউন ট্রিপ এখনো তৈরি হয়নি'}
-          </div>
-        </div>
-      </div>
-
-      {/* Filter Bar */}
-      <div className="bg-white p-4 rounded-3xl border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-3">
-        <div className="flex flex-wrap items-center gap-3">
           {/* Date Picker */}
-          <div className="flex items-center gap-2 bg-slate-50 px-3 py-2 rounded-xl border border-slate-300 text-xs font-semibold">
-            <Calendar className="w-4 h-4 text-emerald-600" />
-            <span className="text-slate-500 text-[11px]">তারিখ:</span>
+          <div className="flex items-center gap-1.5 bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-300 text-[11px] font-semibold">
+            <Calendar className="w-3.5 h-3.5 text-emerald-600" />
             <input
               type="date"
               value={date}
@@ -1079,9 +1082,8 @@ export const DatabasePage: React.FC = () => {
           </div>
 
           {/* Vehicle Dropdown */}
-          <div className="flex items-center gap-2 bg-slate-50 px-3 py-2 rounded-xl border border-slate-300 text-xs font-semibold">
-            <Bus className="w-4 h-4 text-indigo-600" />
-            <span className="text-slate-500 text-[11px]">গাড়ি:</span>
+          <div className="flex items-center gap-1.5 bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-300 text-[11px] font-semibold">
+            <Bus className="w-3.5 h-3.5 text-blue-600" />
             <select
               value={vehicleFilter}
               onChange={(e) => setVehicleFilter(e.target.value)}
@@ -1097,36 +1099,36 @@ export const DatabasePage: React.FC = () => {
           </div>
 
           {/* Trip Type Filter */}
-          <div className="flex bg-slate-100 p-1 rounded-xl text-xs font-bold border border-slate-200">
+          <div className="flex flex-wrap bg-[#e6f4ef] p-0.5 rounded-lg text-[11px] font-bold border border-emerald-200 gap-0.5">
             <button
               type="button"
               onClick={() => setTripTypeFilter('ALL')}
-              className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+              className={`px-2 py-1 rounded-md transition-all cursor-pointer ${
                 tripTypeFilter === 'ALL'
-                  ? 'bg-slate-900 text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-[#0b2820] text-white shadow-2xs'
+                  : 'text-slate-700 hover:text-slate-900'
               }`}
             >
-              সব ট্রিপ ({toBengaliDigits(tableRows.length)})
+              সব ({toBengaliDigits(tableRows.length)})
             </button>
             <button
               type="button"
               onClick={() => setTripTypeFilter('FULL_TRIPS')}
-              className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+              className={`px-2 py-1 rounded-md transition-all cursor-pointer ${
                 tripTypeFilter === 'FULL_TRIPS'
-                  ? 'bg-emerald-600 text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-[#0d9488] text-white shadow-2xs'
+                  : 'text-slate-700 hover:text-slate-900'
               }`}
             >
-              পূর্ণাঙ্গ ট্রিপ ({toBengaliDigits(stats.fullTrips)})
+              পূর্ণাঙ্গ ({toBengaliDigits(stats.fullTrips)})
             </button>
             <button
               type="button"
               onClick={() => setTripTypeFilter('NIGHT_HOLD')}
-              className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+              className={`px-2 py-1 rounded-md transition-all cursor-pointer ${
                 tripTypeFilter === 'NIGHT_HOLD'
-                  ? 'bg-purple-600 text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-[#0f766e] text-white shadow-2xs'
+                  : 'text-slate-700 hover:text-slate-900'
               }`}
             >
               নাইট হোল্ড ({toBengaliDigits(stats.nightHoldTrips)})
@@ -1134,10 +1136,10 @@ export const DatabasePage: React.FC = () => {
             <button
               type="button"
               onClick={() => setTripTypeFilter('PENDING')}
-              className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+              className={`px-2 py-1 rounded-md transition-all cursor-pointer ${
                 tripTypeFilter === 'PENDING'
-                  ? 'bg-amber-600 text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-amber-700 text-white shadow-2xs'
+                  : 'text-slate-700 hover:text-slate-900'
               }`}
             >
               ফিরতি বাকি ({toBengaliDigits(stats.pendingTrips)})
@@ -1146,39 +1148,34 @@ export const DatabasePage: React.FC = () => {
         </div>
 
         {/* Search Input */}
-        <div className="relative flex-1 max-w-xs">
-          <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+        <div className="relative flex-1 min-w-[180px] max-w-xs">
+          <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="গাড়ি, রুট, সুপারভাইজার বা ড্রাইভার..."
-            className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:bg-white focus:ring-1 focus:ring-emerald-500 font-medium"
+            className="w-full pl-8 pr-2.5 py-1 bg-[#f4fbf8] border border-emerald-200 rounded-lg text-[11px] text-slate-900 outline-none focus:bg-white focus:ring-1 focus:ring-emerald-600 font-medium"
           />
         </div>
       </div>
 
-      {/* Main Database Table Card */}
-      <div className="bg-white rounded-3xl border border-slate-200 shadow-xs overflow-hidden">
-        {/* Card Header & Rule Note */}
-        <div className="p-4 border-b border-slate-200 bg-slate-50/50 flex flex-col md:flex-row md:items-center justify-between gap-3">
+      {/* Main Database Excel Sheet Card */}
+      <div className="bg-white rounded-xl border border-emerald-200 shadow-2xs overflow-hidden">
+        {/* Card Header Bar */}
+        <div className="bg-[#0b2820] px-3 py-2 text-white flex flex-col md:flex-row md:items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold text-xs">
+            <span className="px-1.5 py-0.2 rounded bg-white/25 text-white font-bold text-[10px] font-mono">
               {toBengaliDigits(filteredRows.length)}
-            </div>
-            <div>
-              <h3 className="text-sm font-black text-slate-900">
-                ডাটাবেইজ সমন্বয় রেজিস্টার ({toBengaliDigits(filteredRows.length)} টি রেকর্ড প্রদর্শিত)
-              </h3>
-              <p className="text-[11px] text-slate-500">
-                ১৩টি কলাম: তারিখ | গাড়ি নম্বর | নাইট হোল্ড | আপ সময় | ডাউন সময় | সময় ব্যবধান | রুট সমন্বয় | মোট দূরত্ব | আপ সিট ও ভাড়া | ডাউন সিট ও ভাড়া | মোট সিট ও ভাড়া | সুপারভাইজার | ড্রাইভার
-              </p>
-            </div>
+            </span>
+            <h3 className="text-xs font-bold">
+              ডাটাবেইজ সমন্বয় রেজিস্টার শীট
+            </h3>
           </div>
 
-          <div className="text-[11px] font-semibold text-slate-600 flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-xl border border-slate-200">
-            <Info className="w-3.5 h-3.5 text-blue-600 shrink-0" />
-            <span>লজিক: আপ ও ডাউন ট্রিপ মিলে ওই গাড়ির ১টি পূর্ণাঙ্গ ট্রিপ কাউন্ট হবে। নাইট হোল্ড ট্রিপ ফিরতি দিনে গণনা হয়।</span>
+          <div className="text-[10px] text-emerald-50 flex items-center gap-1">
+            <Info className="w-3 h-3 shrink-0" />
+            <span>আপ + ডাউন মিলে ১ পূর্ণাঙ্গ ট্রিপ · নাইট হোল্ড ফিরতি দিনে কাউন্ট হয়</span>
           </div>
         </div>
 
@@ -1625,32 +1622,44 @@ export const DatabasePage: React.FC = () => {
 
       {/* AI Insights Modal */}
       {showAiModal && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 print:hidden">
-          <div className="bg-white rounded-3xl max-w-xl w-full p-6 shadow-2xl border border-slate-200 space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b">
-              <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-purple-600" />
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 print:hidden">
+          <div className="bg-white rounded-t-2xl sm:rounded-2xl max-w-xl w-full shadow-2xl border border-emerald-200 flex flex-col max-h-[90dvh] overflow-hidden">
+            <div className="shrink-0 px-4 py-3 bg-[#0b2820] text-white flex items-center justify-between">
+              <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-emerald-300" />
                 <span>এআই দৈনিক বিশ্লেষণ ও ইনসাইটস</span>
               </h3>
               <button
                 type="button"
                 onClick={() => setShowAiModal(false)}
-                className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold cursor-pointer"
+                className="p-1.5 text-emerald-100 hover:text-white hover:bg-white/15 rounded-lg cursor-pointer"
               >
-                বন্ধ
+                <X className="w-4 h-4" />
               </button>
             </div>
 
-            {aiLoading ? (
-              <div className="py-12 text-center text-xs text-slate-500 flex items-center justify-center gap-2">
-                <RefreshCw className="w-4 h-4 animate-spin text-purple-600" />
-                এআই বিশ্লেষণ প্রস্তুত হচ্ছে...
-              </div>
-            ) : (
-              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 text-xs text-slate-700 leading-relaxed max-h-80 overflow-y-auto whitespace-pre-line font-medium">
-                {aiReport}
-              </div>
-            )}
+            <div className="flex-1 overflow-y-auto overscroll-contain p-4">
+              {aiLoading ? (
+                <div className="py-12 text-center text-xs text-slate-600 flex items-center justify-center gap-2">
+                  <RefreshCw className="w-4 h-4 animate-spin text-[#0d9488]" />
+                  এআই বিশ্লেষণ প্রস্তুত হচ্ছে...
+                </div>
+              ) : (
+                <div className="p-4 bg-[#f4fbf8] rounded-xl border border-emerald-200 text-xs text-slate-800 leading-relaxed whitespace-pre-line font-medium">
+                  {aiReport}
+                </div>
+              )}
+            </div>
+
+            <div className="shrink-0 px-4 py-3 bg-[#f0f9f6] border-t border-emerald-200 flex justify-end pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+              <button
+                type="button"
+                onClick={() => setShowAiModal(false)}
+                className="px-5 py-2 min-h-[44px] bg-[#0b2820] hover:bg-[#134235] text-white rounded-xl text-xs font-bold cursor-pointer"
+              >
+                বন্ধ করুন
+              </button>
+            </div>
           </div>
         </div>
       )}

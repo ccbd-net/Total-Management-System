@@ -13,12 +13,11 @@ import { CountersPage } from './pages/CountersPage.tsx';
 import { VehiclesPage } from './pages/VehiclesPage.tsx';
 import { RoutesPage } from './pages/RoutesPage.tsx';
 import { UsersPage } from './pages/UsersPage.tsx';
-import { AuditHistoryPage } from './pages/AuditHistoryPage.tsx';
-import { AiSummaryPage } from './pages/AiSummaryPage.tsx';
 import { SettingsPage } from './pages/SettingsPage.tsx';
 import { CompanyAdminPage } from './pages/CompanyAdminPage.tsx';
 import { DatabasePage } from './pages/DatabasePage.tsx';
 import { FuelManagementPage } from './pages/FuelManagementPage.tsx';
+import { PWAInstallBanner } from './components/PWAInstallBanner.tsx';
 
 const TAB_TITLES: Record<NavTab, string> = {
   dashboard: 'ড্যাশবোর্ড',
@@ -36,8 +35,6 @@ const TAB_TITLES: Record<NavTab, string> = {
   database: 'ডাটাবেইজ — ট্রিপ ও রুট সমন্বয় রেকর্ড',
   settings: 'সিস্টেম সেটিংস',
 };
-
-import { PWAInstallBanner } from './components/PWAInstallBanner.tsx';
 
 const VALID_TABS = new Set<NavTab>(Object.keys(TAB_TITLES) as NavTab[]);
 
@@ -61,14 +58,21 @@ function MainLayout() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center text-white">
-        <img
-          src="/assets/aistudio/1795612353186_f79fafda.jpg"
-          alt="Data Code Logo"
-          className="w-20 h-20 rounded-2xl object-cover shadow-2xl border border-emerald-500/40 mb-4"
-        />
-        <div className="w-8 h-8 border-3 border-emerald-500 border-t-transparent rounded-full animate-spin mb-3" />
-        <div className="text-sm font-bold tracking-wider">কাউন্টার ম্যানেজমেন্ট সিস্টেম লোড হচ্ছে...</div>
+      <div className="min-h-[100dvh] bg-[#f0f9f6] flex flex-col items-center justify-center text-slate-900 p-4">
+        <div className="w-full max-w-xs bg-white border border-emerald-200 rounded-2xl overflow-hidden shadow-lg text-center">
+          <div className="h-1.5 w-full bg-[#0d9488]" />
+          <div className="p-6">
+            <img
+              src="/assets/aistudio/1795651588938_2_f0f59799.jpg"
+              alt="Vehicles Management System"
+              className="w-16 h-16 rounded-2xl object-cover shadow-sm border border-emerald-200 mx-auto mb-3"
+            />
+            <div className="w-6 h-6 border-2 border-[#0d9488] border-t-transparent rounded-full animate-spin mx-auto mb-2.5" />
+            <div className="text-xs font-bold text-slate-900 tracking-wide">
+              Vehicles Management System লোড হচ্ছে...
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -98,7 +102,6 @@ function MainLayout() {
     ? 'fuel_management'
     : 'dashboard';
 
-  // Jump helper
   const navigateTo = (tab: NavTab) => {
     setCurrentTab(tab);
   };
@@ -151,8 +154,8 @@ function MainLayout() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex overflow-hidden">
-      {/* Sidebar Navigation */}
+    <div className="h-[100dvh] w-full max-w-full bg-[#f0f9f6] text-slate-900 flex overflow-hidden">
+      {/* Deep Forest-Green Sidebar Navigation */}
       <Sidebar
         currentTab={effectiveTab}
         onSelectTab={setCurrentTab}
@@ -160,15 +163,17 @@ function MainLayout() {
         onCloseMobile={() => setMobileMenuOpen(false)}
       />
 
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 h-screen overflow-y-auto">
-        <PWAInstallBanner />
-        <Header
-          pageTitle={TAB_TITLES[effectiveTab] || 'কাউন্টার ম্যানেজমেন্ট সিস্টেম'}
-          onToggleMobileMenu={() => setMobileMenuOpen(!mobileMenuOpen)}
-        />
+      {/* Main Content Shell with Fixed Top Header */}
+      <div className="flex-1 flex flex-col min-w-0 w-full max-w-full h-full overflow-hidden">
+        <div className="shrink-0 z-30">
+          <PWAInstallBanner />
+          <Header
+            pageTitle={TAB_TITLES[effectiveTab] || 'Vehicles Management System'}
+            onToggleMobileMenu={() => setMobileMenuOpen(!mobileMenuOpen)}
+          />
+        </div>
 
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full">
+        <main className="vms-excel-shell flex-1 overflow-y-auto overflow-x-clip p-2 sm:p-3.5 lg:p-4 max-w-7xl mx-auto w-full min-w-0">
           {renderCurrentPage()}
         </main>
       </div>

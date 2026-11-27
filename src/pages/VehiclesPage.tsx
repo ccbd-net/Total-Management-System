@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../context/AuthContext.tsx';
 import { api } from '../services/api.ts';
-import type { Vehicle, SeatCapacity, Schedule } from '../types/index.ts';
+import type { Vehicle, SeatCapacity, Schedule, Driver } from '../types/index.ts';
 import { toBengaliDigits, formatTaka, getTodayDhakaDate, formatBengaliDate } from '../utils/formatters.ts';
 import {
   buildWhatsAppUrl,
@@ -25,12 +25,17 @@ import {
   Layers,
   Trash2,
   MessageCircle,
+  Truck,
+  ChevronDown,
+  Search,
+  Check,
 } from 'lucide-react';
 
 export const VehiclesPage: React.FC = () => {
   const { isMasterAdmin, isModerator, activeCompanyId, user } = useAuth();
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [schedules, setSchedules] = useState<Schedule[]>([]);
+  const [drivers, setDrivers] = useState<Driver[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
   // View Mode: 'fleet' (Vehicle list) or 'owners' (Owner fleet & trip report)
@@ -46,6 +51,9 @@ export const VehiclesPage: React.FC = () => {
   const [seatCapacity, setSeatCapacity] = useState<SeatCapacity>(42);
   const [ownerName, setOwnerName] = useState<string>('');
   const [ownerPhone, setOwnerPhone] = useState<string>('');
+  const [driverName, setDriverName] = useState<string>('');
+  const [isDriverPopupOpen, setIsDriverPopupOpen] = useState<boolean>(false);
+  const [driverSearch, setDriverSearch] = useState<string>('');
   const [status, setStatus] = useState<'active' | 'maintenance' | 'inactive'>('active');
   const [notes, setNotes] = useState<string>('');
 
@@ -58,12 +66,14 @@ export const VehiclesPage: React.FC = () => {
   const fetchVehiclesAndSchedules = async () => {
     setLoading(true);
     try {
-      const [vRes, sRes] = await Promise.all([
+      const [vRes, sRes, dRes] = await Promise.all([
         api.getVehicles(),
         api.getSchedules(), // fetch all recent schedules to calculate owner trip counts
+        api.getDrivers().catch(() => ({ drivers: [] as Driver[] })),
       ]);
       setVehicles(vRes.vehicles);
       setSchedules(sRes.schedules);
+      setDrivers(dRes.drivers || []);
     } catch (err) {
       console.error('Failed to load vehicles:', err);
     } finally {
@@ -75,16 +85,33 @@ export const VehiclesPage: React.FC = () => {
     fetchVehiclesAndSchedules();
   }, []);
 
+  const refreshDriversList = async () => {
+    try {
+      const dRes = await api.getDrivers();
+      setDrivers(dRes.drivers || []);
+    } catch {}
+  };
+
+  const filteredPopupDrivers = useMemo(() => {
+    const q = driverSearch.trim().toLowerCase();
+    if (!q) return drivers;
+    return drivers.filter((d) => d.name.toLowerCase().includes(q));
+  }, [drivers, driverSearch]);
+
   const openAddModal = () => {
     setEditingVehicle(null);
     setRegNo('');
     setSeatCapacity(42);
     setOwnerName('');
     setOwnerPhone('');
+    setDriverName('');
+    setDriverSearch('');
+    setIsDriverPopupOpen(false);
     setStatus('active');
     setNotes('');
     setErrorMsg('');
     setIsModalOpen(true);
+    refreshDriversList();
   };
 
   const openEditModal = (v: Vehicle) => {
@@ -93,10 +120,14 @@ export const VehiclesPage: React.FC = () => {
     setSeatCapacity(v.seatCapacity || 42);
     setOwnerName(v.ownerName || '');
     setOwnerPhone(v.ownerPhone || '');
+    setDriverName(v.driverName || '');
+    setDriverSearch('');
+    setIsDriverPopupOpen(false);
     setStatus(v.status || 'active');
     setNotes(v.notes || '');
     setErrorMsg('');
     setIsModalOpen(true);
+    refreshDriversList();
   };
 
   const handleSave = async (e: React.FormEvent) => {
@@ -120,6 +151,7 @@ export const VehiclesPage: React.FC = () => {
           seatCapacity,
           ownerName: ownerName.trim(),
           ownerPhone: ownerPhone.trim(),
+          driverName: driverName.trim(),
         });
         setSuccessMsg(`গাড়ি "${regNo}" এর তথ্য সফলভাবে আপডেট হয়েছে!`);
       } else {
@@ -128,11 +160,13 @@ export const VehiclesPage: React.FC = () => {
           seatCapacity,
           ownerName: ownerName.trim(),
           ownerPhone: ownerPhone.trim(),
+          driverName: driverName.trim(),
           companyId: activeCompanyId || user?.companyId,
         });
         setSuccessMsg(`নতুন গাড়ি "${regNo}" (মালিক: ${ownerName}) সফলভাবে যুক্ত হয়েছে!`);
       }
       setIsModalOpen(false);
+      setIsDriverPopupOpen(false);
       await fetchVehiclesAndSchedules();
     } catch (err: any) {
       setErrorMsg(err.message || 'গাড়ি সংরক্ষণ ব্যর্থ হয়েছে।');
@@ -264,7 +298,7 @@ export const VehiclesPage: React.FC = () => {
     const csvContent =
       '\uFEFF' +
       [
-        `"Counter Management System — গাড়ির মালিকভিত্তিক বহর ও ট্রিপ অডিট রিপোর্ট"`,
+        `"Vehicles Management System — গাড়ির মালিকভিত্তিক বহর ও ট্রিপ অডিট রিপোর্ট"`,
         `"তারিখ: ${reportDate} | মাস: ${reportMonth} | প্রিন্ট সময়: ${new Date().toLocaleString()}"`,
         headers.join(','),
         ...rows,
@@ -282,78 +316,82 @@ export const VehiclesPage: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Top Header Card */}
-      <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
-            <Bus className="w-5 h-5 text-emerald-600" />
-            <span>গাড়ি ও মালিক ব্যবস্থাপনা (Vehicle & Fleet Owners)</span>
-          </h2>
-          <p className="text-xs text-slate-500 mt-0.5">
-            মালিকের নাম যুক্তকরণ, কোন মালিকের কয়টা গাড়ি এবং দিনে বা মাসে কয় ট্রিপ পরিচালনা করেছে তার পূর্ণাঙ্গ হিসাব
-          </p>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2.5">
-          {/* View Tab Toggle */}
-          <div className="flex bg-slate-100 p-1 rounded-xl text-xs font-bold border border-slate-200">
-            <button
-              type="button"
-              onClick={() => setViewTab('fleet')}
-              className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
-                viewTab === 'fleet'
-                  ? 'bg-slate-900 text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              গাড়ির বহর ({toBengaliDigits(vehicles.length)})
-            </button>
-            <button
-              type="button"
-              onClick={() => setViewTab('owners')}
-              className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
-                viewTab === 'owners'
-                  ? 'bg-emerald-600 text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              মালিকভিত্তিক হিসাব ও ট্রিপ ({toBengaliDigits(ownerStats.length)})
-            </button>
+    <div className="space-y-3">
+      {/* Compact Header */}
+      <div className="bg-white rounded-xl border border-emerald-200 shadow-2xs overflow-hidden">
+        <div className="bg-[#0b2820] px-3 py-2 text-white flex flex-col md:flex-row md:items-center justify-between gap-2">
+          <div className="flex items-center gap-2 min-w-0">
+            <Bus className="w-4 h-4 shrink-0 text-emerald-300" />
+            <div className="min-w-0">
+              <h2 className="text-xs sm:text-sm font-bold leading-tight truncate text-white">
+                গাড়ি ও মালিক ব্যবস্থাপনা (Vehicle & Fleet Owners)
+              </h2>
+              <p className="hidden sm:block text-[10px] text-emerald-200/80 leading-tight truncate">
+                মালিকের নাম, ড্রাইভার, গাড়ির বহর ও দৈনিক/মাসিক ট্রিপ হিসাব
+              </p>
+            </div>
           </div>
 
-          <button
-            type="button"
-            onClick={fetchVehiclesAndSchedules}
-            className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition-colors cursor-pointer"
-            title="রিফ্রেশ"
-          >
-            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-          </button>
+          <div className="flex flex-wrap items-center gap-1.5 shrink-0">
+            {/* View Tab Toggle */}
+            <div className="flex bg-white/15 p-0.5 rounded-lg text-[11px] font-bold border border-white/25">
+              <button
+                type="button"
+                onClick={() => setViewTab('fleet')}
+                className={`px-2.5 py-1 rounded-md transition-all cursor-pointer ${
+                  viewTab === 'fleet'
+                    ? 'bg-[#0d9488] text-white shadow-2xs'
+                    : 'text-emerald-100 hover:bg-white/15'
+                }`}
+              >
+                গাড়ির বহর ({toBengaliDigits(vehicles.length)})
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewTab('owners')}
+                className={`px-2.5 py-1 rounded-md transition-all cursor-pointer ${
+                  viewTab === 'owners'
+                    ? 'bg-[#0d9488] text-white shadow-2xs'
+                    : 'text-emerald-100 hover:bg-white/15'
+                }`}
+              >
+                মালিকভিত্তিক ({toBengaliDigits(ownerStats.length)})
+              </button>
+            </div>
 
-          {(isMasterAdmin || isModerator) && (
             <button
               type="button"
-              onClick={openAddModal}
-              className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-xs hover:shadow-md transition-all flex items-center gap-1.5 cursor-pointer"
+              onClick={fetchVehiclesAndSchedules}
+              className="p-1.5 bg-white/15 hover:bg-white/25 text-white rounded-lg transition-colors cursor-pointer"
+              title="রিফ্রেশ"
             >
-              <Plus className="w-4 h-4" />
-              <span>নতুন গাড়ি ও মালিক যুক্ত করুন</span>
+              <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
             </button>
-          )}
+
+            {(isMasterAdmin || isModerator) && (
+              <button
+                type="button"
+                onClick={openAddModal}
+                className="px-2.5 py-1 bg-[#0d9488] hover:bg-[#0f766e] text-white text-[11px] font-extrabold rounded-lg shadow-2xs transition-all flex items-center gap-1 cursor-pointer border border-emerald-400/30"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>নতুন গাড়ি যুক্ত</span>
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
       {/* Messages */}
       {successMsg && (
-        <div className="p-3.5 bg-emerald-50 text-emerald-800 rounded-2xl text-xs font-semibold border border-emerald-200 flex items-center gap-2">
+        <div className="p-2.5 bg-emerald-50 text-emerald-800 rounded-xl text-xs font-semibold border border-emerald-200 flex items-center gap-2">
           <CheckCircle className="w-4 h-4 shrink-0 text-emerald-600" />
           <span>{successMsg}</span>
         </div>
       )}
 
       {errorMsg && (
-        <div className="p-3.5 bg-red-50 text-red-700 rounded-2xl text-xs font-semibold border border-red-200 flex items-center gap-2">
+        <div className="p-2.5 bg-rose-50 text-rose-700 rounded-xl text-xs font-semibold border border-rose-200 flex items-center gap-2">
           <AlertTriangle className="w-4 h-4 shrink-0" />
           <span>{errorMsg}</span>
         </div>
@@ -361,60 +399,61 @@ export const VehiclesPage: React.FC = () => {
 
       {/* Tab 1: Standard Vehicles List View with Owner Names */}
       {viewTab === 'fleet' && (
-        <div className="space-y-3">
-          <div className="flex items-center justify-between pb-1">
-            <span className="text-xs font-bold text-slate-600">
-              মোট নিবন্ধিত গাড়ি: <strong>{toBengaliDigits(vehicles.length)}</strong> টি
+        <div className="space-y-2.5">
+          <div className="bg-white px-3 py-2 rounded-xl border border-emerald-200 shadow-2xs flex items-center justify-between gap-2">
+            <span className="text-[11px] font-bold text-slate-800">
+              মোট নিবন্ধিত গাড়ি: <strong className="text-[#0f766e]">{toBengaliDigits(vehicles.length)}</strong> টি
             </span>
-            <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs font-bold">
+            <div className="flex items-center gap-1 bg-[#e6f4ef] p-0.5 rounded-lg border border-emerald-200 text-[11px] font-bold">
               <button
                 type="button"
                 onClick={() => setFleetLayout('table')}
-                className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all cursor-pointer ${
+                className={`px-2.5 py-1 rounded-md flex items-center gap-1 transition-all cursor-pointer ${
                   fleetLayout === 'table'
-                    ? 'bg-slate-900 text-white shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900'
+                    ? 'bg-[#0b2820] text-white shadow-2xs'
+                    : 'text-slate-700 hover:text-slate-900'
                 }`}
               >
-                <FileSpreadsheet className="w-3.5 h-3.5" />
-                <span>এক্সেল শিট গ্রিড ভিউ</span>
+                <FileSpreadsheet className="w-3 h-3" />
+                <span>এক্সেল শীট</span>
               </button>
               <button
                 type="button"
                 onClick={() => setFleetLayout('grid')}
-                className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all cursor-pointer ${
+                className={`px-2.5 py-1 rounded-md flex items-center gap-1 transition-all cursor-pointer ${
                   fleetLayout === 'grid'
-                    ? 'bg-slate-900 text-white shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900'
+                    ? 'bg-[#0d9488] text-white shadow-2xs'
+                    : 'text-slate-700 hover:text-slate-900'
                 }`}
               >
-                <Layers className="w-3.5 h-3.5" />
+                <Layers className="w-3 h-3" />
                 <span>কার্ড ভিউ</span>
               </button>
             </div>
           </div>
 
           {fleetLayout === 'table' ? (
-            <div className="bg-white rounded-xl border border-slate-300 shadow-xs overflow-hidden">
+            <div className="bg-white rounded-xl border border-emerald-200 shadow-2xs overflow-hidden">
               <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse border border-slate-300 text-xs">
+                <table className="w-full text-left border-collapse border border-emerald-200 text-xs">
                   <thead>
-                    <tr className="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold uppercase text-[11px]">
-                      <th className="py-2.5 px-3 border-r border-slate-300 text-center w-12">নং</th>
-                      <th className="py-2.5 px-3 border-r border-slate-300">গাড়ির নম্বর (Reg No)</th>
-                      <th className="py-2.5 px-3 border-r border-slate-300">মালিকের নাম</th>
-                      <th className="py-2.5 px-3 border-r border-slate-300">মালিকের মোবাইল</th>
-                      <th className="py-2.5 px-3 border-r border-slate-300 text-center">আসন সংখ্যা</th>
-                      <th className="py-2.5 px-3 border-r border-slate-300 text-center bg-blue-50/50">আজকের ট্রিপ</th>
-                      <th className="py-2.5 px-3 border-r border-slate-300 text-center bg-emerald-50/50">চলতি মাসের ট্রিপ</th>
-                      <th className="py-2.5 px-3 border-r border-slate-300 text-center w-24">স্ট্যাটাস</th>
-                      <th className="py-2.5 px-3 text-right">একশন</th>
+                    <tr className="bg-[#0b2820] text-white font-bold text-[11px]">
+                      <th className="py-2 px-3 border-r border-white/25 text-center w-12">নং</th>
+                      <th className="py-2 px-3 border-r border-white/25">গাড়ির নম্বর (Reg No)</th>
+                      <th className="py-2 px-3 border-r border-white/25">মালিকের নাম</th>
+                      <th className="py-2 px-3 border-r border-white/25">ড্রাইভারের নাম</th>
+                      <th className="py-2 px-3 border-r border-white/25">মালিকের মোবাইল</th>
+                      <th className="py-2 px-3 border-r border-white/25 text-center">আসন সংখ্যা</th>
+                      <th className="py-2 px-3 border-r border-white/25 text-center">আজকের ট্রিপ</th>
+                      <th className="py-2 px-3 border-r border-white/25 text-center">চলতি মাসের ট্রিপ</th>
+                      <th className="py-2 px-3 border-r border-white/25 text-center w-24">স্ট্যাটাস</th>
+                      <th className="py-2 px-3 text-right">একশন</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-200 font-medium">
                     {vehicles.length === 0 ? (
                       <tr>
-                        <td colSpan={9} className="py-12 text-center text-slate-400 border border-slate-300">
+                        <td colSpan={10} className="py-12 text-center text-slate-400 border border-slate-300">
                           কোনো গাড়ি নিবন্ধিত নেই। "+ নতুন গাড়ি ও মালিক যুক্ত করুন" বাটনে ক্লিক করে যুক্ত করুন।
                         </td>
                       </tr>
@@ -440,6 +479,16 @@ export const VehiclesPage: React.FC = () => {
                             </td>
                             <td className="py-2.5 px-3 border-r border-slate-200 font-bold text-slate-800">
                               {v.ownerName || 'সাধারণ'}
+                            </td>
+                            <td className="py-2.5 px-3 border-r border-slate-200 font-bold text-indigo-800">
+                              {v.driverName ? (
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-indigo-50 border border-indigo-200 text-[11px]">
+                                  <Truck className="w-3 h-3 text-indigo-600 shrink-0" />
+                                  <span>{v.driverName}</span>
+                                </span>
+                              ) : (
+                                <span className="text-slate-400 font-normal italic">নির্ধারিত নয়</span>
+                              )}
                             </td>
                             <td className="py-2.5 px-3 border-r border-slate-200 font-mono text-slate-700">
                               {v.ownerPhone ? (
@@ -534,7 +583,7 @@ export const VehiclesPage: React.FC = () => {
               </div>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2.5">
               {vehicles.map((v) => {
                 const todayCount = schedules.filter(
                   (s) => s.vehicleId === v.id && s.date === reportDate && s.status !== 'cancelled'
@@ -546,36 +595,31 @@ export const VehiclesPage: React.FC = () => {
                 return (
                   <div
                     key={v.id}
-                    className="bg-white rounded-2xl border border-slate-200 shadow-xs p-5 hover:shadow-md transition-shadow relative space-y-3"
+                    className="bg-white rounded-xl border border-slate-300 shadow-2xs overflow-hidden flex flex-col justify-between"
                   >
-                    <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-                      <div className="flex items-center gap-2.5">
-                        <div className="w-9 h-9 rounded-xl bg-slate-900 text-white flex items-center justify-center font-bold shadow-xs">
-                          <Bus className="w-4 h-4 text-emerald-400" />
-                        </div>
-                        <div>
-                          <h3 className="font-bold text-sm text-slate-900">{v.regNo}</h3>
-                          <div className="text-[11px] font-bold text-emerald-700 flex items-center gap-1 mt-0.5">
-                            <User className="w-3 h-3" />
-                            <span>মালিক: {v.ownerName || 'সাধারণ'}</span>
-                          </div>
-                        </div>
+                    <div className={`${v.status === 'active' ? 'bg-[#0b2820]' : v.status === 'maintenance' ? 'bg-amber-700' : 'bg-slate-600'} px-3 py-1.5 text-white flex items-center justify-between gap-2`}>
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        <Bus className="w-3.5 h-3.5 shrink-0" />
+                        <h3 className="font-bold text-xs truncate font-mono">{v.regNo}</h3>
                       </div>
-
-                      <span
-                        className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
-                          v.status === 'active'
-                            ? 'bg-emerald-100 text-emerald-800'
-                            : v.status === 'maintenance'
-                            ? 'bg-amber-100 text-amber-800'
-                            : 'bg-slate-100 text-slate-600'
-                        }`}
-                      >
+                      <span className="px-1.5 py-0.2 rounded bg-white/25 text-[10px] font-bold shrink-0">
                         {v.status === 'active' ? 'সক্রিয়' : v.status === 'maintenance' ? 'সার্ভিসিং' : 'নিষ্ক্রিয়'}
                       </span>
                     </div>
 
-                    <div className="space-y-2 text-xs">
+                    <div className="p-3 space-y-2 text-xs">
+                      <div className="flex flex-wrap items-center justify-between gap-1 text-[11px] pb-1.5 border-b border-slate-200">
+                        <span className="font-bold text-emerald-800 flex items-center gap-1">
+                          <User className="w-3 h-3" />
+                          <span>মালিক: {v.ownerName || 'সাধারণ'}</span>
+                        </span>
+                        {v.driverName && (
+                          <span className="font-bold text-violet-700 flex items-center gap-1">
+                            <Truck className="w-3 h-3" />
+                            <span>{v.driverName}</span>
+                          </span>
+                        )}
+                      </div>
                       <div className="flex items-center justify-between">
                         <span className="text-slate-500 font-medium">আসন সংখ্যা:</span>
                         <span className="font-bold text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-lg border border-blue-200">
@@ -678,23 +722,23 @@ export const VehiclesPage: React.FC = () => {
 
       {/* Tab 2: Owner-wise Fleet & Trip Audit View */}
       {viewTab === 'owners' && (
-        <div className="space-y-4">
+        <div className="space-y-3">
           {/* Filter Bar for Owner Report */}
-          <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-3">
-            <div className="flex flex-wrap items-center gap-3">
+          <div className="bg-white p-2.5 rounded-xl border border-slate-300 shadow-2xs flex flex-wrap items-center justify-between gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               {/* Daily Filter */}
-              <div className="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-300 text-xs font-semibold">
+              <div className="flex items-center gap-1.5 bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-300 text-[11px] font-semibold">
                 <span className="text-slate-500">দিন:</span>
                 <input
                   type="date"
                   value={reportDate ?? ''}
                   onChange={(e) => setReportDate(e.target.value)}
-                  className="bg-transparent outline-none cursor-pointer"
+                  className="bg-transparent outline-none cursor-pointer font-bold"
                 />
               </div>
 
               {/* Month Filter */}
-              <div className="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-300 text-xs font-semibold">
+              <div className="flex items-center gap-1.5 bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-300 text-[11px] font-semibold">
                 <span className="text-slate-500">মাস:</span>
                 <input
                   type="month"
@@ -705,29 +749,29 @@ export const VehiclesPage: React.FC = () => {
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
               <button
                 type="button"
                 onClick={exportOwnerReportToExcel}
-                className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-xs"
+                className="px-2.5 py-1 bg-[#0d9488] hover:bg-[#0f766e] text-white rounded-lg text-[11px] font-bold flex items-center gap-1 transition-all cursor-pointer shadow-2xs"
               >
-                <FileSpreadsheet className="w-4 h-4" />
-                <span>মালিক রিপোর্ট এক্সেল (.CSV)</span>
+                <FileSpreadsheet className="w-3.5 h-3.5" />
+                <span>এক্সেল (.CSV)</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => window.print()}
-                className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-xs"
+                className="px-2.5 py-1 bg-[#0b2820] hover:bg-[#134235] text-white rounded-lg text-[11px] font-bold flex items-center gap-1 transition-all cursor-pointer shadow-2xs"
               >
-                <Printer className="w-4 h-4" />
+                <Printer className="w-3.5 h-3.5" />
                 <span>প্রিন্ট</span>
               </button>
             </div>
           </div>
 
-          {/* Owner Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Owner Sheet Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {ownerStats.map((o) => {
               const monthlySeats = o.monthlyTrips.reduce((acc, t) => acc + (t.totalBookedSeats || 0), 0);
               const monthlyCargo = o.monthlyTrips.reduce((acc, t) => acc + (Number(t.totalCargoCollection) || 0), 0);
@@ -749,32 +793,24 @@ export const VehiclesPage: React.FC = () => {
               return (
                 <div
                   key={o.ownerName}
-                  className="bg-white rounded-3xl border border-slate-200 shadow-xs p-5 hover:shadow-md transition-shadow space-y-4"
+                  className="bg-white rounded-xl border border-slate-300 shadow-2xs overflow-hidden flex flex-col justify-between"
                 >
                   {/* Owner Header */}
-                  <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold">
-                        <User className="w-5 h-5" />
-                      </div>
-                      <div>
-                        <h3 className="font-black text-sm text-slate-900">{o.ownerName}</h3>
-                        <div className="text-xs text-slate-500 flex items-center gap-1">
-                          <Phone className="w-3 h-3 text-slate-400" />
-                          <span>{o.ownerPhone || 'মোবাইল নম্বর যুক্ত নেই'}</span>
+                  <div className="bg-[#0b2820] px-3 py-1.5 text-white flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <User className="w-4 h-4 shrink-0" />
+                      <div className="min-w-0">
+                        <h3 className="font-bold text-xs truncate">{o.ownerName}</h3>
+                        <div className="text-[10px] text-emerald-50 font-mono truncate">
+                          {o.ownerPhone || 'মোবাইল নেই'}
                         </div>
                       </div>
                     </div>
-
-                    <div className="text-right">
-                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
-                        গাড়ির সংখ্যা
-                      </span>
-                      <span className="text-base font-black text-emerald-700">
-                        {toBengaliDigits(o.vehicles.length)} টি গাড়ি
-                      </span>
-                    </div>
+                    <span className="px-2 py-0.5 rounded bg-white/25 text-[10px] font-bold shrink-0">
+                      {toBengaliDigits(o.vehicles.length)} টি গাড়ি
+                    </span>
                   </div>
+                  <div className="p-3 space-y-2.5">
 
                   {/* Owned Vehicles Chips */}
                   <div>
@@ -866,10 +902,11 @@ export const VehiclesPage: React.FC = () => {
                         <span>হোয়াটসঅ্যাপে হিসাব পাঠান ({o.ownerPhone})</span>
                       </a>
                     ) : (
-                      <div className="w-full py-2 px-3 bg-slate-100 text-slate-500 rounded-xl text-[11px] font-semibold text-center">
+                      <div className="w-full py-1.5 px-3 bg-slate-100 text-slate-500 rounded-lg text-[10.5px] font-semibold text-center">
                         হোয়াটসঅ্যাপে পাঠাতে মালিকের সঠিক ১১ সংখ্যার মোবাইল নম্বর যুক্ত করুন
                       </div>
                     )}
+                  </div>
                   </div>
                 </div>
               );
@@ -880,135 +917,343 @@ export const VehiclesPage: React.FC = () => {
 
       {/* Add / Edit Vehicle Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200">
-            <div className="flex items-center justify-between pb-3 border-b mb-4">
-              <h3 className="text-base font-bold text-slate-900">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
+          <div className="bg-white rounded-t-2xl sm:rounded-2xl max-w-md w-full shadow-2xl border border-emerald-200 flex flex-col max-h-[92dvh] sm:max-h-[88dvh] overflow-hidden">
+            <div className="shrink-0 px-4 py-3 bg-[#0b2820] text-white flex items-center justify-between gap-2">
+              <h3 className="text-sm sm:text-base font-bold text-white">
                 {editingVehicle ? 'গাড়ি ও মালিক তথ্য সম্পাদনা' : 'নতুন গাড়ি ও মালিক সংযোজন'}
               </h3>
               <button
                 type="button"
                 onClick={() => setIsModalOpen(false)}
-                className="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg cursor-pointer"
+                className="p-1.5 text-emerald-100 hover:text-white hover:bg-white/15 rounded-lg cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            {errorMsg && (
-              <div className="mb-4 p-3 bg-red-50 text-red-700 text-xs font-semibold rounded-xl border border-red-200 flex items-center gap-2">
-                <AlertTriangle className="w-4 h-4 shrink-0" />
-                <span>{errorMsg}</span>
-              </div>
-            )}
-
-            <form onSubmit={handleSave} className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  গাড়ির রেজিস্ট্রেশন নম্বর *
-                </label>
-                <input
-                  type="text"
-                  value={regNo ?? ''}
-                  onChange={(e) => setRegNo(e.target.value)}
-                  placeholder="ঢাকা মেট্রো-ব-১৫-৪২০১"
-                  className="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold outline-none focus:bg-white focus:ring-2 focus:ring-emerald-500"
-                  required
-                />
-              </div>
-
-              {/* Owner Name Input (Replaced Model as requested) */}
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  গাড়ির মালিকের নাম *
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                    <User className="w-4 h-4" />
+            <form onSubmit={handleSave} className="flex-1 flex flex-col min-h-0 overflow-hidden">
+              <div className="flex-1 overflow-y-auto overscroll-contain p-4 space-y-3.5 text-slate-900">
+                {errorMsg && (
+                  <div className="p-3 bg-rose-50 text-rose-700 text-xs font-semibold rounded-xl border border-rose-200 flex items-center gap-2">
+                    <AlertTriangle className="w-4 h-4 shrink-0" />
+                    <span>{errorMsg}</span>
                   </div>
+                )}
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-800 mb-1">
+                    গাড়ির রেজিস্ট্রেশন নম্বর *
+                  </label>
                   <input
                     type="text"
-                    value={ownerName ?? ''}
-                    onChange={(e) => setOwnerName(e.target.value)}
-                    placeholder="মালিকের পূর্ণ নাম"
-                    className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold outline-none focus:bg-white focus:ring-2 focus:ring-emerald-500"
+                    value={regNo ?? ''}
+                    onChange={(e) => setRegNo(e.target.value)}
+                    placeholder="ঢাকা মেট্রো-ব-১৫-৪২০১"
+                    className="w-full px-3 py-2.5 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs text-slate-900 font-bold outline-none focus:bg-white focus:ring-2 focus:ring-emerald-600"
                     required
                   />
                 </div>
-              </div>
 
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  সিট প্ল্যান কনফিগারেশন (Seat Capacity) *
-                </label>
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setSeatCapacity(42)}
-                    className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
-                      seatCapacity === 42
-                        ? 'bg-emerald-50 border-emerald-600 text-emerald-900 ring-2 ring-emerald-500/20'
-                        : 'bg-white border-slate-300 text-slate-700'
-                    }`}
-                  >
-                    <div className="font-bold text-xs">৪২ সিট বাস</div>
-                    <div className="text-[10px] text-slate-500">A-I (৩৬) + J (৫) + EX-1 (১)</div>
-                  </button>
+                {/* Owner Name Input */}
+                <div>
+                  <label className="block text-xs font-bold text-slate-800 mb-1">
+                    গাড়ির মালিকের নাম *
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                      <User className="w-4 h-4" />
+                    </div>
+                    <input
+                      type="text"
+                      value={ownerName ?? ''}
+                      onChange={(e) => setOwnerName(e.target.value)}
+                      placeholder="মালিকের পূর্ণ নাম"
+                      className="w-full pl-9 pr-3 py-2.5 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs text-slate-900 font-bold outline-none focus:bg-white focus:ring-2 focus:ring-emerald-600"
+                      required
+                    />
+                  </div>
+                </div>
 
-                  <button
-                    type="button"
-                    onClick={() => setSeatCapacity(46)}
-                    className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
-                      seatCapacity === 46
-                        ? 'bg-emerald-50 border-emerald-600 text-emerald-900 ring-2 ring-emerald-500/20'
-                        : 'bg-white border-slate-300 text-slate-700'
-                    }`}
-                  >
-                    <div className="font-bold text-xs">৪৬ সিট বাস</div>
-                    <div className="text-[10px] text-slate-500">A-J (৪০) + K (৫) + EX-1 (১)</div>
-                  </button>
+                {/* Owner Mobile Number Input */}
+                <div>
+                  <label className="block text-xs font-bold text-slate-800 mb-1">
+                    মালিকের মোবাইল নম্বর (হোয়াটসঅ্যাপ রিপোর্টের জন্য)
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                      <Phone className="w-4 h-4" />
+                    </div>
+                    <input
+                      type="tel"
+                      value={ownerPhone ?? ''}
+                      onChange={(e) => setOwnerPhone(e.target.value)}
+                      placeholder="যেমন: 01711-000000"
+                      className="w-full pl-9 pr-3 py-2.5 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs text-slate-900 font-bold font-mono outline-none focus:bg-white focus:ring-2 focus:ring-emerald-600"
+                    />
+                  </div>
+                  <p className="text-[10px] text-slate-600 mt-1">
+                    ১১ সংখ্যার নম্বর দিলে গাড়ি ও মালিকের হিসাব সরাসরি হোয়াটসঅ্যাপে পাঠানো যাবে।
+                  </p>
+                </div>
+
+                {/* Driver Name Field */}
+                <div>
+                  <label className="block text-xs font-bold text-slate-800 mb-1">
+                    ড্রাইভারের নাম (ইউজার ও সুপারভাইজার তালিকা থেকে)
+                  </label>
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setDriverSearch('');
+                        setIsDriverPopupOpen(true);
+                      }}
+                      className="flex-1 px-3 py-2.5 bg-[#f4fbf8] hover:bg-white border border-emerald-200 hover:border-emerald-500 rounded-xl text-xs font-bold flex items-center justify-between gap-2 text-left transition-all cursor-pointer focus:ring-2 focus:ring-emerald-600 outline-none"
+                    >
+                      <span className="flex items-center gap-2 min-w-0">
+                        <Truck className="w-4 h-4 text-[#0d9488] shrink-0" />
+                        <span className={`truncate ${driverName ? 'text-slate-900' : 'text-slate-400 font-medium'}`}>
+                          {driverName || 'পপআপ লিস্ট থেকে ড্রাইভার নির্বাচন করুন'}
+                        </span>
+                      </span>
+                      <ChevronDown className="w-4 h-4 text-slate-400 shrink-0" />
+                    </button>
+                    {driverName && (
+                      <button
+                        type="button"
+                        onClick={() => setDriverName('')}
+                        className="p-2.5 bg-slate-100 hover:bg-rose-50 text-slate-500 hover:text-rose-600 border border-slate-300 rounded-xl transition-colors cursor-pointer"
+                        title="ড্রাইভারের নাম মুছুন"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-800 mb-1">
+                    সিট প্ল্যান কনফিগারেশন (Seat Capacity) *
+                  </label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setSeatCapacity(42)}
+                      className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                        seatCapacity === 42
+                          ? 'bg-emerald-50 border-[#0d9488] text-slate-900 ring-2 ring-emerald-500/20'
+                          : 'bg-white border-emerald-200 text-slate-700'
+                      }`}
+                    >
+                      <div className="font-bold text-xs">৪২ সিট বাস</div>
+                      <div className="text-[10px] text-slate-600">A-I (৩৬) + J (৫) + EX-1 (১)</div>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setSeatCapacity(46)}
+                      className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                        seatCapacity === 46
+                          ? 'bg-emerald-50 border-[#0d9488] text-slate-900 ring-2 ring-emerald-500/20'
+                          : 'bg-white border-emerald-200 text-slate-700'
+                      }`}
+                    >
+                      <div className="font-bold text-xs">৪৬ সিট বাস</div>
+                      <div className="text-[10px] text-slate-600">A-J (৪০) + K (৫) + EX-1 (১)</div>
+                    </button>
+                  </div>
                 </div>
               </div>
 
-              <button
-                type="submit"
-                className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-md cursor-pointer transition-all"
-              >
-                {editingVehicle ? 'গাড়ির তথ্য আপডেট করুন' : 'নতুন গাড়ি সংরক্ষণ করুন'}
-              </button>
+              <div className="shrink-0 px-4 py-3 bg-[#f0f9f6] border-t border-emerald-200 flex items-center justify-end gap-2 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+                <button
+                  type="button"
+                  onClick={() => setIsModalOpen(false)}
+                  className="px-4 py-2.5 min-h-[44px] bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 rounded-xl text-xs font-bold cursor-pointer"
+                >
+                  বাতিল
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 sm:flex-none px-5 py-2.5 min-h-[44px] bg-[#0d9488] hover:bg-[#0f766e] text-white rounded-xl text-xs font-bold shadow-md cursor-pointer transition-all"
+                >
+                  {editingVehicle ? 'গাড়ির তথ্য আপডেট করুন' : 'নতুন গাড়ি সংরক্ষণ করুন'}
+                </button>
+              </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Driver Popup List Modal */}
+      {isModalOpen && isDriverPopupOpen && (
+        <div
+          className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4"
+          onClick={() => setIsDriverPopupOpen(false)}
+        >
+          <div
+            className="bg-white rounded-t-2xl sm:rounded-2xl max-w-sm w-full shadow-2xl border border-emerald-200 flex flex-col max-h-[85dvh] overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="shrink-0 px-4 py-3 bg-[#0b2820] text-white flex items-center justify-between">
+              <div className="flex items-center gap-2 min-w-0">
+                <Truck className="w-4 h-4 text-emerald-300 shrink-0" />
+                <div className="min-w-0">
+                  <h4 className="text-sm font-bold text-white truncate">ড্রাইভারের তালিকা</h4>
+                  <p className="text-[10px] text-emerald-200/80 truncate">
+                    মোট {toBengaliDigits(drivers.length)} জন ড্রাইভার
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsDriverPopupOpen(false)}
+                className="p-1.5 text-emerald-100 hover:text-white hover:bg-white/15 rounded-lg cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="shrink-0 p-3 border-b border-emerald-100 bg-[#f4fbf8]">
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                  <Search className="w-3.5 h-3.5" />
+                </div>
+                <input
+                  type="text"
+                  value={driverSearch}
+                  onChange={(e) => setDriverSearch(e.target.value)}
+                  placeholder="ড্রাইভারের নাম খুঁজুন..."
+                  className="w-full pl-9 pr-3 py-2 bg-white border border-emerald-200 rounded-xl text-xs text-slate-900 font-bold outline-none focus:ring-2 focus:ring-emerald-600"
+                  autoFocus
+                />
+              </div>
+            </div>
+
+            <div className="overflow-y-auto overscroll-contain flex-1 p-3 space-y-1.5">
+              {filteredPopupDrivers.length === 0 ? (
+                <div className="py-6 px-3 text-center space-y-2.5 bg-slate-50 rounded-xl border border-slate-200">
+                  <p className="text-xs text-slate-500 font-medium">
+                    {drivers.length === 0
+                      ? 'ইউজার ও সুপারভাইজার পেইজের ড্রাইভার তালিকায় কোনো নাম পাওয়া যায়নি।'
+                      : 'খুঁজে পাওয়া যায়নি।'}
+                  </p>
+                  {driverSearch.trim() && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setDriverName(driverSearch.trim());
+                        setIsDriverPopupOpen(false);
+                      }}
+                      className="px-3 py-2 min-h-[40px] bg-[#0d9488] hover:bg-[#0f766e] text-white rounded-xl text-xs font-bold cursor-pointer"
+                    >
+                      "{driverSearch.trim()}" ব্যবহার করুন
+                    </button>
+                  )}
+                </div>
+              ) : (
+                filteredPopupDrivers.map((d) => {
+                  const isSelected = driverName.trim().toLowerCase() === d.name.trim().toLowerCase();
+                  return (
+                    <button
+                      key={d.id}
+                      type="button"
+                      onClick={() => {
+                        setDriverName(d.name);
+                        setIsDriverPopupOpen(false);
+                      }}
+                      className={`w-full px-3.5 py-2.5 rounded-xl border text-left flex items-center justify-between gap-2 transition-all cursor-pointer ${
+                        isSelected
+                          ? 'bg-emerald-50 border-[#0d9488] text-slate-900 ring-1 ring-emerald-500/30'
+                          : 'bg-white border-slate-200 hover:bg-[#f4fbf8] hover:border-emerald-300 text-slate-800'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <div
+                          className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
+                            isSelected ? 'bg-[#0d9488] text-white' : 'bg-slate-100 text-slate-600'
+                          }`}
+                        >
+                          <Truck className="w-3.5 h-3.5" />
+                        </div>
+                        <div className="min-w-0">
+                          <div className="text-xs font-bold truncate">{d.name}</div>
+                          {typeof d.totalTrips === 'number' && d.totalTrips > 0 && (
+                            <div className="text-[10px] text-slate-500">
+                              মোট ট্রিপ: {toBengaliDigits(d.totalTrips)} টি
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      {isSelected && <Check className="w-4 h-4 text-[#0d9488] shrink-0" />}
+                    </button>
+                  );
+                })
+              )}
+            </div>
+
+            {driverName && (
+              <div className="shrink-0 px-4 py-2.5 bg-[#f0f9f6] border-t border-emerald-200 flex justify-between items-center pb-[max(0.625rem,env(safe-area-inset-bottom))]">
+                <span className="text-[11px] text-slate-600 truncate">
+                  নির্বাচিত: <strong className="text-slate-900">{driverName}</strong>
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setDriverName('');
+                    setIsDriverPopupOpen(false);
+                  }}
+                  className="px-3 py-1.5 text-[11px] font-bold text-rose-600 hover:bg-rose-50 rounded-lg cursor-pointer shrink-0"
+                >
+                  নির্বাচন মুছুন
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}
 
       {/* Seat Map Preview Modal */}
       {previewVehicle && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-3 border-b mb-4">
-              <div>
-                <h3 className="font-bold text-base text-slate-900">{previewVehicle.regNo}</h3>
-                <p className="text-xs text-slate-500">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
+          <div className="bg-white rounded-t-2xl sm:rounded-2xl max-w-lg w-full shadow-2xl border border-emerald-200 flex flex-col max-h-[92dvh] sm:max-h-[88dvh] overflow-hidden">
+            <div className="shrink-0 px-4 py-3 bg-[#0b2820] text-white flex items-center justify-between gap-2">
+              <div className="min-w-0">
+                <h3 className="font-bold text-sm sm:text-base text-white truncate">{previewVehicle.regNo}</h3>
+                <p className="text-[11px] text-emerald-200/80 truncate">
                   মালিক: {previewVehicle.ownerName || 'সাধারণ'} | আসন সংখ্যা: {toBengaliDigits(previewVehicle.seatCapacity)}
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => setPreviewVehicle(null)}
-                className="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg cursor-pointer"
+                className="p-1.5 text-emerald-100 hover:text-white hover:bg-white/15 rounded-lg cursor-pointer shrink-0"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <SeatMap
-              seatCapacity={previewVehicle.seatCapacity}
-              bookedSeats={[]}
-              selectedSeats={[]}
-              onSeatToggle={() => {}}
-              counters={[]}
-              readOnly={true}
-            />
+            <div className="flex-1 overflow-y-auto overscroll-contain p-4">
+              <SeatMap
+                seatCapacity={previewVehicle.seatCapacity}
+                bookedSeats={[]}
+                selectedSeats={[]}
+                onSeatToggle={() => {}}
+                counters={[]}
+                readOnly={true}
+              />
+            </div>
+
+            <div className="shrink-0 px-4 py-2.5 bg-[#f0f9f6] border-t border-emerald-200 flex justify-end pb-[max(0.625rem,env(safe-area-inset-bottom))]">
+              <button
+                type="button"
+                onClick={() => setPreviewVehicle(null)}
+                className="px-5 py-2 min-h-[44px] bg-[#0b2820] hover:bg-[#134235] text-white rounded-xl text-xs font-bold cursor-pointer"
+              >
+                বন্ধ করুন
+              </button>
+            </div>
           </div>
         </div>
       )}

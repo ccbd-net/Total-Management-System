@@ -396,76 +396,73 @@ export const CompanyAdminPage: React.FC = () => {
   const expiredCount = companies.length - activeCount;
 
   return (
-    <div className="space-y-6">
-      {/* Top Header Card */}
-      <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-purple-100 text-purple-700">
-              সুপার এডমিন প্যানেল
-            </span>
-            <span className="text-xs text-slate-400">•</span>
-            <span className="text-xs font-semibold text-slate-600">এডমিন: {user?.name || 'Zayem Bhuiya'}</span>
+    <div className="space-y-3">
+      {/* Compact Header Card */}
+      <div className="bg-white rounded-xl border border-emerald-200 shadow-2xs overflow-hidden">
+        <div className="bg-[#0b2820] px-3 py-2 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div className="min-w-0">
+            <div className="flex items-center gap-1.5 text-[10px] text-emerald-200 font-bold">
+              <span className="px-1.5 py-0.2 rounded bg-white/15">সুপার এডমিন</span>
+              <span>·</span>
+              <span className="truncate">{user?.name || 'Zayem Bhuiya'}</span>
+            </div>
+            <h2 className="text-xs sm:text-sm font-bold flex items-center gap-1.5 mt-0.5 truncate text-white">
+              <Building2 className="w-4 h-4 shrink-0 text-emerald-300" />
+              <span className="truncate">কোম্পানি ও সাবস্ক্রিপশন ব্যবস্থাপনা</span>
+            </h2>
           </div>
-          <h2 className="text-xl font-black text-slate-800 flex items-center gap-2 mt-1">
-            <Building2 className="w-6 h-6 text-purple-600" />
-            <span>কোম্পানি ও সাবস্ক্রিপশন ব্যবস্থাপনা</span>
-          </h2>
-          <p className="text-xs text-slate-500 mt-1">
-            বিভিন্ন বাস কোম্পানির জন্য স্বতন্ত্র সাবস্ক্রিপশন, নিজস্ব লোগো ও নাম, এডমিন লগইন আইডি ও পিন নির্ধারণ করুন।
-          </p>
-        </div>
 
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            type="button"
-            onClick={fetchCompanies}
-            className="p-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition-colors cursor-pointer"
-            title="রিফ্রেশ"
-          >
-            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-          </button>
+          <div className="flex flex-wrap items-center gap-1.5 shrink-0">
+            <button
+              type="button"
+              onClick={fetchCompanies}
+              className="p-1.5 bg-white/15 hover:bg-white/25 text-white rounded-lg transition-colors cursor-pointer"
+              title="রিফ্রেশ"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+            </button>
 
-          {isMasterAdmin && (
-            <>
-              <button
-                type="button"
-                onClick={handleCleanupOrphans}
-                disabled={cleaningOrphans}
-                className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors whitespace-nowrap cursor-pointer disabled:opacity-60"
-                title="আগের মুছে যাওয়া কোম্পানির কোনো অরফান ডাটা বা ক্যাশ থাকলে পরিষ্কার করুন"
-              >
-                <Database className={`w-3.5 h-3.5 text-slate-600 ${cleaningOrphans ? 'animate-pulse' : ''}`} />
-                <span>{cleaningOrphans ? 'পরিষ্কার হচ্ছে...' : 'পুরানো ডাটা পরিষ্কার'}</span>
-              </button>
+            {isMasterAdmin && (
+              <>
+                <button
+                  type="button"
+                  onClick={handleCleanupOrphans}
+                  disabled={cleaningOrphans}
+                  className="px-2.5 py-1 bg-white/15 hover:bg-white/25 text-white rounded-lg text-[11px] font-bold flex items-center gap-1 transition-colors whitespace-nowrap cursor-pointer disabled:opacity-60"
+                  title="পুরানো অরফান ডাটা পরিষ্কার করুন"
+                >
+                  <Database className={`w-3.5 h-3.5 ${cleaningOrphans ? 'animate-pulse' : ''}`} />
+                  <span>{cleaningOrphans ? 'পরিষ্কার হচ্ছে...' : 'পুরানো ডাটা পরিষ্কার'}</span>
+                </button>
 
-              <button
-                type="button"
-                onClick={handleSaveToLocal}
-                disabled={savingLocal}
-                className="px-3 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors whitespace-nowrap cursor-pointer disabled:opacity-60"
-                title="ডাটাবেইজের বর্তমান স্ন্যাপশট ব্রাউজার লোকাল স্টোরেজে জমা করুন"
-              >
-                <HardDrive className="w-3.5 h-3.5 text-emerald-600" />
-                <span>{savingLocal ? 'সংরক্ষণ হচ্ছে...' : 'লোকাল সেভ'}</span>
-              </button>
+                <button
+                  type="button"
+                  onClick={handleSaveToLocal}
+                  disabled={savingLocal}
+                  className="px-2.5 py-1 bg-[#0f766e] hover:bg-[#0d9488] text-white rounded-lg text-[11px] font-bold flex items-center gap-1 transition-colors whitespace-nowrap cursor-pointer disabled:opacity-60"
+                  title="ব্রাউজার লোকাল স্টোরেজে জমা করুন"
+                >
+                  <HardDrive className="w-3.5 h-3.5" />
+                  <span>{savingLocal ? 'সংরক্ষণ হচ্ছে...' : 'লোকাল সেভ'}</span>
+                </button>
 
-              <button
-                type="button"
-                onClick={openAddModal}
-                className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all shadow-purple-600/30 whitespace-nowrap cursor-pointer"
-              >
-                <Plus className="w-4 h-4" />
-                <span>নতুন কোম্পানি ও সাবস্ক্রিপশন</span>
-              </button>
-            </>
-          )}
+                <button
+                  type="button"
+                  onClick={openAddModal}
+                  className="px-2.5 py-1 bg-[#0d9488] hover:bg-[#0f766e] text-white rounded-lg text-[11px] font-extrabold flex items-center gap-1 shadow-2xs transition-all whitespace-nowrap cursor-pointer border border-emerald-400/30"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>নতুন কোম্পানি</span>
+                </button>
+              </>
+            )}
+          </div>
         </div>
       </div>
 
       {/* Messages */}
       {successMsg && (
-        <div className="p-3.5 bg-emerald-50 text-emerald-800 rounded-2xl text-xs font-semibold border border-emerald-200 flex items-center justify-between">
+        <div className="p-2.5 bg-emerald-50 text-emerald-800 rounded-xl text-xs font-semibold border border-emerald-200 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <CheckCircle className="w-4 h-4 shrink-0 text-emerald-600" />
             <span>{successMsg}</span>
@@ -477,9 +474,9 @@ export const CompanyAdminPage: React.FC = () => {
       )}
 
       {errorMsg && (
-        <div className="p-3.5 bg-red-50 text-red-700 rounded-2xl text-xs font-semibold border border-red-200 flex items-center justify-between">
+        <div className="p-2.5 bg-rose-50 text-rose-700 rounded-xl text-xs font-semibold border border-rose-200 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <AlertTriangle className="w-4 h-4 shrink-0 text-red-600" />
+            <AlertTriangle className="w-4 h-4 shrink-0 text-rose-600" />
             <span>{errorMsg}</span>
           </div>
           <button type="button" onClick={() => setErrorMsg('')} className="text-slate-400 hover:text-slate-600">
@@ -488,61 +485,69 @@ export const CompanyAdminPage: React.FC = () => {
         </div>
       )}
 
-      {/* Analytics Metric Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between">
-          <div>
-            <div className="text-xs text-slate-500 font-medium">মোট কোম্পানি</div>
-            <div className="text-2xl font-black text-slate-800 mt-1">{toBengaliDigits(companies.length)} টি</div>
-            <div className="text-[11px] text-slate-400 mt-0.5">নিবন্ধিত পরিবহন প্রতিষ্ঠান</div>
+      {/* Excel-Sheet 3-Column KPI Matrix */}
+      <div className="bg-emerald-200 border border-emerald-200 rounded-xl overflow-hidden shadow-2xs">
+        <div className="grid grid-cols-3 gap-px">
+          <div className="bg-white flex flex-col">
+            <div className="bg-[#0b2820] px-2.5 py-1 flex items-center justify-between gap-1 text-white">
+              <span className="text-[10px] font-bold truncate">মোট কোম্পানি</span>
+              <Building2 className="w-3 h-3 shrink-0 opacity-90 text-emerald-300" />
+            </div>
+            <div className="px-2.5 py-1.5 flex items-baseline justify-between gap-1">
+              <span className="text-sm sm:text-base font-black text-slate-900 tabular-nums">
+                {toBengaliDigits(companies.length)}
+              </span>
+              <span className="text-[10px] text-slate-500 hidden sm:inline">টি প্রতিষ্ঠান</span>
+            </div>
           </div>
-          <div className="w-12 h-12 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center font-bold">
-            <Building2 className="w-6 h-6" />
-          </div>
-        </div>
 
-        <div className="bg-white p-4 rounded-2xl border border-emerald-100 shadow-xs flex items-center justify-between">
-          <div>
-            <div className="text-xs text-emerald-600 font-bold">সক্রিয় সাবস্ক্রিপশন</div>
-            <div className="text-2xl font-black text-emerald-700 mt-1">{toBengaliDigits(activeCount)} টি</div>
-            <div className="text-[11px] text-emerald-500 mt-0.5">নিয়মিত সেবা সচল রয়েছে</div>
+          <div className="bg-white flex flex-col">
+            <div className="bg-[#0d9488] px-2.5 py-1 flex items-center justify-between gap-1 text-white">
+              <span className="text-[10px] font-bold truncate">সক্রিয় সাবস্ক্রিপশন</span>
+              <ShieldCheck className="w-3 h-3 shrink-0 opacity-90" />
+            </div>
+            <div className="px-2.5 py-1.5 flex items-baseline justify-between gap-1">
+              <span className="text-sm sm:text-base font-black text-emerald-800 tabular-nums">
+                {toBengaliDigits(activeCount)}
+              </span>
+              <span className="text-[10px] text-slate-500 hidden sm:inline">সচল</span>
+            </div>
           </div>
-          <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center font-bold">
-            <ShieldCheck className="w-6 h-6" />
-          </div>
-        </div>
 
-        <div className="bg-white p-4 rounded-2xl border border-rose-100 shadow-xs flex items-center justify-between">
-          <div>
-            <div className="text-xs text-rose-600 font-bold">মেয়াদোত্তীর্ণ সাবস্ক্রিপশন</div>
-            <div className="text-2xl font-black text-rose-700 mt-1">{toBengaliDigits(expiredCount)} টি</div>
-            <div className="text-[11px] text-rose-500 mt-0.5">নবায়ন করা প্রয়োজন</div>
-          </div>
-          <div className="w-12 h-12 bg-rose-50 text-rose-600 rounded-2xl flex items-center justify-center font-bold">
-            <AlertTriangle className="w-6 h-6" />
+          <div className="bg-white flex flex-col">
+            <div className={`${expiredCount > 0 ? 'bg-amber-700' : 'bg-[#0f766e]'} px-2.5 py-1 flex items-center justify-between gap-1 text-white`}>
+              <span className="text-[10px] font-bold truncate">মেয়াদোত্তীর্ণ</span>
+              <AlertTriangle className="w-3 h-3 shrink-0 opacity-90" />
+            </div>
+            <div className="px-2.5 py-1.5 flex items-baseline justify-between gap-1">
+              <span className={`text-sm sm:text-base font-black tabular-nums ${expiredCount > 0 ? 'text-rose-700' : 'text-slate-900'}`}>
+                {toBengaliDigits(expiredCount)}
+              </span>
+              <span className="text-[10px] text-slate-500 hidden sm:inline">নবায়ন প্রয়োজন</span>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Filter and Search Bar */}
-      <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3">
+      {/* Compact Filter and Search Bar */}
+      <div className="bg-white p-2.5 rounded-xl border border-emerald-200 shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-2">
         <div className="relative w-full sm:w-80">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+          <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             value={searchTerm ?? ''}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="কোম্পানির নাম বা মোবাইল নম্বর দিয়ে খুঁজুন..."
-            className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:bg-white focus:ring-2 focus:ring-purple-500"
+            className="w-full pl-8 pr-2.5 py-1.5 bg-[#f4fbf8] border border-emerald-200 rounded-lg text-xs text-slate-900 outline-none focus:bg-white focus:ring-2 focus:ring-emerald-600"
           />
         </div>
 
-        <div className="flex items-center gap-2 w-full sm:w-auto">
+        <div className="flex items-center gap-1 bg-[#e6f4ef] p-0.5 rounded-lg border border-emerald-200 w-full sm:w-auto">
           <button
             type="button"
             onClick={() => setStatusFilter('all')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
-              statusFilter === 'all' ? 'bg-slate-800 text-white shadow-xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+            className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition-all cursor-pointer flex-1 sm:flex-none ${
+              statusFilter === 'all' ? 'bg-[#0b2820] text-white shadow-2xs' : 'text-slate-700 hover:text-slate-900'
             }`}
           >
             সব ({toBengaliDigits(companies.length)})
@@ -550,8 +555,8 @@ export const CompanyAdminPage: React.FC = () => {
           <button
             type="button"
             onClick={() => setStatusFilter('active')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
-              statusFilter === 'active' ? 'bg-emerald-600 text-white shadow-xs' : 'bg-slate-100 text-emerald-700 hover:bg-emerald-50'
+            className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition-all cursor-pointer flex-1 sm:flex-none ${
+              statusFilter === 'active' ? 'bg-[#0d9488] text-white shadow-2xs' : 'text-emerald-800 hover:bg-emerald-50'
             }`}
           >
             সক্রিয় ({toBengaliDigits(activeCount)})
@@ -559,8 +564,8 @@ export const CompanyAdminPage: React.FC = () => {
           <button
             type="button"
             onClick={() => setStatusFilter('expired')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
-              statusFilter === 'expired' ? 'bg-rose-600 text-white shadow-xs' : 'bg-slate-100 text-rose-700 hover:bg-rose-50'
+            className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition-all cursor-pointer flex-1 sm:flex-none ${
+              statusFilter === 'expired' ? 'bg-amber-700 text-white shadow-2xs' : 'text-rose-700 hover:bg-rose-50'
             }`}
           >
             মেয়াদোত্তীর্ণ ({toBengaliDigits(expiredCount)})
@@ -568,8 +573,8 @@ export const CompanyAdminPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Company Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+      {/* Company Sheet Cards Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {filteredCompanies.map((c) => {
           const daysLeft = calculateDaysRemaining(c.subscriptionExpiry);
           const isExpired = daysLeft <= 0;
@@ -577,79 +582,59 @@ export const CompanyAdminPage: React.FC = () => {
           return (
             <div
               key={c.id}
-              className={`bg-white rounded-3xl border transition-all shadow-xs hover:shadow-md p-5 flex flex-col justify-between ${
-                isExpired ? 'border-rose-300 ring-1 ring-rose-200' : 'border-slate-200'
+              className={`bg-white rounded-xl border transition-all shadow-2xs overflow-hidden flex flex-col justify-between ${
+                isExpired ? 'border-rose-300 ring-1 ring-rose-200' : 'border-emerald-200'
               }`}
             >
               <div>
-                {/* Card Top: Logo and Badges */}
-                <div className="flex items-start justify-between gap-3 pb-3 border-b border-slate-100">
-                  <div className="flex items-center gap-3">
+                {/* Card Top Strip */}
+                <div className={`${isExpired ? 'bg-rose-700' : 'bg-[#0b2820]'} px-3 py-1.5 text-white flex items-center justify-between gap-2`}>
+                  <div className="flex items-center gap-2 min-w-0">
                     <img
                       src={c.logoUrl || '/logo.png'}
                       alt={c.name}
-                      className="w-12 h-12 rounded-2xl object-cover border border-slate-200 shadow-xs bg-slate-900"
+                      className="w-7 h-7 rounded-lg object-cover border border-white/50 bg-slate-900 shrink-0"
                     />
-                    <div>
-                      <h3 className="font-bold text-slate-900 text-sm leading-snug">{c.name}</h3>
-                      <div className="flex items-center gap-1.5 text-xs text-slate-500 mt-0.5">
-                        <Lock className="w-3.5 h-3.5 text-emerald-600" />
-                        <span>এডমিন লগইন:</span>
-                        <span className="font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
-                          গোপন ও সুরক্ষিত
-                        </span>
+                    <div className="min-w-0">
+                      <h3 className="font-bold text-xs truncate">{c.name}</h3>
+                      <div className="text-[10px] text-white/85 flex items-center gap-1">
+                        <Lock className="w-2.5 h-2.5" />
+                        <span>সুরক্ষিত এডমিন</span>
                       </div>
                     </div>
                   </div>
 
-                  <div>
-                    {isExpired ? (
-                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-rose-100 text-rose-700 border border-rose-200">
-                        <AlertTriangle className="w-3 h-3" />
-                        <span>মেয়াদোত্তীর্ণ</span>
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-700 border border-emerald-200">
-                        <CheckCircle className="w-3 h-3" />
-                        <span>সক্রিয়</span>
-                      </span>
-                    )}
-                  </div>
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-white/25 text-[10px] font-bold shrink-0">
+                    {isExpired ? <AlertTriangle className="w-3 h-3" /> : <CheckCircle className="w-3 h-3" />}
+                    <span>{isExpired ? 'মেয়াদোত্তীর্ণ' : 'সক্রিয়'}</span>
+                  </span>
                 </div>
 
-                {/* Company Contact & Location */}
-                <div className="py-3 space-y-1.5 text-xs text-slate-600 border-b border-slate-100">
-                  <div className="flex items-center gap-2">
-                    <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                    <span className="truncate">{c.address || 'ঠিকানা নির্ধারিত হয়নি'}</span>
+                {/* Sheet Body */}
+                <div className="divide-y divide-slate-200 text-[11px]">
+                  <div className="px-3 py-1.5 flex items-center justify-between gap-2 text-slate-600">
+                    <span className="flex items-center gap-1.5 truncate">
+                      <MapPin className="w-3 h-3 text-slate-400 shrink-0" />
+                      <span className="truncate">{c.address || 'ঠিকানা নির্ধারিত হয়নি'}</span>
+                    </span>
+                    <span className="flex items-center gap-1 font-mono shrink-0 text-slate-700 font-semibold">
+                      <Phone className="w-3 h-3 text-slate-400" />
+                      <span>{c.phone || '-'}</span>
+                    </span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Phone className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                    <span>{c.phone || 'হটলাইন নেই'}</span>
-                  </div>
-                </div>
 
-                {/* Subscription Expiry & Countdown */}
-                <div className="py-3 bg-slate-50/80 rounded-2xl p-3 my-3 border border-slate-100">
-                  <div className="flex items-center justify-between text-xs mb-1.5">
+                  <div className="px-3 py-1.5 bg-slate-50/70 flex items-center justify-between gap-2">
                     <span className="text-slate-500 flex items-center gap-1 font-medium">
-                      <Calendar className="w-3.5 h-3.5 text-purple-600" />
-                      <span>সাবস্ক্রিপশন মেয়াদ শেষ:</span>
+                      <Calendar className="w-3 h-3 text-violet-600" />
+                      <span>মেয়াদ: {toBengaliDigits(c.subscriptionExpiry)}</span>
                     </span>
-                    <span className="font-bold text-slate-800 font-mono">
-                      {formatBengaliDate(c.subscriptionExpiry)} ({toBengaliDigits(c.subscriptionExpiry)})
-                    </span>
-                  </div>
-
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="text-slate-500 font-medium">অবশিষ্ট সময়কাল:</span>
                     {isExpired ? (
                       <span className="font-bold text-rose-600">
-                        সাবস্ক্রিপশন শেষ ({toBengaliDigits(Math.abs(daysLeft))} দিন পূর্বে শেষ)
+                        শেষ ({toBengaliDigits(Math.abs(daysLeft))} দিন আগে)
                       </span>
                     ) : (
                       <span className={`font-bold ${daysLeft <= 15 ? 'text-amber-600' : 'text-emerald-600'}`}>
-                        {toBengaliDigits(daysLeft)} দিন বাকি রয়েছে
+                        {toBengaliDigits(daysLeft)} দিন বাকি
                       </span>
                     )}
                   </div>
@@ -657,80 +642,82 @@ export const CompanyAdminPage: React.FC = () => {
               </div>
 
               {/* Action Buttons */}
-              <div className="pt-2 flex items-center justify-between gap-2 border-t border-slate-100">
-                <div className="flex items-center gap-1.5">
-                  <button
-                    type="button"
-                    onClick={() => handleExtendSubscription(c, 30)}
-                    className="px-2.5 py-1.5 bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 rounded-xl text-xs font-bold transition-colors cursor-pointer"
-                    title="সাবস্ক্রিপশন ৩০ দিন বাড়ান"
-                  >
-                    +৩০ দিন
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleExtendSubscription(c, 90)}
-                    className="px-2.5 py-1.5 bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 rounded-xl text-xs font-bold transition-colors cursor-pointer"
-                    title="সাবস্ক্রিপশন ৩ মাস বাড়ান"
-                  >
-                    +৩ মাস
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleExtendSubscription(c, 365)}
-                    className="px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-xl text-xs font-bold transition-colors cursor-pointer"
-                    title="সাবস্ক্রিপশন ১ বছর বাড়ান"
-                  >
-                    +১ বছর
-                  </button>
+              <div className="p-2.5 bg-slate-50 border-t border-slate-200 space-y-2">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      onClick={() => handleExtendSubscription(c, 30)}
+                      className="px-2 py-1 bg-violet-50 hover:bg-violet-100 text-violet-700 border border-violet-200 rounded-md text-[10.5px] font-bold transition-colors cursor-pointer"
+                      title="সাবস্ক্রিপশন ৩০ দিন বাড়ান"
+                    >
+                      +৩০ দিন
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleExtendSubscription(c, 90)}
+                      className="px-2 py-1 bg-violet-50 hover:bg-violet-100 text-violet-700 border border-violet-200 rounded-md text-[10.5px] font-bold transition-colors cursor-pointer"
+                      title="সাবস্ক্রিপশন ৩ মাস বাড়ান"
+                    >
+                      +৩ মাস
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleExtendSubscription(c, 365)}
+                      className="px-2 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-md text-[10.5px] font-bold transition-colors cursor-pointer"
+                      title="সাবস্ক্রিপশন ১ বছর বাড়ান"
+                    >
+                      +১ বছর
+                    </button>
+                  </div>
+
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setResetModalCompany(c);
+                        setNewAdminLoginId('');
+                        setNewPin('');
+                        setResetErrorMsg('');
+                      }}
+                      className="p-1 text-violet-600 hover:bg-violet-100 rounded transition-colors cursor-pointer"
+                      title="এডমিন আইডি ও পিন রিসেট করুন"
+                    >
+                      <KeyRound className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => openEditModal(c)}
+                      className="p-1 text-blue-600 hover:bg-blue-100 rounded transition-colors cursor-pointer"
+                      title="সম্পাদনা করুন"
+                    >
+                      <Edit className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => openDeleteModal(c)}
+                      className="p-1 text-rose-600 hover:bg-rose-100 rounded transition-colors cursor-pointer"
+                      title="কোম্পানি ও এর সব ডাটা নিরাপদভাবে মুছুন"
+                      aria-label={`${c.name} মুছুন`}
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 </div>
 
-                <div className="flex items-center gap-1">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setResetModalCompany(c);
-                      setNewAdminLoginId('');
-                      setNewPin('');
-                      setResetErrorMsg('');
-                    }}
-                    className="p-1.5 text-purple-600 hover:bg-purple-50 rounded-lg transition-colors cursor-pointer"
-                    title="এডমিন আইডি ও পিন রিসেট করুন"
-                  >
-                    <KeyRound className="w-4 h-4" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => openEditModal(c)}
-                    className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
-                    title="সম্পাদনা করুন"
-                  >
-                    <Edit className="w-4 h-4" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => openDeleteModal(c)}
-                    className="p-2 text-rose-600 hover:bg-rose-50 border border-transparent hover:border-rose-200 rounded-lg transition-colors cursor-pointer"
-                    title="কোম্পানি ও এর সব ডাটা নিরাপদভাবে মুছুন"
-                    aria-label={`${c.name} মুছুন`}
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
+                {/* Enter Company Dashboard Context */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveCompanyId(c.id);
+                    setSuccessMsg(`"${c.name}" এর ড্যাশবোর্ডে প্রবেশ করেছেন। এখন আপনি এই কোম্পানির ট্রিপ, বাস ও কাউন্টার ব্যবস্থাপনা করতে পারবেন।`);
+                  }}
+                  className="w-full px-3 py-1.5 bg-[#0d9488] hover:bg-[#0f766e] text-white rounded-lg text-[11px] font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
+                >
+                  <ExternalLink className="w-3.5 h-3.5" />
+                  <span>কোম্পানি ড্যাশবোর্ডে প্রবেশ করুন</span>
+                </button>
               </div>
-
-              {/* Enter Company Dashboard Context */}
-              <button
-                type="button"
-                onClick={() => {
-                  setActiveCompanyId(c.id);
-                  setSuccessMsg(`"${c.name}" এর ড্যাশবোর্ডে প্রবেশ করেছেন। এখন আপনি এই কোম্পানির ট্রিপ, বাস ও কাউন্টার ব্যবস্থাপনা করতে পারবেন।`);
-                }}
-                className="w-full mt-2.5 px-3 py-2 bg-slate-900 hover:bg-purple-900 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer shadow-xs"
-              >
-                <ExternalLink className="w-3.5 h-3.5 text-purple-400" />
-                <span>কোম্পানি ড্যাশবোর্ডে প্রবেশ করুন</span>
-              </button>
             </div>
           );
         })}
@@ -748,214 +735,216 @@ export const CompanyAdminPage: React.FC = () => {
 
       {/* Add / Edit Company Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-3 border-b mb-4">
-              <div>
-                <h3 className="text-base font-bold text-slate-900">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
+          <div className="bg-white rounded-t-2xl sm:rounded-2xl max-w-lg w-full shadow-2xl border border-emerald-200 max-h-[92dvh] sm:max-h-[88dvh] flex flex-col overflow-hidden">
+            <div className="shrink-0 px-4 py-3 bg-[#0b2820] text-white flex items-center justify-between gap-2">
+              <div className="min-w-0">
+                <h3 className="text-sm sm:text-base font-bold text-white truncate">
                   {editingCompany ? 'কোম্পানি তথ্য ও সাবস্ক্রিপশন সম্পাদনা' : 'নতুন কোম্পানি ও সাবস্ক্রিপশন তৈরি'}
                 </h3>
-                <p className="text-[11px] text-slate-500">
-                  কোম্পানির নাম, নিজস্ব লোগো, এডমিন আইডি, পিন এবং নির্দিষ্ট মেয়াদের সাবস্ক্রিপশন দিন
+                <p className="text-[11px] text-emerald-200/80 truncate">
+                  কোম্পানির নাম, নিজস্ব লোগো, এডমিন আইডি, পিন এবং মেয়াদের তারিখ দিন
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => setIsModalOpen(false)}
-                className="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg"
+                className="p-1.5 text-emerald-100 hover:text-white hover:bg-white/15 rounded-lg cursor-pointer shrink-0"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            {errorMsg && (
-              <div className="mb-4 p-3 bg-red-50 text-red-700 text-xs font-semibold rounded-xl border border-red-200 flex items-center gap-2">
-                <AlertTriangle className="w-4 h-4 shrink-0" />
-                <span>{errorMsg}</span>
-              </div>
-            )}
+            <form onSubmit={handleSave} className="flex-1 flex flex-col min-h-0 overflow-hidden">
+              <div className="flex-1 overflow-y-auto overscroll-contain p-4 space-y-3.5 text-slate-900">
+                {errorMsg && (
+                  <div className="p-3 bg-rose-50 text-rose-700 text-xs font-semibold rounded-xl border border-rose-200 flex items-center gap-2">
+                    <AlertTriangle className="w-4 h-4 shrink-0" />
+                    <span>{errorMsg}</span>
+                  </div>
+                )}
 
-            <form onSubmit={handleSave} className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  কোম্পানির নাম (Company Name) *
-                </label>
-                <input
-                  type="text"
-                  value={name ?? ''}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="যেমন: ঢাকা এক্সপ্রেস, সোনার বাংলা ট্রাভেলস"
-                  className="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs font-semibold outline-none focus:bg-white focus:ring-2 focus:ring-purple-500"
-                  required
-                />
-              </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-800 mb-1">
+                    কোম্পানির নাম (Company Name) *
+                  </label>
+                  <input
+                    type="text"
+                    value={name ?? ''}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="যেমন: ঢাকা এক্সপ্রেস, সোনার বাংলা ট্রাভেলস"
+                    className="w-full px-3 py-2 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs text-slate-900 font-semibold outline-none focus:bg-white focus:ring-2 focus:ring-emerald-600"
+                    required
+                  />
+                </div>
 
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                  কোম্পানির নিজস্ব লোগো (গ্যালারি / ড্রাইভ / লোকাল স্টোরেজ থেকে আপলোড)
-                </label>
-                <div className="flex items-center gap-3 p-3 bg-slate-50 border border-slate-200 rounded-2xl">
-                  {logoUrl ? (
-                    <div className="relative group shrink-0">
-                      <img
-                        src={logoUrl}
-                        alt="Company Logo"
-                        className="w-14 h-14 rounded-xl object-cover border-2 border-purple-500 shadow-sm bg-white"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setLogoUrl('')}
-                        className="absolute -top-1.5 -right-1.5 bg-rose-600 text-white rounded-full p-1 shadow-md hover:bg-rose-700 cursor-pointer"
-                        title="লোগো মুছে ফেলুন"
+                <div>
+                  <label className="block text-xs font-bold text-slate-800 mb-1.5">
+                    কোম্পানির নিজস্ব লোগো (গ্যালারি / ড্রাইভ / লোকাল স্টোরেজ থেকে আপলোড)
+                  </label>
+                  <div className="flex items-center gap-3 p-3 bg-[#f4fbf8] border border-emerald-200 rounded-2xl">
+                    {logoUrl ? (
+                      <div className="relative group shrink-0">
+                        <img
+                          src={logoUrl}
+                          alt="Company Logo"
+                          className="w-14 h-14 rounded-xl object-cover border-2 border-[#0d9488] shadow-sm bg-white"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setLogoUrl('')}
+                          className="absolute -top-1.5 -right-1.5 bg-rose-600 text-white rounded-full p-1 shadow-md hover:bg-rose-700 cursor-pointer"
+                          title="লোগো মুছে ফেলুন"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="w-14 h-14 rounded-xl border-2 border-dashed border-emerald-300 flex items-center justify-center text-emerald-500 bg-white shrink-0">
+                        <Building2 className="w-6 h-6" />
+                      </div>
+                    )}
+
+                    <div className="flex-1 min-w-0">
+                      <label
+                        htmlFor="company-logo-file-input"
+                        className={`inline-flex items-center gap-2 px-3 py-1.5 ${
+                          isProcessingLogo ? 'bg-emerald-400' : 'bg-[#0d9488] hover:bg-[#0f766e]'
+                        } text-white rounded-xl text-xs font-bold cursor-pointer transition-colors shadow-xs`}
                       >
-                        <X className="w-3 h-3" />
-                      </button>
+                        {isProcessingLogo ? (
+                          <>
+                            <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                            <span>লোগো প্রসেস হচ্ছে...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Sparkles className="w-3.5 h-3.5" />
+                            <span>{logoUrl ? 'নতুন ছবি আপলোড করুন' : 'ডিভাইস বা ড্রাইভ থেকে লোগো নির্বাচন'}</span>
+                          </>
+                        )}
+                      </label>
+                      <input
+                        id="company-logo-file-input"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleLogoFileUpload}
+                        className="hidden"
+                      />
+                      <div className="text-[10px] text-slate-600 mt-1">
+                        মোবাইল বা পিসির গ্যালারি/ড্রাইভ থেকে যে কোনো ছবি/লোগো সিলেক্ট করুন (PNG, JPG, WEBP)
+                      </div>
                     </div>
-                  ) : (
-                    <div className="w-14 h-14 rounded-xl border-2 border-dashed border-slate-300 flex items-center justify-center text-slate-400 bg-white shrink-0">
-                      <Building2 className="w-6 h-6" />
-                    </div>
-                  )}
+                  </div>
+                </div>
 
-                  <div className="flex-1 min-w-0">
-                    <label
-                      htmlFor="company-logo-file-input"
-                      className={`inline-flex items-center gap-2 px-3 py-1.5 ${
-                        isProcessingLogo ? 'bg-purple-400' : 'bg-purple-600 hover:bg-purple-700'
-                      } text-white rounded-xl text-xs font-bold cursor-pointer transition-colors shadow-xs`}
-                    >
-                      {isProcessingLogo ? (
-                        <>
-                          <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                          <span>লোগো প্রসেস হচ্ছে...</span>
-                        </>
-                      ) : (
-                        <>
-                          <Sparkles className="w-3.5 h-3.5" />
-                          <span>{logoUrl ? 'নতুন ছবি আপলোড করুন' : 'ডিভাইস বা ড্রাইভ থেকে লোগো নির্বাচন'}</span>
-                        </>
-                      )}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-800 mb-1">
+                      এডমিন লগইন আইডি {editingCompany ? '(রিসেট করতে চাইলে)' : '*'}
                     </label>
                     <input
-                      id="company-logo-file-input"
-                      type="file"
-                      accept="image/*"
-                      onChange={handleLogoFileUpload}
-                      className="hidden"
+                      type="text"
+                      value={adminLoginId ?? ''}
+                      onChange={(e) => setAdminLoginId(e.target.value)}
+                      placeholder={editingCompany ? 'অপরিবর্তিত রাখতে খালি রাখুন' : 'যেমন: admin01, transport01'}
+                      className="w-full px-3 py-2 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs text-slate-900 font-mono font-bold outline-none focus:bg-white focus:ring-2 focus:ring-emerald-600"
+                      required={!editingCompany}
                     />
-                    <div className="text-[10px] text-slate-500 mt-1">
-                      মোবাইল বা পিসির গ্যালারি/ড্রাইভ থেকে যে কোনো ছবি/লোগো সিলেক্ট করুন (PNG, JPG, WEBP)
-                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-800 mb-1">
+                      সিকিউর পিন (৪-৬ ডিজিট) {editingCompany ? '(পরিবর্তন করতে চাইলে)' : '*'}
+                    </label>
+                    <input
+                      type="password"
+                      maxLength={6}
+                      value={pin ?? ''}
+                      onChange={(e) => setPin(e.target.value)}
+                      placeholder={editingCompany ? 'পরিবর্তন না করলে খালি রাখুন' : 'যেমন: 1234'}
+                      className="w-full px-3 py-2 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs text-slate-900 font-mono outline-none focus:bg-white focus:ring-2 focus:ring-emerald-600"
+                      required={!editingCompany}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-800 mb-1">
+                    সাবস্ক্রিপশনের মেয়াদ শেষ হওয়ার তারিখ *
+                  </label>
+                  <input
+                    type="date"
+                    value={subscriptionExpiry ?? ''}
+                    onChange={(e) => setSubscriptionExpiry(e.target.value)}
+                    className="w-full px-3 py-2 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs text-slate-900 font-bold outline-none focus:bg-white focus:ring-2 focus:ring-emerald-600"
+                    required
+                  />
+                  <div className="flex flex-wrap items-center gap-2 mt-2">
+                    <span className="text-[10px] text-slate-500">দ্রুত মেয়াদ সেট:</span>
+                    {[
+                      { label: '+১ মাস', days: 30 },
+                      { label: '+৩ মাস', days: 90 },
+                      { label: '+৬ মাস', days: 180 },
+                      { label: '+১ বছর', days: 365 },
+                    ].map((p, i) => (
+                      <button
+                        key={i}
+                        type="button"
+                        onClick={() => {
+                          const d = new Date();
+                          d.setDate(d.getDate() + p.days);
+                          setSubscriptionExpiry(d.toISOString().split('T')[0]);
+                        }}
+                        className="text-[10px] px-2 py-0.5 rounded bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-900 font-semibold cursor-pointer"
+                      >
+                        {p.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-800 mb-1">
+                      প্রধান অফিসের ঠিকানা
+                    </label>
+                    <input
+                      type="text"
+                      value={address ?? ''}
+                      onChange={(e) => setAddress(e.target.value)}
+                      placeholder="টার্মিনাল বা প্রধান অফিস"
+                      className="w-full px-3 py-2 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs text-slate-900 outline-none focus:bg-white focus:ring-2 focus:ring-emerald-600"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-800 mb-1">
+                      হটলাইন / মোবাইল নম্বর
+                    </label>
+                    <input
+                      type="text"
+                      value={phone ?? ''}
+                      onChange={(e) => setPhone(e.target.value)}
+                      placeholder="01711-XXXXXX"
+                      className="w-full px-3 py-2 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs text-slate-900 outline-none focus:bg-white focus:ring-2 focus:ring-emerald-600"
+                    />
                   </div>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
-                    এডমিন লগইন আইডি {editingCompany ? '(রিসেট করতে চাইলে)' : '*'}
-                  </label>
-                  <input
-                    type="text"
-                    value={adminLoginId ?? ''}
-                    onChange={(e) => setAdminLoginId(e.target.value)}
-                    placeholder={editingCompany ? 'অপরিবর্তিত রাখতে খালি রাখুন' : 'যেমন: admin01, transport01'}
-                    className="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs font-mono font-bold outline-none focus:bg-white focus:ring-2 focus:ring-purple-500"
-                    required={!editingCompany}
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
-                    সিকিউর পিন (৪-৬ ডিজিট) {editingCompany ? '(পরিবর্তন করতে চাইলে)' : '*'}
-                  </label>
-                  <input
-                    type="password"
-                    maxLength={6}
-                    value={pin ?? ''}
-                    onChange={(e) => setPin(e.target.value)}
-                    placeholder={editingCompany ? 'পরিবর্তন না করলে খালি রাখুন' : 'যেমন: 1234'}
-                    className="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs font-mono outline-none focus:bg-white focus:ring-2 focus:ring-purple-500"
-                    required={!editingCompany}
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  সাবস্ক্রিপশনের মেয়াদ শেষ হওয়ার তারিখ *
-                </label>
-                <input
-                  type="date"
-                  value={subscriptionExpiry ?? ''}
-                  onChange={(e) => setSubscriptionExpiry(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs font-bold outline-none focus:bg-white focus:ring-2 focus:ring-purple-500"
-                  required
-                />
-                <div className="flex items-center gap-2 mt-2">
-                  <span className="text-[10px] text-slate-400">দ্রুত মেয়াদ সেট:</span>
-                  {[
-                    { label: '+১ মাস', days: 30 },
-                    { label: '+৩ মাস', days: 90 },
-                    { label: '+৬ মাস', days: 180 },
-                    { label: '+১ বছর', days: 365 },
-                  ].map((p, i) => (
-                    <button
-                      key={i}
-                      type="button"
-                      onClick={() => {
-                        const d = new Date();
-                        d.setDate(d.getDate() + p.days);
-                        setSubscriptionExpiry(d.toISOString().split('T')[0]);
-                      }}
-                      className="text-[10px] px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 cursor-pointer"
-                    >
-                      {p.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
-                    প্রধান অফিসের ঠিকানা
-                  </label>
-                  <input
-                    type="text"
-                    value={address ?? ''}
-                    onChange={(e) => setAddress(e.target.value)}
-                    placeholder="টার্মিনাল বা প্রধান অফিস"
-                    className="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs outline-none focus:bg-white focus:ring-2 focus:ring-purple-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
-                    হটলাইন / মোবাইল নম্বর
-                  </label>
-                  <input
-                    type="text"
-                    value={phone ?? ''}
-                    onChange={(e) => setPhone(e.target.value)}
-                    placeholder="01711-XXXXXX"
-                    className="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs outline-none focus:bg-white focus:ring-2 focus:ring-purple-500"
-                  />
-                </div>
-              </div>
-
-              <div className="pt-3 border-t flex items-center justify-end gap-3">
+              <div className="shrink-0 px-4 py-3 bg-[#f0f9f6] border-t border-emerald-200 flex items-center justify-end gap-2 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold"
+                  className="px-4 py-2.5 min-h-[44px] bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 rounded-xl text-xs font-bold cursor-pointer"
                 >
                   বাতিল
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="px-5 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold shadow-md shadow-purple-600/30 flex items-center gap-1.5"
+                  className="flex-1 sm:flex-none px-5 py-2.5 min-h-[44px] bg-[#0d9488] hover:bg-[#0f766e] text-white rounded-xl text-xs font-bold shadow-md flex items-center justify-center gap-1.5 cursor-pointer"
                 >
                   <CheckCircle className="w-4 h-4" />
                   <span>{editingCompany ? 'আপডেট সংরক্ষণ' : 'কোম্পানি তৈরি করুন'}</span>
@@ -968,79 +957,81 @@ export const CompanyAdminPage: React.FC = () => {
 
       {/* Quick Reset Admin ID & PIN Modal */}
       {resetModalCompany && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div className="bg-white w-full max-w-md rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col">
-            <div className="px-6 py-4 bg-slate-900 text-white flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold">
-                  <KeyRound className="w-5 h-5" />
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
+          <div className="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl shadow-2xl border border-emerald-200 overflow-hidden flex flex-col max-h-[92dvh] sm:max-h-[88dvh]">
+            <div className="shrink-0 px-4 py-3 bg-[#0b2820] text-white flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-8 h-8 rounded-lg bg-[#0d9488]/30 text-emerald-300 flex items-center justify-center font-bold shrink-0">
+                  <KeyRound className="w-4 h-4" />
                 </div>
-                <div>
-                  <h3 className="font-bold text-sm">এডমিন লগইন আইডি ও পিন রিসেট</h3>
-                  <div className="text-[11px] text-slate-300">{resetModalCompany.name}</div>
+                <div className="min-w-0">
+                  <h3 className="font-bold text-sm text-white truncate">এডমিন লগইন আইডি ও পিন রিসেট</h3>
+                  <div className="text-[11px] text-emerald-200/80 truncate">{resetModalCompany.name}</div>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => setResetModalCompany(null)}
-                className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
+                className="p-1.5 text-emerald-100 hover:text-white rounded-lg hover:bg-white/15 transition-colors cursor-pointer shrink-0"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            {resetErrorMsg && (
-              <div className="m-4 p-3 bg-rose-50 border border-rose-200 text-rose-800 text-xs font-semibold rounded-2xl flex items-center gap-2">
-                <AlertTriangle className="w-4 h-4 shrink-0" />
-                <span>{resetErrorMsg}</span>
-              </div>
-            )}
+            <form onSubmit={handleResetSubmit} className="flex-1 flex flex-col min-h-0 overflow-hidden">
+              <div className="flex-1 overflow-y-auto overscroll-contain p-4 space-y-3.5 text-slate-900">
+                {resetErrorMsg && (
+                  <div className="p-3 bg-rose-50 border border-rose-200 text-rose-800 text-xs font-semibold rounded-xl flex items-center gap-2">
+                    <AlertTriangle className="w-4 h-4 shrink-0" />
+                    <span>{resetErrorMsg}</span>
+                  </div>
+                )}
 
-            <form onSubmit={handleResetSubmit} className="p-6 space-y-4">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  কোম্পানি এডমিন লগইন আইডি *
-                </label>
-                <input
-                  type="text"
-                  value={newAdminLoginId}
-                  onChange={(e) => setNewAdminLoginId(e.target.value)}
-                  placeholder="যেমন: chandra01"
-                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-mono font-bold outline-none focus:bg-white focus:ring-2 focus:ring-purple-500"
-                  required
-                />
-              </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-800 mb-1">
+                    কোম্পানি এডমিন লগইন আইডি *
+                  </label>
+                  <input
+                    type="text"
+                    value={newAdminLoginId}
+                    onChange={(e) => setNewAdminLoginId(e.target.value)}
+                    placeholder="যেমন: chandra01"
+                    className="w-full px-3.5 py-2.5 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs text-slate-900 font-mono font-bold outline-none focus:bg-white focus:ring-2 focus:ring-emerald-600"
+                    required
+                  />
+                </div>
 
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  নতুন ৪-৬ ডিজিট সিকিউর পিন *
-                </label>
-                <input
-                  type="password"
-                  maxLength={6}
-                  value={newPin}
-                  onChange={(e) => setNewPin(e.target.value)}
-                  placeholder="যেমন: 1234"
-                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-mono font-bold outline-none focus:bg-white focus:ring-2 focus:ring-purple-500"
-                  required
-                />
-                <div className="text-[10px] text-slate-500 mt-1">
-                  এই নতুন আইডি ও পিন দিয়ে কোম্পানি এডমিন তার প্যানেলে লগইন করতে পারবে।
+                <div>
+                  <label className="block text-xs font-bold text-slate-800 mb-1">
+                    নতুন ৪-৬ ডিজিট সিকিউর পিন *
+                  </label>
+                  <input
+                    type="password"
+                    maxLength={6}
+                    value={newPin}
+                    onChange={(e) => setNewPin(e.target.value)}
+                    placeholder="যেমন: 1234"
+                    className="w-full px-3.5 py-2.5 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs text-slate-900 font-mono font-bold outline-none focus:bg-white focus:ring-2 focus:ring-emerald-600"
+                    required
+                  />
+                  <div className="text-[10px] text-slate-600 mt-1">
+                    এই নতুন আইডি ও পিন দিয়ে কোম্পানি এডমিন তার প্যানেলে লগইন করতে পারবে।
+                  </div>
                 </div>
               </div>
 
-              <div className="pt-3 border-t border-slate-200 flex items-center justify-end gap-2.5">
+              <div className="shrink-0 px-4 py-3 bg-[#f0f9f6] border-t border-emerald-200 flex items-center justify-end gap-2 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
                 <button
                   type="button"
                   onClick={() => setResetModalCompany(null)}
-                  className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold cursor-pointer"
+                  className="px-4 py-2.5 min-h-[44px] bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 rounded-xl text-xs font-bold cursor-pointer"
                 >
                   বাতিল
                 </button>
                 <button
                   type="submit"
                   disabled={resetSubmitting}
-                  className="px-5 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold shadow-md shadow-purple-600/30 flex items-center gap-1.5 cursor-pointer"
+                  className="flex-1 sm:flex-none px-5 py-2.5 min-h-[44px] bg-[#0d9488] hover:bg-[#0f766e] text-white rounded-xl text-xs font-bold shadow-md flex items-center justify-center gap-1.5 cursor-pointer"
                 >
                   <Lock className="w-3.5 h-3.5" />
                   <span>{resetSubmitting ? 'সংরক্ষণ হচ্ছে...' : 'আইডি ও পিন আপডেট করুন'}</span>
@@ -1054,41 +1045,41 @@ export const CompanyAdminPage: React.FC = () => {
       {/* Safe Isolated Delete Confirmation Modal */}
       {deleteTargetCompany && (
         <div
-          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4"
+          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4"
           role="dialog"
           aria-modal="true"
           aria-labelledby="delete-company-title"
         >
-          <div className="bg-white w-full max-w-md rounded-2xl shadow-2xl border border-slate-200 overflow-hidden">
-            <div className="px-5 py-4 bg-rose-600 text-white flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-white/15 flex items-center justify-center shrink-0">
-                  <AlertTriangle className="w-5 h-5" />
+          <div className="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl shadow-2xl border border-rose-200 flex flex-col max-h-[92dvh] sm:max-h-[88dvh] overflow-hidden">
+            <div className="shrink-0 px-4 py-3 bg-rose-700 text-white flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-8 h-8 rounded-lg bg-white/15 flex items-center justify-center shrink-0">
+                  <AlertTriangle className="w-4 h-4" />
                 </div>
-                <div>
-                  <h3 id="delete-company-title" className="font-bold text-sm">
+                <div className="min-w-0">
+                  <h3 id="delete-company-title" className="font-bold text-sm truncate">
                     কোম্পানি স্থায়ীভাবে মুছে ফেলার নিশ্চিতকরণ
                   </h3>
-                  <div className="text-[11px] text-rose-100">{deleteTargetCompany.name}</div>
+                  <div className="text-[11px] text-rose-100 truncate">{deleteTargetCompany.name}</div>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => !deletingCompany && setDeleteTargetCompany(null)}
                 disabled={deletingCompany}
-                className="p-1.5 text-rose-100 hover:text-white rounded-lg hover:bg-white/10 transition-colors cursor-pointer disabled:opacity-50"
+                className="p-1.5 text-rose-100 hover:text-white rounded-lg hover:bg-white/10 transition-colors cursor-pointer disabled:opacity-50 shrink-0"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="p-5 space-y-4">
-              <div className="text-xs text-slate-700 leading-relaxed">
+            <div className="flex-1 overflow-y-auto overscroll-contain p-4 space-y-3.5">
+              <div className="text-xs text-slate-800 leading-relaxed">
                 আপনি কি নিশ্চিতভাবে <strong className="text-slate-900">"{deleteTargetCompany.name}"</strong> কোম্পানি ও এর অধীনস্থ সকল রেকর্ড মুছে ফেলতে চান?
               </div>
 
-              <div className="bg-slate-50 rounded-xl border border-slate-200 p-3.5">
-                <div className="text-[11px] font-bold text-slate-600 mb-2.5">
+              <div className="bg-slate-50 rounded-xl border border-slate-200 p-3">
+                <div className="text-[11px] font-bold text-slate-600 mb-2">
                   এই কোম্পানির সাথে যেসব নিজস্ব ডাটা মুছে যাবে:
                 </div>
                 {loadingDeleteStats ? (
@@ -1122,29 +1113,29 @@ export const CompanyAdminPage: React.FC = () => {
                 )}
               </div>
 
-              <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-[11px] text-emerald-800 font-medium leading-relaxed">
+              <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-[11px] text-emerald-900 font-medium leading-relaxed">
                 সুরক্ষা নিশ্চিত: কেবল এই কোম্পানির (<span className="font-mono">{deleteTargetCompany.id}</span>) নিজস্ব ডাটা ও ব্রাউজার ক্যাশ মুছে যাবে। অন্য কোনো কোম্পানির ডাটাবেইজ, টিকিট বা সুপার এডমিন অ্যাকাউন্টে কোনো প্রভাব পড়বে না।
               </div>
+            </div>
 
-              <div className="pt-2 border-t border-slate-200 flex items-center justify-end gap-2.5">
-                <button
-                  type="button"
-                  onClick={() => setDeleteTargetCompany(null)}
-                  disabled={deletingCompany}
-                  className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold whitespace-nowrap cursor-pointer disabled:opacity-50"
-                >
-                  বাতিল করুন
-                </button>
-                <button
-                  type="button"
-                  onClick={confirmDeleteCompany}
-                  disabled={deletingCompany || loadingDeleteStats}
-                  className="px-4 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold shadow-sm flex items-center gap-1.5 whitespace-nowrap cursor-pointer disabled:opacity-50"
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
-                  <span>{deletingCompany ? 'মুছে ফেলা হচ্ছে...' : 'কোম্পানি ও সব ডাটা মুছুন'}</span>
-                </button>
-              </div>
+            <div className="shrink-0 px-4 py-3 bg-[#f0f9f6] border-t border-slate-200 flex items-center justify-end gap-2 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+              <button
+                type="button"
+                onClick={() => setDeleteTargetCompany(null)}
+                disabled={deletingCompany}
+                className="px-4 py-2.5 min-h-[44px] bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 rounded-xl text-xs font-bold whitespace-nowrap cursor-pointer disabled:opacity-50"
+              >
+                বাতিল করুন
+              </button>
+              <button
+                type="button"
+                onClick={confirmDeleteCompany}
+                disabled={deletingCompany || loadingDeleteStats}
+                className="flex-1 sm:flex-none px-4 py-2.5 min-h-[44px] bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold shadow-sm flex items-center justify-center gap-1.5 whitespace-nowrap cursor-pointer disabled:opacity-50"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>{deletingCompany ? 'মুছে ফেলা হচ্ছে...' : 'কোম্পানি ও সব ডাটা মুছুন'}</span>
+              </button>
             </div>
           </div>
         </div>

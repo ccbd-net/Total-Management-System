@@ -150,19 +150,19 @@ export const ForwardUpTripsModal: React.FC<ForwardUpTripsModalProps> = ({
   const groupedPreview = groupSchedulesByRouteNumber(sourceTrips);
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="bg-white rounded-3xl max-w-3xl w-full max-h-[92vh] flex flex-col overflow-hidden shadow-2xl border border-slate-200">
-        {/* Header */}
-        <div className="px-6 py-4 bg-slate-900 text-white flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-blue-500/20 text-blue-300 flex items-center justify-center">
+    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
+      <div className="bg-white rounded-t-2xl sm:rounded-2xl max-w-3xl w-full max-h-[92dvh] sm:max-h-[88dvh] flex flex-col overflow-hidden shadow-2xl border border-emerald-200">
+        {/* Sticky Header */}
+        <div className="shrink-0 px-4 py-3 bg-[#0b2820] text-white flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="w-9 h-9 rounded-xl bg-[#0d9488]/30 text-emerald-300 flex items-center justify-center shrink-0">
               <Forward className="w-5 h-5" />
             </div>
-            <div>
-              <h3 className="text-base font-black">
+            <div className="min-w-0">
+              <h3 className="text-sm sm:text-base font-black truncate">
                 গতকালের আপ ট্রিপ ফরোয়ার্ড করুন
               </h3>
-              <p className="text-xs text-slate-300 mt-0.5">
+              <p className="text-[11px] text-emerald-200 truncate">
                 পূর্ববর্তী দিনের সকল আপ ট্রিপ আজকের বা নির্দিষ্ট তারিখে নিয়ে এসে সহজেই এডিট/ডিলিট করুন
               </p>
             </div>
@@ -170,14 +170,14 @@ export const ForwardUpTripsModal: React.FC<ForwardUpTripsModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 cursor-pointer"
+            className="p-1.5 text-emerald-200 hover:text-white rounded-lg hover:bg-white/10 cursor-pointer shrink-0"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="flex-1 flex flex-col overflow-hidden">
-          <div className="p-5 overflow-y-auto space-y-4 flex-1">
+        <form onSubmit={handleSubmit} className="flex-1 flex flex-col min-h-0 overflow-hidden">
+          <div className="p-4 sm:p-5 overflow-y-auto overscroll-contain space-y-4 flex-1 text-slate-900">
             {/* Date Selection Controls */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-200">
               {/* Source Date */}
@@ -390,29 +390,29 @@ export const ForwardUpTripsModal: React.FC<ForwardUpTripsModalProps> = ({
             )}
           </div>
 
-          {/* Modal Footer */}
-          <div className="px-6 py-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between gap-3">
-            <div className="text-[11px] text-slate-500">
+          {/* Sticky Modal Footer */}
+          <div className="shrink-0 px-4 py-3 bg-[#f0f9f6] border-t border-emerald-200 flex flex-wrap items-center justify-between gap-2 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+            <div className="text-[11px] text-slate-600 hidden sm:block">
               শুধুমাত্র <strong>আপ ট্রিপ (UP)</strong> ফরোয়ার্ড হবে; সিট বুকিং ও টাকা ০ থেকে শুরু হবে।
             </div>
-            <div className="flex items-center gap-2 shrink-0">
+            <div className="flex items-center gap-2 ml-auto">
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 rounded-xl text-xs font-bold cursor-pointer"
+                className="min-h-[44px] px-4 py-2 bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 rounded-xl text-xs font-bold cursor-pointer"
               >
                 বাতিল
               </button>
               <button
                 type="submit"
                 disabled={submitting || selectedIds.length === 0}
-                className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-black shadow-md transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                className="min-h-[44px] px-5 py-2 bg-[#0d9488] hover:bg-[#0f766e] text-white rounded-xl text-xs font-black shadow-xs transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
               >
                 <CheckCircle className="w-4 h-4" />
                 <span>
                   {submitting
                     ? 'ফরোয়ার্ড হচ্ছে...'
-                    : `${toBengaliDigits(selectedIds.length)}টি আপ ট্রিপ ফরোয়ার্ড করুন`}
+                    : `${toBengaliDigits(selectedIds.length)}টি আপ ট্রিপ ফরোয়ার্ড`}
                 </span>
               </button>
             </div>

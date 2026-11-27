@@ -165,45 +165,49 @@ export const RoutesPage: React.FC = () => {
   });
 
   return (
-    <div className="space-y-6">
-      {/* Top Header Card */}
-      <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
-            <MapPin className="w-5 h-5 text-emerald-600" />
-            <span>রুট ও স্টপেজ ব্যবস্থাপনা</span>
-          </h2>
-          <p className="text-xs text-slate-500 mt-0.5">
-            বাস চলাচলের প্রধান রুট ও মধ্যবর্তী স্টপেজ। কোন নির্দিষ্ট ভাড়া বাধ্যতামূলক নয়; ট্রিপ শিডিউল তৈরির সময় ভাড়া নির্ধারিত হয়।
-          </p>
-        </div>
+    <div className="space-y-3">
+      {/* Compact Header */}
+      <div className="bg-white rounded-xl border border-emerald-200 shadow-2xs overflow-hidden">
+        <div className="bg-[#0b2820] px-3 py-2 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div className="flex items-center gap-2 min-w-0">
+            <MapPin className="w-4 h-4 shrink-0 text-emerald-300" />
+            <div className="min-w-0">
+              <h2 className="text-xs sm:text-sm font-bold leading-tight truncate text-white">
+                রুট ও স্টপেজ ব্যবস্থাপনা
+              </h2>
+              <p className="hidden sm:block text-[10px] text-emerald-200/80 leading-tight truncate">
+                বাস চলাচলের প্রধান রুট, মধ্যবর্তী স্টপেজ ও কিমি দূরত্ব
+              </p>
+            </div>
+          </div>
 
-        <div className="flex items-center gap-2.5">
-          <button
-            type="button"
-            onClick={fetchRoutes}
-            className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition-colors"
-            title="রিফ্রেশ"
-          >
-            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-          </button>
-
-          {canManageTrips && (
+          <div className="flex items-center gap-1.5 shrink-0">
             <button
               type="button"
-              onClick={openAddModal}
-              className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-xs hover:shadow-md transition-all flex items-center gap-1.5 cursor-pointer"
+              onClick={fetchRoutes}
+              className="p-1.5 bg-white/15 hover:bg-white/25 text-white rounded-lg transition-colors cursor-pointer"
+              title="রিফ্রেশ"
             >
-              <Plus className="w-4 h-4" />
-              <span>নতুন রুট তৈরি করুন</span>
+              <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
             </button>
-          )}
+
+            {canManageTrips && (
+              <button
+                type="button"
+                onClick={openAddModal}
+                className="px-2.5 py-1 bg-[#0d9488] hover:bg-[#0f766e] text-white text-[11px] font-extrabold rounded-lg shadow-2xs transition-all flex items-center gap-1 cursor-pointer border border-emerald-400/30"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>নতুন রুট</span>
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
       {/* Messages */}
       {successMsg && (
-        <div className="p-3.5 bg-emerald-50 text-emerald-800 rounded-2xl text-xs font-semibold border border-emerald-200 flex items-center justify-between">
+        <div className="p-2.5 bg-emerald-50 text-emerald-800 rounded-xl text-xs font-semibold border border-emerald-200 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <CheckCircle className="w-4 h-4 shrink-0 text-emerald-600" />
             <span>{successMsg}</span>
@@ -215,9 +219,9 @@ export const RoutesPage: React.FC = () => {
       )}
 
       {errorMsg && (
-        <div className="p-3.5 bg-red-50 text-red-700 rounded-2xl text-xs font-semibold border border-red-200 flex items-center justify-between">
+        <div className="p-2.5 bg-rose-50 text-rose-700 rounded-xl text-xs font-semibold border border-rose-200 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <AlertTriangle className="w-4 h-4 shrink-0 text-red-600" />
+            <AlertTriangle className="w-4 h-4 shrink-0 text-rose-600" />
             <span>{errorMsg}</span>
           </div>
           <button type="button" onClick={() => setErrorMsg('')} className="text-slate-400 hover:text-slate-600">
@@ -227,37 +231,37 @@ export const RoutesPage: React.FC = () => {
       )}
 
       {/* Search Bar & Direction Filter Tabs */}
-      <div className="bg-white p-3 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row items-center gap-3">
-        <div className="flex items-center gap-2 flex-1 w-full">
-          <Search className="w-4 h-4 text-slate-400 ml-2" />
+      <div className="bg-white p-2.5 rounded-xl border border-emerald-200 shadow-2xs flex flex-col sm:flex-row items-center gap-2">
+        <div className="relative flex-1 w-full">
+          <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             value={searchTerm ?? ''}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="রুটের নাম, শুরুর স্থান বা গন্তব্য দিয়ে খুঁজুন..."
-            className="w-full px-2 py-1 bg-transparent text-xs outline-none"
+            className="w-full pl-8 pr-2.5 py-1.5 bg-[#f4fbf8] border border-emerald-200 rounded-lg text-xs text-slate-900 outline-none focus:bg-white focus:ring-2 focus:ring-emerald-600"
           />
         </div>
 
-        <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl text-xs font-bold border border-slate-200 w-full sm:w-auto shrink-0">
+        <div className="flex items-center gap-1 bg-[#e6f4ef] p-0.5 rounded-lg text-[11px] font-bold border border-emerald-200 w-full sm:w-auto shrink-0">
           <button
             type="button"
             onClick={() => setDirectionFilter('ALL')}
-            className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex-1 sm:flex-none text-center ${
+            className={`px-2.5 py-1 rounded-md transition-all cursor-pointer flex-1 sm:flex-none text-center ${
               directionFilter === 'ALL'
-                ? 'bg-slate-900 text-white shadow-xs'
-                : 'text-slate-600 hover:text-slate-900'
+                ? 'bg-[#0b2820] text-white shadow-2xs'
+                : 'text-slate-700 hover:text-slate-900'
             }`}
           >
-            সকল রুট ({routes.length})
+            সকল ({toBengaliDigits(routes.length)})
           </button>
           <button
             type="button"
             onClick={() => setDirectionFilter('UP')}
-            className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex-1 sm:flex-none text-center ${
+            className={`px-2.5 py-1 rounded-md transition-all cursor-pointer flex-1 sm:flex-none text-center ${
               directionFilter === 'UP'
-                ? 'bg-blue-600 text-white shadow-xs'
-                : 'text-slate-600 hover:text-slate-900'
+                ? 'bg-[#0d9488] text-white shadow-2xs'
+                : 'text-slate-700 hover:text-slate-900'
             }`}
           >
             আপ রুট
@@ -265,10 +269,10 @@ export const RoutesPage: React.FC = () => {
           <button
             type="button"
             onClick={() => setDirectionFilter('DOWN')}
-            className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex-1 sm:flex-none text-center ${
+            className={`px-2.5 py-1 rounded-md transition-all cursor-pointer flex-1 sm:flex-none text-center ${
               directionFilter === 'DOWN'
-                ? 'bg-emerald-600 text-white shadow-xs'
-                : 'text-slate-600 hover:text-slate-900'
+                ? 'bg-[#0f766e] text-white shadow-2xs'
+                : 'text-slate-700 hover:text-slate-900'
             }`}
           >
             ডাউন রুট
@@ -276,101 +280,105 @@ export const RoutesPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Route Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* Route Sheet Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
         {filtered.map((r) => (
           <div
             key={r.id}
-            className="bg-white rounded-2xl border border-slate-200 shadow-xs p-5 hover:shadow-md transition-shadow flex flex-col justify-between space-y-4"
+            className="bg-white rounded-xl border border-emerald-200 shadow-2xs overflow-hidden flex flex-col justify-between"
           >
             <div>
-              <div className="flex items-start justify-between pb-3 border-b">
-                <div>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    {r.routeNumber && (
-                      <span className="px-2 py-0.5 rounded bg-slate-900 text-white text-[10px] font-black tabular-nums">
-                        রুট নং {toBengaliDigits(r.routeNumber)}
-                      </span>
-                    )}
-                    <h3 className="font-bold text-sm text-slate-900">{r.name}</h3>
-                    <span
-                      className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                        r.direction === 'UP'
-                          ? 'bg-blue-100 text-blue-800 border border-blue-200'
-                          : r.direction === 'DOWN'
-                          ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
-                          : 'bg-purple-100 text-purple-800 border border-purple-200'
-                      }`}
-                    >
-                      {r.direction === 'UP' ? 'আপ রুট' : r.direction === 'DOWN' ? 'ডাউন রুট' : 'উভয় দিক'}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2 text-xs text-slate-500 mt-1 font-medium">
-                    <span className="font-semibold text-slate-700">{r.origin}</span>
-                    <ArrowRight className="w-3.5 h-3.5 text-emerald-600" />
-                    <span className="font-semibold text-slate-700">{r.destination}</span>
-                  </div>
-                </div>
-
-                <div className="text-right">
-                  {r.baseFare ? (
-                    <span className="text-sm font-black text-emerald-700">{formatTaka(r.baseFare)}</span>
-                  ) : (
-                    <span className="text-xs font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded">
-                      ভাড়া ট্রিপভিত্তিক
+              {/* Route Title Strip */}
+              <div
+                className={`${
+                  r.direction === 'UP'
+                    ? 'bg-[#0b2820]'
+                    : r.direction === 'DOWN'
+                    ? 'bg-[#0f766e]'
+                    : 'bg-[#0d9488]'
+                } px-3 py-1.5 text-white flex items-center justify-between gap-2`}
+              >
+                <div className="flex items-center gap-1.5 min-w-0">
+                  {r.routeNumber && (
+                    <span className="px-1.5 py-0.2 rounded bg-white/25 text-[10px] font-black tabular-nums shrink-0">
+                      #{toBengaliDigits(r.routeNumber)}
                     </span>
                   )}
-                  {r.distanceKm && (
-                    <div className="text-[10px] text-slate-400 mt-0.5">
-                      দূরত্ব: {toBengaliDigits(r.distanceKm)} কিমি
-                    </div>
-                  )}
+                  <h3 className="font-bold text-xs truncate">{r.name}</h3>
                 </div>
+                <span className="px-1.5 py-0.2 rounded bg-white/20 text-[10px] font-bold shrink-0">
+                  {r.direction === 'UP' ? 'আপ রুট' : r.direction === 'DOWN' ? 'ডাউন রুট' : 'উভয় দিক'}
+                </span>
               </div>
 
-              {/* Intermediate Stops Badges */}
-              <div className="mt-3">
-                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1.5">
-                  মধ্যবর্তী স্টপেজ সমূহ:
-                </span>
-                <div className="flex flex-wrap gap-1.5">
-                  {r.intermediateStops.length > 0 ? (
-                    r.intermediateStops.map((stop, i) => (
-                      <span
-                        key={i}
-                        className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-medium border border-slate-200"
-                      >
-                        📍 {stop}
+              {/* Compact Route Info Rows */}
+              <div className="p-3 space-y-2">
+                <div className="flex items-center justify-between gap-2 pb-1.5 border-b border-slate-200 text-xs">
+                  <div className="flex items-center gap-1.5 text-slate-700 font-semibold min-w-0">
+                    <span className="truncate">{r.origin}</span>
+                    <ArrowRight className="w-3 h-3 text-emerald-600 shrink-0" />
+                    <span className="truncate">{r.destination}</span>
+                  </div>
+                  <div className="text-right shrink-0 flex items-center gap-2">
+                    {r.distanceKm && (
+                      <span className="text-[10px] text-slate-500 font-bold">
+                        {toBengaliDigits(r.distanceKm)} কিমি
                       </span>
-                    ))
-                  ) : (
-                    <span className="text-xs text-slate-400 italic">কোনো বিরতি স্থান নেই (নন-স্টপ)</span>
-                  )}
+                    )}
+                    {r.baseFare ? (
+                      <span className="text-xs font-black text-emerald-700">{formatTaka(r.baseFare)}</span>
+                    ) : (
+                      <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">
+                        ট্রিপভিত্তিক
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Intermediate Stops */}
+                <div>
+                  <span className="text-[10px] font-bold text-slate-500 block mb-1">
+                    মধ্যবর্তী স্টপেজ:
+                  </span>
+                  <div className="flex flex-wrap gap-1">
+                    {r.intermediateStops.length > 0 ? (
+                      r.intermediateStops.map((stop, i) => (
+                        <span
+                          key={i}
+                          className="px-2 py-0.5 bg-slate-100 text-slate-700 rounded text-[11px] font-medium border border-slate-200"
+                        >
+                          {stop}
+                        </span>
+                      ))
+                    ) : (
+                      <span className="text-[11px] text-slate-400 italic">নন-স্টপ (বিরতিহীন)</span>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* Edit / Delete Action Buttons */}
             {canManageTrips && (
-              <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
-                <span className="text-[11px] text-slate-400">
-                  {isMasterBookingCounter ? 'মাষ্টার বুকিং কাউন্টার পারমিশন' : 'এডমিন নিয়ন্ত্রণ'}
+              <div className="px-3 py-1.5 border-t border-slate-200 bg-slate-50 flex items-center justify-between">
+                <span className="text-[10px] text-slate-400">
+                  {isMasterBookingCounter ? 'মাষ্টার বুকিং পারমিশন' : 'এডমিন নিয়ন্ত্রণ'}
                 </span>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5">
                   <button
                     type="button"
                     onClick={() => openEditModal(r)}
-                    className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-bold rounded-xl transition-colors flex items-center gap-1 cursor-pointer"
+                    className="px-2 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 text-[11px] font-bold rounded-md transition-colors flex items-center gap-1 cursor-pointer"
                   >
-                    <Edit className="w-3.5 h-3.5" />
+                    <Edit className="w-3 h-3" />
                     <span>সম্পাদনা</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => handleDelete(r)}
-                    className="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold rounded-xl transition-colors flex items-center gap-1 cursor-pointer"
+                    className="px-2 py-1 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-[11px] font-bold rounded-md transition-colors flex items-center gap-1 cursor-pointer"
                   >
-                    <Trash2 className="w-3.5 h-3.5" />
+                    <Trash2 className="w-3 h-3" />
                     <span>মুছুন</span>
                   </button>
                 </div>
@@ -382,179 +390,183 @@ export const RoutesPage: React.FC = () => {
 
       {/* Add / Edit Route Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200">
-            <div className="flex items-center justify-between pb-3 border-b mb-4">
-              <div>
-                <h3 className="text-base font-bold text-slate-900">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
+          <div className="bg-white rounded-t-2xl sm:rounded-2xl max-w-md w-full shadow-2xl border border-emerald-200 flex flex-col max-h-[92dvh] sm:max-h-[88dvh] overflow-hidden">
+            <div className="shrink-0 px-4 py-3 bg-[#0b2820] text-white flex items-center justify-between gap-2">
+              <div className="min-w-0">
+                <h3 className="text-sm sm:text-base font-bold text-white truncate">
                   {editingRoute ? 'রুট তথ্য সম্পাদনা' : 'নতুন রুট তৈরি করুন'}
                 </h3>
-                <p className="text-[11px] text-slate-400">ভাড়া নির্দিষ্ট নয়; শিডিউল তৈরির সময় প্রয়োজনমতো পরিবর্তন করা যায়</p>
+                <p className="text-[11px] text-emerald-200/80 truncate">
+                  ভাড়া নির্দিষ্ট নয়; শিডিউল তৈরির সময় পরিবর্তন করা যায়
+                </p>
               </div>
               <button
                 type="button"
                 onClick={() => setIsModalOpen(false)}
-                className="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg"
+                className="p-1.5 text-emerald-100 hover:text-white hover:bg-white/15 rounded-lg cursor-pointer shrink-0"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            {errorMsg && (
-              <div className="mb-4 p-3 bg-red-50 text-red-700 text-xs font-semibold rounded-xl border border-red-200 flex items-center gap-2">
-                <AlertTriangle className="w-4 h-4 shrink-0" />
-                <span>{errorMsg}</span>
-              </div>
-            )}
+            <form onSubmit={handleSave} className="flex-1 flex flex-col min-h-0 overflow-hidden">
+              <div className="flex-1 overflow-y-auto overscroll-contain p-4 space-y-3.5 text-slate-900">
+                {errorMsg && (
+                  <div className="p-3 bg-rose-50 text-rose-700 text-xs font-semibold rounded-xl border border-rose-200 flex items-center gap-2">
+                    <AlertTriangle className="w-4 h-4 shrink-0" />
+                    <span>{errorMsg}</span>
+                  </div>
+                )}
 
-            <form onSubmit={handleSave} className="space-y-4">
-              {/* Route Direction: UP / DOWN */}
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                  রুটের ট্রিপ দিক (১. আপ রুট / ২. ডাউন রুট) *
-                </label>
+                {/* Route Direction: UP / DOWN */}
+                <div>
+                  <label className="block text-xs font-bold text-slate-800 mb-1.5">
+                    রুটের ট্রিপ দিক (১. আপ রুট / ২. ডাউন রুট) *
+                  </label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setDirection('UP')}
+                      className={`p-2.5 rounded-xl border text-center transition-all cursor-pointer ${
+                        direction === 'UP'
+                          ? 'bg-emerald-50 border-[#0d9488] text-slate-900 ring-2 ring-emerald-500/20 font-bold'
+                          : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
+                      }`}
+                    >
+                      <div className="text-xs font-bold">১. আপ রুট (UP)</div>
+                      <div className="text-[10px] text-slate-600 mt-0.5">মাদারীপুর ➔ ঢাকা</div>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setDirection('DOWN')}
+                      className={`p-2.5 rounded-xl border text-center transition-all cursor-pointer ${
+                        direction === 'DOWN'
+                          ? 'bg-emerald-50 border-[#0f766e] text-slate-900 ring-2 ring-emerald-500/20 font-bold'
+                          : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
+                      }`}
+                    >
+                      <div className="text-xs font-bold">২. ডাউন রুট (DOWN)</div>
+                      <div className="text-[10px] text-slate-600 mt-0.5">ঢাকা ➔ মাদারীপুর</div>
+                    </button>
+                  </div>
+                  <p className="text-[11px] text-slate-600 mt-1.5">
+                    আপ ও ডাউন রুট আলাদা থাকলে সমন্বয়ের সময় রুট জোড়া হয়ে ১টি পূর্ণাঙ্গ ট্রিপের হিসাব পাওয়া যাবে।
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-3 gap-2.5">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-800 mb-1">
+                      রুট নং *
+                    </label>
+                    <input
+                      type="number"
+                      min="1"
+                      value={routeNumber ?? ''}
+                      onChange={(e) => setRouteNumber(e.target.value)}
+                      placeholder="যেমন: ১"
+                      className="w-full px-3 py-2 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs text-slate-900 font-bold tabular-nums outline-none focus:bg-white focus:ring-2 focus:ring-emerald-600"
+                      required
+                    />
+                  </div>
+                  <div className="col-span-2">
+                    <label className="block text-xs font-bold text-slate-800 mb-1">
+                      রুটের নাম (Route Title)
+                    </label>
+                    <input
+                      type="text"
+                      value={name ?? ''}
+                      onChange={(e) => setName(e.target.value)}
+                      placeholder="মাদারীপুর - পদ্মা সেতু - সায়েদাবাদ"
+                      className="w-full px-3 py-2 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs text-slate-900 outline-none focus:bg-white focus:ring-2 focus:ring-emerald-600"
+                    />
+                  </div>
+                </div>
+
                 <div className="grid grid-cols-2 gap-2.5">
-                  <button
-                    type="button"
-                    onClick={() => setDirection('UP')}
-                    className={`p-3 rounded-xl border text-center transition-all cursor-pointer ${
-                      direction === 'UP'
-                        ? 'bg-blue-50 border-blue-600 text-blue-900 ring-2 ring-blue-500/20 font-bold'
-                        : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
-                    }`}
-                  >
-                    <div className="text-xs font-bold">১. আপ রুট (UP)</div>
-                    <div className="text-[10px] text-slate-500 mt-0.5">মাদারীপুর ➔ ঢাকা</div>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setDirection('DOWN')}
-                    className={`p-3 rounded-xl border text-center transition-all cursor-pointer ${
-                      direction === 'DOWN'
-                        ? 'bg-emerald-50 border-emerald-600 text-emerald-900 ring-2 ring-emerald-500/20 font-bold'
-                        : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
-                    }`}
-                  >
-                    <div className="text-xs font-bold">২. ডাউন রুট (DOWN)</div>
-                    <div className="text-[10px] text-slate-500 mt-0.5">ঢাকা ➔ মাদারীপুর</div>
-                  </button>
-                </div>
-                <p className="text-[11px] text-slate-500 mt-1.5">
-                  আপ ও ডাউন রুট আলাদা থাকলে সমন্বয়ের সময় রুট জোড়া হয়ে ১টি পূর্ণাঙ্গ ট্রিপের হিসাব পাওয়া যাবে (যেমন: কালকিনি - কদমতলী + গুলিস্তান - মাদারীপুর = কালকিনি - কদমতলী - গুলিস্তান - মাদারীপুর ১টি পূর্ণাঙ্গ ট্রিপ)।
-                </p>
-              </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-800 mb-1">
+                      শুরুর স্থান (Origin) *
+                    </label>
+                    <input
+                      type="text"
+                      value={origin ?? ''}
+                      onChange={(e) => setOrigin(e.target.value)}
+                      placeholder="মাদারীপুর"
+                      className="w-full px-3 py-2 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs text-slate-900 outline-none focus:bg-white focus:ring-2 focus:ring-emerald-600"
+                      required
+                    />
+                  </div>
 
-              <div className="grid grid-cols-3 gap-3">
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
-                    রুট নং (১, ২, ৩...) *
-                  </label>
-                  <input
-                    type="number"
-                    min="1"
-                    value={routeNumber ?? ''}
-                    onChange={(e) => setRouteNumber(e.target.value)}
-                    placeholder="যেমন: ১"
-                    className="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs font-bold tabular-nums outline-none focus:bg-white focus:ring-2 focus:ring-emerald-500"
-                    required
-                  />
-                </div>
-                <div className="col-span-2">
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
-                    রুটের নাম (Route Title)
-                  </label>
-                  <input
-                    type="text"
-                    value={name ?? ''}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="যেমন: মাদারীপুর - পদ্মা সেতু - সায়েদাবাদ"
-                    className="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs outline-none focus:bg-white focus:ring-2 focus:ring-emerald-500"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
-                    শুরুর স্থান (Origin) *
-                  </label>
-                  <input
-                    type="text"
-                    value={origin ?? ''}
-                    onChange={(e) => setOrigin(e.target.value)}
-                    placeholder="মাদারীপুর"
-                    className="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs outline-none focus:bg-white focus:ring-2 focus:ring-emerald-500"
-                    required
-                  />
+                  <div>
+                    <label className="block text-xs font-bold text-slate-800 mb-1">
+                      গন্তব্য (Destination) *
+                    </label>
+                    <input
+                      type="text"
+                      value={destination ?? ''}
+                      onChange={(e) => setDestination(e.target.value)}
+                      placeholder="ঢাকা (গাবতলী)"
+                      className="w-full px-3 py-2 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs text-slate-900 outline-none focus:bg-white focus:ring-2 focus:ring-emerald-600"
+                      required
+                    />
+                  </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
-                    গন্তব্য (Destination) *
+                  <label className="block text-xs font-bold text-slate-800 mb-1">
+                    মধ্যবর্তী স্টপেজ সমূহ (কমা দিয়ে আলাদা করুন)
                   </label>
-                  <input
-                    type="text"
-                    value={destination ?? ''}
-                    onChange={(e) => setDestination(e.target.value)}
-                    placeholder="ঢাকা (গাবতলী)"
-                    className="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs outline-none focus:bg-white focus:ring-2 focus:ring-emerald-500"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  মধ্যবর্তী স্টপেজ সমূহ (কমা দিয়ে আলাদা করুন)
-                </label>
-                <textarea
-                  rows={2}
-                  value={stopsText ?? ''}
-                  onChange={(e) => setStopsText(e.target.value)}
-                  placeholder="ভাঙ্গা, শিবচর, পদ্মা সেতু টোলপ্লাজা, সায়েদাবাদ"
-                  className="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs outline-none focus:bg-white focus:ring-2 focus:ring-emerald-500"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
-                    আনুমানিক বেস ভাড়া (৳) <span className="text-slate-400 font-normal">(ঐচ্ছিক)</span>
-                  </label>
-                  <input
-                    type="number"
-                    value={baseFare ?? ''}
-                    onChange={(e) => setBaseFare(e.target.value)}
-                    placeholder="ট্রিপে পরিবর্তনযোগ্য"
-                    className="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs outline-none focus:bg-white focus:ring-2 focus:ring-emerald-500"
+                  <textarea
+                    rows={2}
+                    value={stopsText ?? ''}
+                    onChange={(e) => setStopsText(e.target.value)}
+                    placeholder="ভাঙ্গা, শিবচর, পদ্মা সেতু টোলপ্লাজা, সায়েদাবাদ"
+                    className="w-full px-3 py-2 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs text-slate-900 outline-none focus:bg-white focus:ring-2 focus:ring-emerald-600"
                   />
                 </div>
 
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
-                    দূরত্ব (কিমি)
-                  </label>
-                  <input
-                    type="number"
-                    value={distanceKm ?? ''}
-                    onChange={(e) => setDistanceKm(e.target.value)}
-                    placeholder="যেমন: ৮৫"
-                    className="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs outline-none focus:bg-white focus:ring-2 focus:ring-emerald-500"
-                  />
+                <div className="grid grid-cols-2 gap-2.5">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-800 mb-1">
+                      বেস ভাড়া (৳) <span className="text-slate-400 font-normal">(ঐচ্ছিক)</span>
+                    </label>
+                    <input
+                      type="number"
+                      value={baseFare ?? ''}
+                      onChange={(e) => setBaseFare(e.target.value)}
+                      placeholder="ট্রিপে পরিবর্তনযোগ্য"
+                      className="w-full px-3 py-2 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs text-slate-900 outline-none focus:bg-white focus:ring-2 focus:ring-emerald-600"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-800 mb-1">
+                      দূরত্ব (কিমি)
+                    </label>
+                    <input
+                      type="number"
+                      value={distanceKm ?? ''}
+                      onChange={(e) => setDistanceKm(e.target.value)}
+                      placeholder="যেমন: ৮৫"
+                      className="w-full px-3 py-2 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs text-slate-900 outline-none focus:bg-white focus:ring-2 focus:ring-emerald-600"
+                    />
+                  </div>
                 </div>
               </div>
 
-              <div className="pt-3 border-t flex items-center justify-end gap-3">
+              <div className="shrink-0 px-4 py-3 bg-[#f0f9f6] border-t border-emerald-200 flex items-center justify-end gap-2 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold cursor-pointer"
+                  className="px-4 py-2.5 min-h-[44px] bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 rounded-xl text-xs font-bold cursor-pointer"
                 >
                   বাতিল
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-md shadow-emerald-600/30 flex items-center gap-1.5 cursor-pointer"
+                  className="px-5 py-2.5 min-h-[44px] bg-[#0d9488] hover:bg-[#0f766e] text-white rounded-xl text-xs font-bold shadow-md flex items-center gap-1.5 cursor-pointer"
                 >
                   <CheckCircle className="w-4 h-4" />
                   <span>{editingRoute ? 'আপডেট সংরক্ষণ' : 'রুট যুক্ত করুন'}</span>

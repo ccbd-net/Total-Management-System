@@ -174,45 +174,41 @@ export const WeeklyTrendsChart: React.FC<WeeklyTrendsChartProps> = ({
   return (
     <section
       aria-label="সাপ্তাহিক টিকিট বিক্রয় ও ফুয়েল খরচ প্রবণতা"
-      className="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200 shadow-xs space-y-5"
+      className="bg-white border border-[#a7d7c5] rounded-xl shadow-2xs overflow-hidden"
     >
-      {/* Header Row */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-slate-100">
-        <div>
-          <h3 className="text-base font-bold text-slate-900">
+      {/* Compact Spreadsheet Toolbar Header */}
+      <div className="bg-[#0b2820] px-3 py-2 border-b border-[#071d17] flex flex-col lg:flex-row lg:items-center justify-between gap-2 text-white">
+        <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+          <h3 className="text-xs sm:text-sm font-bold text-white">
             সাপ্তাহিক টিকিট বিক্রয় ও ফুয়েল খরচ প্রবণতা
           </h3>
-          <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500 mt-1 tabular-nums">
-            <span>
-              {data
-                ? `${formatBengaliDate(data.startDate)} – ${formatBengaliDate(data.endDate)}`
-                : 'চলতি সপ্তাহের হিসাব'}
-            </span>
-            <span aria-hidden="true">·</span>
-            <span>শনিবার থেকে শুক্রবার (৭ দিন)</span>
-          </div>
+          <span className="text-[10px] sm:text-[11px] text-emerald-200 tabular-nums">
+            ({data
+              ? `${formatBengaliDate(data.startDate)} – ${formatBengaliDate(data.endDate)}`
+              : 'চলতি সপ্তাহের হিসাব'})
+          </span>
         </div>
 
         {/* Interactive Controls */}
-        <div className="flex flex-wrap items-center gap-2.5">
+        <div className="flex flex-wrap items-center gap-1.5">
           {/* Week Stepper */}
-          <div className="flex items-center bg-slate-100 p-1 rounded-xl">
+          <div className="flex items-center bg-white/95 border border-emerald-200 p-0.5 rounded-lg">
             <button
               type="button"
               onClick={() => onShiftWeek(-7)}
-              className="p-1.5 text-slate-600 hover:text-slate-900 hover:bg-white rounded-lg transition-colors whitespace-nowrap shrink-0"
+              className="p-1 text-slate-700 hover:text-slate-950 hover:bg-emerald-50 rounded transition-colors shrink-0 cursor-pointer"
               title="পূর্বের সপ্তাহ"
               aria-label="পূর্বের সপ্তাহ"
             >
-              <ChevronLeft className="w-4 h-4" />
+              <ChevronLeft className="w-3.5 h-3.5" />
             </button>
             <button
               type="button"
               onClick={onResetCurrentWeek}
-              className={`px-3 py-1 text-xs font-semibold rounded-lg transition-colors whitespace-nowrap shrink-0 ${
+              className={`px-2 py-0.5 text-[11px] font-bold rounded transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
                 isCurrentWeek
-                  ? 'bg-white text-slate-900 shadow-2xs'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-[#0b2820] text-white'
+                  : 'text-slate-700 hover:text-slate-950'
               }`}
             >
               চলতি সপ্তাহ
@@ -220,248 +216,246 @@ export const WeeklyTrendsChart: React.FC<WeeklyTrendsChartProps> = ({
             <button
               type="button"
               onClick={() => onShiftWeek(7)}
-              className="p-1.5 text-slate-600 hover:text-slate-900 hover:bg-white rounded-lg transition-colors whitespace-nowrap shrink-0"
+              className="p-1 text-slate-700 hover:text-slate-950 hover:bg-emerald-50 rounded transition-colors shrink-0 cursor-pointer"
               title="পরের সপ্তাহ"
               aria-label="পরের সপ্তাহ"
             >
-              <ChevronRight className="w-4 h-4" />
+              <ChevronRight className="w-3.5 h-3.5" />
             </button>
           </div>
 
           {/* Chart Type Segmented Control */}
-          <div className="flex items-center bg-slate-100 p-1 rounded-xl">
+          <div className="flex items-center bg-white/95 border border-emerald-200 p-0.5 rounded-lg">
             <button
               type="button"
               onClick={() => setChartMode('area')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors whitespace-nowrap shrink-0 ${
+              className={`flex items-center gap-1 px-2 py-0.5 text-[11px] font-bold rounded transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
                 chartMode === 'area'
-                  ? 'bg-white text-slate-900 shadow-2xs'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-[#0d9488] text-white'
+                  : 'text-slate-700 hover:text-slate-950'
               }`}
             >
-              <TrendingUp className="w-3.5 h-3.5" />
-              <span>ট্রেণ্ড লাইন</span>
+              <TrendingUp className="w-3 h-3" />
+              <span>লাইন</span>
             </button>
             <button
               type="button"
               onClick={() => setChartMode('bar')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors whitespace-nowrap shrink-0 ${
+              className={`flex items-center gap-1 px-2 py-0.5 text-[11px] font-bold rounded transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
                 chartMode === 'bar'
-                  ? 'bg-white text-slate-900 shadow-2xs'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-[#0f766e] text-white'
+                  : 'text-slate-700 hover:text-slate-950'
               }`}
             >
-              <BarChart3 className="w-3.5 h-3.5" />
-              <span>বার তুলনা</span>
+              <BarChart3 className="w-3 h-3" />
+              <span>বার</span>
             </button>
           </div>
 
           <button
             type="button"
-            onClick={() => onNavigateTo('fuel_log')}
-            className="text-xs font-semibold text-blue-600 hover:text-blue-800 flex items-center gap-1 px-2 py-1.5 whitespace-nowrap shrink-0"
+            onClick={() => onNavigateTo('fuel_management')}
+            className="text-[11px] font-bold text-[#0b2820] hover:bg-emerald-50 flex items-center gap-0.5 px-2 py-1 bg-white rounded-lg whitespace-nowrap shrink-0 shadow-2xs cursor-pointer"
           >
             <span>ফুয়েল লগ</span>
-            <ArrowUpRight className="w-3.5 h-3.5" />
+            <ArrowUpRight className="w-3 h-3" />
           </button>
         </div>
       </div>
 
-      {/* Weekly Totals Summary Strip */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-slate-200 border border-slate-200/90 rounded-xl bg-slate-50/70">
-        <div className="p-3.5 sm:px-4">
-          <div className="text-xs font-semibold text-slate-500">সাপ্তাহিক টিকিট বিক্রয়</div>
-          <div className="text-lg sm:text-xl font-black text-emerald-700 mt-1 tabular-nums">
+      {/* Weekly Totals Excel Strip */}
+      <div className="grid grid-cols-3 divide-x divide-[#d1e7de] border-b border-[#a7d7c5] bg-[#f4fbf8]">
+        <div className="px-2.5 py-2 sm:px-3.5">
+          <div className="text-[10px] font-bold text-slate-500">সাপ্তাহিক বিক্রয়</div>
+          <div className="text-xs sm:text-base font-black text-emerald-700 mt-0.5 tabular-nums">
             {formatTaka(totals?.totalTicketSales || 0)}
           </div>
-          <div className="text-[11px] text-slate-500 mt-0.5 tabular-nums">
-            {toBengaliDigits(totals?.totalTicketsCount || 0)} টি টিকিট ·{' '}
-            {toBengaliDigits(totals?.totalSeatsSold || 0)} আসন বিক্রিত
+          <div className="text-[10px] text-slate-500 tabular-nums truncate">
+            {toBengaliDigits(totals?.totalTicketsCount || 0)} টিকিট · {toBengaliDigits(totals?.totalSeatsSold || 0)} আসন
           </div>
         </div>
 
-        <div className="p-3.5 sm:px-4">
-          <div className="text-xs font-semibold text-slate-500">সাপ্তাহিক ফুয়েল খরচ</div>
-          <div className="text-lg sm:text-xl font-black text-amber-700 mt-1 tabular-nums">
+        <div className="px-2.5 py-2 sm:px-3.5">
+          <div className="text-[10px] font-bold text-slate-500">সাপ্তাহিক ফুয়েল</div>
+          <div className="text-xs sm:text-base font-black text-amber-700 mt-0.5 tabular-nums">
             {formatTaka(totals?.totalFuelExpense || 0)}
           </div>
-          <div className="text-[11px] text-slate-500 mt-0.5 tabular-nums">
-            মোট ব্যবহৃত তেল: {toBengaliDigits(totals?.totalFuelLiters || 0)} লিটার
+          <div className="text-[10px] text-slate-500 tabular-nums truncate">
+            {toBengaliDigits(totals?.totalFuelLiters || 0)} লিটার তেল
           </div>
         </div>
 
-        <div className="p-3.5 sm:px-4">
-          <div className="text-xs font-semibold text-slate-500">নীট উদ্বৃত্ত (বিক্রয় - ফুয়েল)</div>
+        <div className="px-2.5 py-2 sm:px-3.5">
+          <div className="text-[10px] font-bold text-slate-500">নীট উদ্বৃত্ত</div>
           <div
-            className={`text-lg sm:text-xl font-black mt-1 tabular-nums ${
+            className={`text-xs sm:text-base font-black mt-0.5 tabular-nums ${
               (totals?.totalNetBalance || 0) >= 0 ? 'text-slate-900' : 'text-rose-600'
             }`}
           >
             {formatTaka(totals?.totalNetBalance || 0)}
           </div>
-          <div className="text-[11px] text-slate-500 mt-0.5 tabular-nums">
-            বিক্রয়ের তুলনায় ফুয়েল ব্যয় {toBengaliDigits(totals?.fuelToSalesRatio || 0)}%
+          <div className="text-[10px] text-slate-500 tabular-nums truncate">
+            ফুয়েল ব্যয় {toBengaliDigits(totals?.fuelToSalesRatio || 0)}%
           </div>
         </div>
       </div>
 
       {/* Chart Area */}
-      {loading && !data ? (
-        <div className="h-[290px] w-full rounded-xl bg-slate-100 animate-pulse" />
-      ) : (
-        <div className="space-y-3">
-          {/* Legend */}
-          <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-slate-600">
-            <div className="flex items-center gap-5">
-              <div className="flex items-center gap-2">
-                <span className="w-3 h-3 rounded-xs bg-emerald-600 inline-block" />
-                <span className="font-semibold text-slate-700">দৈনিক টিকিট বিক্রয় (৳)</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="w-3 h-3 rounded-xs bg-amber-600 inline-block" />
-                <span className="font-semibold text-slate-700">দৈনিক ফুয়েল খরচ (৳)</span>
-              </div>
-            </div>
-            {!hasAnyActivity && !loading && (
-              <span className="text-[11px] text-slate-400">
-                এই সপ্তাহে এখনো কোনো বিক্রয় বা ফুয়েল এন্ট্রি রেকর্ড হয়নি
-              </span>
-            )}
-          </div>
-
-          <div className="relative h-[290px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              {chartMode === 'area' ? (
-                <AreaChart
-                  data={days}
-                  margin={{ top: 10, right: 12, left: 4, bottom: 18 }}
-                >
-                  <defs>
-                    <linearGradient id="ticketSalesGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#059669" stopOpacity={0.22} />
-                      <stop offset="95%" stopColor="#059669" stopOpacity={0.01} />
-                    </linearGradient>
-                    <linearGradient id="fuelExpenseGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#d97706" stopOpacity={0.22} />
-                      <stop offset="95%" stopColor="#d97706" stopOpacity={0.01} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                  <XAxis
-                    dataKey="date"
-                    axisLine={{ stroke: '#cbd5e1' }}
-                    tickLine={false}
-                    tick={renderCustomTick}
-                    interval={0}
-                  />
-                  <YAxis
-                    axisLine={false}
-                    tickLine={false}
-                    width={68}
-                    tickFormatter={formatShortYAxisTaka}
-                    tick={{ fontSize: 11, fill: '#64748b' }}
-                  />
-                  <Tooltip
-                    content={<WeeklyChartTooltip />}
-                    cursor={{ stroke: '#94a3b8', strokeDasharray: '4 4' }}
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="ticketSalesAmount"
-                    name="টিকিট বিক্রয়"
-                    stroke="#059669"
-                    strokeWidth={2.5}
-                    fillOpacity={1}
-                    fill="url(#ticketSalesGrad)"
-                    dot={{ r: 3.5, fill: '#059669', strokeWidth: 2, stroke: '#ffffff' }}
-                    activeDot={{ r: 5.5, fill: '#059669', strokeWidth: 2, stroke: '#ffffff' }}
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="fuelExpenseAmount"
-                    name="ফুয়েল খরচ"
-                    stroke="#d97706"
-                    strokeWidth={2.5}
-                    fillOpacity={1}
-                    fill="url(#fuelExpenseGrad)"
-                    dot={{ r: 3.5, fill: '#d97706', strokeWidth: 2, stroke: '#ffffff' }}
-                    activeDot={{ r: 5.5, fill: '#d97706', strokeWidth: 2, stroke: '#ffffff' }}
-                  />
-                </AreaChart>
-              ) : (
-                <BarChart
-                  data={days}
-                  margin={{ top: 10, right: 12, left: 4, bottom: 18 }}
-                  barGap={6}
-                >
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                  <XAxis
-                    dataKey="date"
-                    axisLine={{ stroke: '#cbd5e1' }}
-                    tickLine={false}
-                    tick={renderCustomTick}
-                    interval={0}
-                  />
-                  <YAxis
-                    axisLine={false}
-                    tickLine={false}
-                    width={68}
-                    tickFormatter={formatShortYAxisTaka}
-                    tick={{ fontSize: 11, fill: '#64748b' }}
-                  />
-                  <Tooltip
-                    content={<WeeklyChartTooltip />}
-                    cursor={{ fill: 'rgba(241, 245, 249, 0.7)' }}
-                  />
-                  <Bar
-                    dataKey="ticketSalesAmount"
-                    name="টিকিট বিক্রয়"
-                    fill="#059669"
-                    radius={[6, 6, 0, 0]}
-                    maxBarSize={30}
-                  />
-                  <Bar
-                    dataKey="fuelExpenseAmount"
-                    name="ফুয়েল খরচ"
-                    fill="#d97706"
-                    radius={[6, 6, 0, 0]}
-                    maxBarSize={30}
-                  />
-                </BarChart>
-              )}
-            </ResponsiveContainer>
-
-            {!hasAnyActivity && !loading && (
-              <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/75 backdrop-blur-[1px] rounded-xl text-center px-4">
-                <p className="text-sm font-semibold text-slate-700">
-                  এই সপ্তাহে এখনো কোনো টিকিট বিক্রয় বা ফুয়েল খরচ এন্ট্রি নেই
-                </p>
-                <p className="text-xs text-slate-500 mt-1">
-                  সিট বুকিং বা ফুয়েল লগ যুক্ত করলে এখানে ৭ দিনের প্রবণতা দেখা যাবে
-                </p>
-                <div className="flex flex-wrap items-center justify-center gap-2.5 mt-3.5">
-                  <button
-                    type="button"
-                    onClick={() => onNavigateTo('seat_booking')}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold transition-colors whitespace-nowrap shrink-0"
-                  >
-                    <Armchair className="w-3.5 h-3.5" />
-                    <span>সিট বুকিং করুন</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => onNavigateTo('fuel_log')}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold transition-colors whitespace-nowrap shrink-0"
-                  >
-                    <Fuel className="w-3.5 h-3.5" />
-                    <span>ফুয়েল এন্ট্রি করুন</span>
-                  </button>
+      <div className="p-2.5 sm:p-3.5">
+        {loading && !data ? (
+          <div className="h-[210px] w-full rounded-lg bg-slate-100 animate-pulse" />
+        ) : (
+          <div className="space-y-2">
+            {/* Legend */}
+            <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-600">
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2.5 h-2.5 rounded-xs bg-emerald-600 inline-block" />
+                  <span className="font-semibold text-slate-700">টিকিট বিক্রয় (৳)</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2.5 h-2.5 rounded-xs bg-amber-600 inline-block" />
+                  <span className="font-semibold text-slate-700">ফুয়েল খরচ (৳)</span>
                 </div>
               </div>
-            )}
+              {!hasAnyActivity && !loading && (
+                <span className="text-[10px] text-slate-400">
+                  এই সপ্তাহে এখনো কোনো এন্ট্রি নেই
+                </span>
+              )}
+            </div>
+
+            <div className="relative h-[210px] sm:h-[235px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                {chartMode === 'area' ? (
+                  <AreaChart
+                    data={days}
+                    margin={{ top: 8, right: 8, left: 0, bottom: 16 }}
+                  >
+                    <defs>
+                      <linearGradient id="ticketSalesGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#059669" stopOpacity={0.22} />
+                        <stop offset="95%" stopColor="#059669" stopOpacity={0.01} />
+                      </linearGradient>
+                      <linearGradient id="fuelExpenseGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#d97706" stopOpacity={0.22} />
+                        <stop offset="95%" stopColor="#d97706" stopOpacity={0.01} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                    <XAxis
+                      dataKey="date"
+                      axisLine={{ stroke: '#cbd5e1' }}
+                      tickLine={false}
+                      tick={renderCustomTick}
+                      interval={0}
+                    />
+                    <YAxis
+                      axisLine={false}
+                      tickLine={false}
+                      width={56}
+                      tickFormatter={formatShortYAxisTaka}
+                      tick={{ fontSize: 10, fill: '#64748b' }}
+                    />
+                    <Tooltip
+                      content={<WeeklyChartTooltip />}
+                      cursor={{ stroke: '#94a3b8', strokeDasharray: '4 4' }}
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="ticketSalesAmount"
+                      name="টিকিট বিক্রয়"
+                      stroke="#059669"
+                      strokeWidth={2}
+                      fillOpacity={1}
+                      fill="url(#ticketSalesGrad)"
+                      dot={{ r: 3, fill: '#059669', strokeWidth: 1.5, stroke: '#ffffff' }}
+                      activeDot={{ r: 5, fill: '#059669', strokeWidth: 2, stroke: '#ffffff' }}
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="fuelExpenseAmount"
+                      name="ফুয়েল খরচ"
+                      stroke="#d97706"
+                      strokeWidth={2}
+                      fillOpacity={1}
+                      fill="url(#fuelExpenseGrad)"
+                      dot={{ r: 3, fill: '#d97706', strokeWidth: 1.5, stroke: '#ffffff' }}
+                      activeDot={{ r: 5, fill: '#d97706', strokeWidth: 2, stroke: '#ffffff' }}
+                    />
+                  </AreaChart>
+                ) : (
+                  <BarChart
+                    data={days}
+                    margin={{ top: 8, right: 8, left: 0, bottom: 16 }}
+                    barGap={4}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                    <XAxis
+                      dataKey="date"
+                      axisLine={{ stroke: '#cbd5e1' }}
+                      tickLine={false}
+                      tick={renderCustomTick}
+                      interval={0}
+                    />
+                    <YAxis
+                      axisLine={false}
+                      tickLine={false}
+                      width={56}
+                      tickFormatter={formatShortYAxisTaka}
+                      tick={{ fontSize: 10, fill: '#64748b' }}
+                    />
+                    <Tooltip
+                      content={<WeeklyChartTooltip />}
+                      cursor={{ fill: 'rgba(241, 245, 249, 0.7)' }}
+                    />
+                    <Bar
+                      dataKey="ticketSalesAmount"
+                      name="টিকিট বিক্রয়"
+                      fill="#059669"
+                      radius={[4, 4, 0, 0]}
+                      maxBarSize={24}
+                    />
+                    <Bar
+                      dataKey="fuelExpenseAmount"
+                      name="ফুয়েল খরচ"
+                      fill="#d97706"
+                      radius={[4, 4, 0, 0]}
+                      maxBarSize={24}
+                    />
+                  </BarChart>
+                )}
+              </ResponsiveContainer>
+
+              {!hasAnyActivity && !loading && (
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/80 backdrop-blur-[1px] rounded-lg text-center px-3">
+                  <p className="text-xs font-bold text-slate-700">
+                    এই সপ্তাহে এখনো কোনো টিকিট বিক্রয় বা ফুয়েল খরচ নেই
+                  </p>
+                  <div className="flex flex-wrap items-center justify-center gap-2 mt-2.5">
+                    <button
+                      type="button"
+                      onClick={() => onNavigateTo('seat_booking')}
+                      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#0d9488] hover:bg-[#0f766e] text-white text-[11px] font-bold transition-colors whitespace-nowrap shrink-0 cursor-pointer"
+                    >
+                      <Armchair className="w-3 h-3" />
+                      <span>সিট বুকিং</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => onNavigateTo('fuel_management')}
+                      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#0b2820] hover:bg-[#071d17] text-white text-[11px] font-bold transition-colors whitespace-nowrap shrink-0 cursor-pointer"
+                    >
+                      <Fuel className="w-3 h-3" />
+                      <span>ফুয়েল এন্ট্রি</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </section>
   );
 };

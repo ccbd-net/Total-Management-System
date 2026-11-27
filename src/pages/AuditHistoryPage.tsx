@@ -70,31 +70,36 @@ export const AuditHistoryPage: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Top Header Card */}
-      <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
-            <History className="w-5 h-5 text-emerald-600" />
-            <span>পরিবর্তনের ইতিহাস ও অডিট ট্রেইল (Audit Logs)</span>
-          </h2>
-          <p className="text-xs text-slate-500 mt-0.5">
-            কে, কখন ট্রিপ শিডিউল, গাড়ি, সুপারভাইজার, ছাড়ার সময় বা বুকিং পরিবর্তন করেছেন তার বিস্তারিত রেকর্ড
-          </p>
-        </div>
+      <div className="bg-white rounded-xl border border-[#a7d7c5] shadow-2xs overflow-hidden">
+        <div className="bg-[#0b2820] px-3.5 py-2.5 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div className="flex items-center gap-2 min-w-0">
+            <History className="w-4 h-4 text-emerald-300 shrink-0" />
+            <div className="min-w-0">
+              <h2 className="text-xs sm:text-sm font-bold leading-tight truncate">
+                পরিবর্তনের ইতিহাস ও অডিট ট্রেইল (Audit Logs)
+              </h2>
+              <p className="hidden sm:block text-[10px] text-emerald-200 leading-tight">
+                কে, কখন ট্রিপ শিডিউল, গাড়ি, সুপারভাইজার, ছাড়ার সময় বা বুকিং পরিবর্তন করেছেন তার বিস্তারিত রেকর্ড
+              </p>
+            </div>
+          </div>
 
-        <button
-          type="button"
-          onClick={fetchLogs}
-          className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition-colors self-start sm:self-auto"
-          title="রিফ্রেশ"
-        >
-          <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-        </button>
+          <button
+            type="button"
+            onClick={fetchLogs}
+            className="px-3 py-1.5 bg-[#0d9488] hover:bg-[#0f766e] text-white rounded-lg text-xs font-bold transition-colors self-start sm:self-auto flex items-center gap-1.5 cursor-pointer"
+            title="রিফ্রেশ"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+            <span>রিফ্রেশ</span>
+          </button>
+        </div>
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row items-center gap-3">
+      <div className="bg-white p-3 rounded-xl border border-[#a7d7c5] shadow-2xs flex flex-col sm:flex-row items-center gap-2.5">
         <div className="relative flex-1 w-full">
-          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
             <Search className="w-4 h-4" />
           </div>
           <input
@@ -102,7 +107,7 @@ export const AuditHistoryPage: React.FC = () => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="অপারেটর নাম, অ্যাকশন বা বিবরণ দিয়ে খুঁজুন..."
-            className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-emerald-500 focus:bg-white outline-none"
+            className="w-full pl-9 pr-3 py-2 bg-[#f4fbf8] border border-[#a7d7c5] rounded-xl text-xs focus:ring-2 focus:ring-[#0d9488] focus:bg-white outline-none"
           />
         </div>
 
@@ -110,7 +115,7 @@ export const AuditHistoryPage: React.FC = () => {
         <select
           value={actionFilter}
           onChange={(e) => setActionFilter(e.target.value)}
-          className="w-full sm:w-auto px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-semibold outline-none"
+          className="w-full sm:w-auto px-3 py-2 bg-[#f4fbf8] border border-[#a7d7c5] rounded-xl text-xs font-semibold outline-none"
         >
           <option value="">সকল অ্যাকশন (All Actions)</option>
           <option value="CREATE_BOOKING">বুকিং তৈরি (CREATE_BOOKING)</option>
@@ -123,12 +128,12 @@ export const AuditHistoryPage: React.FC = () => {
       </div>
 
       {/* Audit Log Table */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
-        <div className="p-4 border-b border-slate-200 flex items-center justify-between">
-          <h3 className="font-bold text-sm text-slate-800">
+      <div className="bg-white rounded-xl border border-[#a7d7c5] shadow-2xs overflow-hidden">
+        <div className="px-3.5 py-2.5 bg-[#0f766e] text-white flex items-center justify-between">
+          <h3 className="font-bold text-xs sm:text-sm">
             লিপিবদ্ধ পরিবর্তন সমূহ ({toBengaliDigits(filteredLogs.length)} টি রেকর্ড)
           </h3>
-          <span className="text-xs text-slate-500">অনপনেয় (Immutable Audit History)</span>
+          <span className="text-[11px] text-emerald-100">অনপনেয় (Immutable Audit History)</span>
         </div>
 
         {filteredLogs.length === 0 ? (
@@ -194,35 +199,35 @@ export const AuditHistoryPage: React.FC = () => {
 
       {/* Diff / Value Inspection Modal */}
       {selectedLog && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-200">
-            <div className="flex items-center justify-between pb-3 border-b mb-4">
-              <div>
-                <h3 className="text-base font-bold text-slate-900">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
+          <div className="bg-white rounded-t-2xl sm:rounded-2xl max-w-lg w-full shadow-2xl border border-emerald-200 flex flex-col max-h-[92dvh] sm:max-h-[88dvh] overflow-hidden">
+            <div className="shrink-0 px-4 py-3 bg-[#0b2820] text-white flex items-center justify-between gap-2">
+              <div className="min-w-0">
+                <h3 className="text-sm sm:text-base font-bold truncate">
                   পরিবর্তন বিবরণ ({selectedLog.actionType})
                 </h3>
-                <p className="text-xs text-slate-500">
+                <p className="text-[11px] text-emerald-200 truncate">
                   সম্পাদনাকারী: {selectedLog.userName} ({formatBengaliDateTime(selectedLog.timestamp)})
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => setSelectedLog(null)}
-                className="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg"
+                className="p-1.5 text-emerald-200 hover:text-white hover:bg-white/10 rounded-lg cursor-pointer shrink-0"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="space-y-4 text-xs">
-              <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 font-medium text-slate-800">
+            <div className="flex-1 overflow-y-auto overscroll-contain p-4 space-y-3.5 text-xs text-slate-900">
+              <div className="p-3 bg-[#f4fbf8] rounded-xl border border-[#a7d7c5] font-medium text-slate-800">
                 {selectedLog.details}
               </div>
 
               {selectedLog.previousValues && (
                 <div>
-                  <div className="font-bold text-red-600 mb-1">পূর্ববর্তী মান (Previous Values):</div>
-                  <pre className="p-3 bg-red-50 border border-red-200 text-red-900 rounded-xl overflow-x-auto text-[11px] font-mono">
+                  <div className="font-bold text-rose-700 mb-1">পূর্ববর্তী মান (Previous Values):</div>
+                  <pre className="p-3 bg-rose-50 border border-rose-200 text-rose-900 rounded-xl overflow-x-auto text-[11px] font-mono">
                     {JSON.stringify(selectedLog.previousValues, null, 2)}
                   </pre>
                 </div>
@@ -230,19 +235,19 @@ export const AuditHistoryPage: React.FC = () => {
 
               {selectedLog.newValues && (
                 <div>
-                  <div className="font-bold text-emerald-600 mb-1">নতুন মান (New Values):</div>
-                  <pre className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-900 rounded-xl overflow-x-auto text-[11px] font-mono">
+                  <div className="font-bold text-[#0f766e] mb-1">নতুন মান (New Values):</div>
+                  <pre className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-950 rounded-xl overflow-x-auto text-[11px] font-mono">
                     {JSON.stringify(selectedLog.newValues, null, 2)}
                   </pre>
                 </div>
               )}
             </div>
 
-            <div className="mt-5 pt-3 border-t text-right">
+            <div className="shrink-0 px-4 py-3 bg-[#f0f9f6] border-t border-emerald-200 flex items-center justify-end pb-[max(0.75rem,env(safe-area-inset-bottom))]">
               <button
                 type="button"
                 onClick={() => setSelectedLog(null)}
-                className="px-4 py-2 bg-slate-800 text-white rounded-xl text-xs font-bold"
+                className="min-h-[44px] px-5 py-2 bg-[#0b2820] hover:bg-[#071d17] text-white rounded-xl text-xs font-bold cursor-pointer"
               >
                 বন্ধ করুন
               </button>

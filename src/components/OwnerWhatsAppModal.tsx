@@ -50,18 +50,18 @@ export const OwnerWhatsAppModal: React.FC<OwnerWhatsAppModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/65 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto print:hidden">
-      <div className="bg-white rounded-2xl max-w-3xl w-full shadow-2xl border border-slate-200 overflow-hidden my-6 flex flex-col max-h-[90vh]">
-        <div className="p-4 sm:p-5 bg-emerald-900 text-white flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center">
+    <div className="fixed inset-0 z-50 bg-black/65 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 print:hidden">
+      <div className="bg-white rounded-t-2xl sm:rounded-2xl max-w-3xl w-full shadow-2xl border border-emerald-200 overflow-hidden flex flex-col max-h-[92dvh] sm:max-h-[88dvh]">
+        <div className="shrink-0 px-4 py-3 bg-[#0b2820] text-white flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="w-9 h-9 rounded-xl bg-[#0d9488]/30 border border-emerald-400/30 flex items-center justify-center shrink-0">
               <MessageCircle className="w-5 h-5 text-emerald-300" />
             </div>
-            <div>
-              <h3 className="font-bold text-sm sm:text-base">
+            <div className="min-w-0">
+              <h3 className="font-bold text-sm sm:text-base truncate">
                 মালিকদের হোয়াটসঅ্যাপে রিপোর্ট পাঠান
               </h3>
-              <p className="text-[11px] text-emerald-200">
+              <p className="text-[11px] text-emerald-200 truncate">
                 {reportTitle} • {dateLabel}
               </p>
             </div>
@@ -69,13 +69,13 @@ export const OwnerWhatsAppModal: React.FC<OwnerWhatsAppModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 text-emerald-200 hover:text-white hover:bg-emerald-800 rounded-lg transition-colors cursor-pointer"
+            className="p-1.5 text-emerald-200 hover:text-white hover:bg-white/10 rounded-lg transition-colors cursor-pointer shrink-0"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <div className="p-4 sm:p-5 overflow-y-auto space-y-3 bg-slate-50">
+        <div className="flex-1 p-4 sm:p-5 overflow-y-auto overscroll-contain space-y-3 bg-[#f4fbf8]">
           {items.length === 0 ? (
             <div className="py-10 text-center text-xs text-slate-500 bg-white rounded-xl border border-slate-200">
               হোয়াটসঅ্যাপে পাঠানোর জন্য কোনো মালিক বা গাড়ির তথ্য পাওয়া যায়নি।
@@ -220,6 +220,16 @@ export const OwnerWhatsAppModal: React.FC<OwnerWhatsAppModalProps> = ({
               );
             })
           )}
+        </div>
+
+        <div className="shrink-0 px-4 py-3 bg-[#f0f9f6] border-t border-emerald-200 flex items-center justify-end pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+          <button
+            type="button"
+            onClick={onClose}
+            className="min-h-[44px] px-5 py-2 bg-[#0b2820] hover:bg-[#071d17] text-white rounded-xl text-xs font-bold cursor-pointer"
+          >
+            বন্ধ করুন
+          </button>
         </div>
       </div>
     </div>

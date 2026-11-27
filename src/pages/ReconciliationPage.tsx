@@ -548,147 +548,158 @@ export const ReconciliationPage: React.FC = () => {
   );
 
   return (
-    <div className="space-y-6">
-      <div className="space-y-6 print:hidden">
-      {/* Top Header Card */}
-      <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
-            <Scale className="w-5 h-5 text-emerald-600" />
-            <span>ট্রিপ হিসাব সমন্বয় (আপ + ডাউন কালেকশন)</span>
-          </h2>
-          <p className="text-xs text-slate-500 mt-0.5">
-            প্রতিটি গাড়ির আপ ও ডাউন ট্রিপ ক্যাশ সংগ্রহ ম্যাচিং, আর্থিক অডিট ও ডাউনলোড
-          </p>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2.5">
-          <div className="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-300 text-xs font-semibold">
-            <Calendar className="w-4 h-4 text-emerald-600" />
-            <input
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              className="bg-transparent outline-none cursor-pointer"
-            />
+    <div className="space-y-3">
+      <div className="space-y-3 print:hidden">
+      {/* Compact Excel Header Card */}
+      <div className="bg-white rounded-xl border border-[#a7d7c5] shadow-2xs overflow-hidden">
+        <div className="bg-[#0b2820] px-3 py-2 text-white flex flex-col md:flex-row md:items-center justify-between gap-2">
+          <div className="flex items-center gap-2 min-w-0">
+            <Scale className="w-4 h-4 text-emerald-300 shrink-0" />
+            <div className="min-w-0">
+              <h2 className="text-xs sm:text-sm font-bold leading-tight truncate">
+                ট্রিপ হিসাব সমন্বয় শীট (আপ + ডাউন কালেকশন)
+              </h2>
+              <p className="hidden sm:block text-[10px] text-emerald-200 leading-tight">
+                প্রতিটি গাড়ির আপ ও ডাউন ট্রিপ ক্যাশ সংগ্রহ ম্যাচিং, অডিট ও ডাউনলোড
+              </p>
+            </div>
           </div>
 
-          <button
-            type="button"
-            onClick={fetchReconciliationData}
-            className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition-colors cursor-pointer"
-            title="রিফ্রেশ"
-          >
-            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-          </button>
+          <div className="flex flex-wrap items-center gap-1.5 shrink-0">
+            <div className="flex items-center gap-1 bg-white px-2 py-1 rounded-lg border border-emerald-200 text-[11px] font-bold text-slate-900">
+              <Calendar className="w-3.5 h-3.5 text-[#0d9488]" />
+              <input
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                className="bg-transparent outline-none cursor-pointer text-[11px]"
+              />
+            </div>
 
-          {/* Export Buttons */}
-          <button
-            type="button"
-            onClick={exportToExcel}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-xs hover:shadow-md transition-all cursor-pointer"
-            title="এক্সেল ফাইল (.csv) হিসেবে ডাউনলোড করুন"
-          >
-            <FileSpreadsheet className="w-4 h-4" />
-            <span>এক্সেল (Excel)</span>
-          </button>
+            <button
+              type="button"
+              onClick={fetchReconciliationData}
+              className="p-1.5 bg-[#071d17] hover:bg-[#0f766e] text-white rounded-lg transition-colors cursor-pointer"
+              title="রিফ্রেশ"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+            </button>
 
-          <button
-            type="button"
-            onClick={handleDownloadTablePDF}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-xs font-bold shadow-xs hover:shadow-md transition-all cursor-pointer"
-            title="শুধু ডাটা টেবিল পিডিএফ ডাউনলোড করুন"
-          >
-            <Download className="w-4 h-4 text-emerald-400" />
-            <span>টেবিল PDF</span>
-          </button>
+            <button
+              type="button"
+              onClick={exportToExcel}
+              className="inline-flex items-center gap-1 px-2.5 py-1 bg-white hover:bg-emerald-50 text-[#0b2820] rounded-lg text-[11px] font-bold shadow-2xs transition-all cursor-pointer"
+              title="এক্সেল ফাইল (.csv) হিসেবে ডাউনলোড করুন"
+            >
+              <FileSpreadsheet className="w-3.5 h-3.5 text-[#0d9488]" />
+              <span>Excel</span>
+            </button>
 
-          <button
-            type="button"
-            onClick={() => setShowWhatsAppModal(true)}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold shadow-xs hover:shadow-md transition-all cursor-pointer"
-            title="মালিকদের মোবাইলে হোয়াটসঅ্যাপে হিসাব পাঠান"
-          >
-            <MessageCircle className="w-4 h-4" />
-            <span>হোয়াটসঅ্যাপ (মালিক)</span>
-          </button>
+            <button
+              type="button"
+              onClick={handleDownloadTablePDF}
+              className="inline-flex items-center gap-1 px-2.5 py-1 bg-[#071d17] hover:bg-[#0f766e] text-white border border-emerald-700/60 rounded-lg text-[11px] font-bold shadow-2xs transition-all cursor-pointer"
+              title="শুধু ডাটা টেবিল পিডিএফ ডাউনলোড করুন"
+            >
+              <Download className="w-3.5 h-3.5 text-emerald-300" />
+              <span>PDF</span>
+            </button>
 
-          <button
-            type="button"
-            onClick={() => setShowPrintModal(true)}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-xs hover:shadow-md transition-all cursor-pointer"
-            title="শুধু টেবিল প্রিন্ট / পিডিএফ প্রিভিউ দেখুন"
-          >
-            <Printer className="w-4 h-4" />
-            <span>প্রিন্ট / প্রিভিউ</span>
-          </button>
+            <button
+              type="button"
+              onClick={() => setShowWhatsAppModal(true)}
+              className="inline-flex items-center gap-1 px-2.5 py-1 bg-[#0f766e] hover:bg-[#0d9488] text-white rounded-lg text-[11px] font-bold shadow-2xs transition-all cursor-pointer"
+              title="মালিকদের মোবাইলে হোয়াটসঅ্যাপে হিসাব পাঠান"
+            >
+              <MessageCircle className="w-3.5 h-3.5" />
+              <span>WA মালিক</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setShowPrintModal(true)}
+              className="inline-flex items-center gap-1 px-2.5 py-1 bg-[#0d9488] hover:bg-[#0f766e] text-white rounded-lg text-[11px] font-bold shadow-2xs transition-all cursor-pointer"
+              title="শুধু টেবিল প্রিন্ট / পিডিএফ প্রিভিউ দেখুন"
+            >
+              <Printer className="w-3.5 h-3.5" />
+              <span>প্রিন্ট</span>
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Alert Messages */}
       {successMsg && (
-        <div className="p-3.5 bg-emerald-50 text-emerald-800 rounded-2xl text-xs font-semibold border border-emerald-200 flex items-center gap-2">
+        <div className="p-2.5 bg-emerald-50 text-emerald-900 rounded-xl text-xs font-semibold border border-emerald-200 flex items-center gap-2">
           <CheckCircle className="w-4 h-4 shrink-0 text-emerald-600" />
           <span>{successMsg}</span>
         </div>
       )}
       {errorMsg && (
-        <div className="p-3.5 bg-red-50 text-red-700 rounded-2xl text-xs font-semibold border border-red-200 flex items-center gap-2">
+        <div className="p-2.5 bg-rose-50 text-rose-700 rounded-xl text-xs font-semibold border border-rose-200 flex items-center gap-2">
           <AlertCircle className="w-4 h-4 shrink-0" />
           <span>{errorMsg}</span>
         </div>
       )}
 
-      {/* Summary Stats Banner */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
-          <span className="text-xs font-semibold text-slate-500">মোট কম্বাইন্ড আদায় (সিট + মাল)</span>
-          <div className="text-2xl font-black text-emerald-700 mt-1 tabular-nums">
-            {formatTaka(totalCombinedCollection)}
+      {/* Excel-Grid Summary Matrix */}
+      <div className="bg-[#a7d7c5] border border-[#a7d7c5] rounded-xl overflow-hidden shadow-2xs">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-px">
+          <div className="bg-white">
+            <div className="bg-[#0b2820] px-2.5 py-1 text-[10px] font-bold text-white">
+              মোট কম্বাইন্ড আদায় (সিট + মাল)
+            </div>
+            <div className="px-3 py-1.5">
+              <div className="text-sm sm:text-base font-black text-[#0f766e] tabular-nums">
+                {formatTaka(totalCombinedCollection)}
+              </div>
+              <div className="text-[10px] text-slate-600 font-semibold tabular-nums">
+                সিট: {formatTaka(totalSeatCollection)} · মাল: {formatTaka(totalCargoCollection)}
+              </div>
+            </div>
           </div>
-          <span className="text-[11px] text-slate-500 font-semibold block">
-            সিট: {formatTaka(totalSeatCollection)} | মাল: {formatTaka(totalCargoCollection)}
-          </span>
-        </div>
 
-        <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
-          <span className="text-xs font-semibold text-slate-500">সমন্বিত গাড়ি সংখ্যা</span>
-          <div className="text-2xl font-black text-slate-900 mt-1">
-            {toBengaliDigits(reconciledCount)} / {toBengaliDigits(pairs.length)}
+          <div className="bg-white">
+            <div className="bg-[#0f766e] px-2.5 py-1 text-[10px] font-bold text-white">
+              সমন্বিত গাড়ি সংখ্যা
+            </div>
+            <div className="px-3 py-1.5">
+              <div className="text-sm sm:text-base font-black text-[#0b2820] tabular-nums">
+                {toBengaliDigits(reconciledCount)} / {toBengaliDigits(pairs.length)}
+              </div>
+              <div className="text-[10px] text-slate-600">অনুমোদিত সমন্বয় সম্পন্ন</div>
+            </div>
           </div>
-          <span className="text-[11px] text-slate-400">অনুমোদিত সমন্বয় সম্পন্ন হয়েছে</span>
-        </div>
 
-        <div className={`p-4 rounded-2xl border shadow-xs transition-colors ${
-          pendingCount === 0 ? 'bg-emerald-50/70 border-emerald-200' : 'bg-white border-slate-200'
-        }`}>
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500">অসমন্বিত বা অপেক্ষমান ট্রিপ</span>
-            {pendingCount === 0 && (
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
-                সব সমন্বিত
-              </span>
-            )}
+          <div className="bg-white">
+            <div className={`${pendingCount === 0 ? 'bg-[#0d9488]' : 'bg-amber-700'} px-2.5 py-1 text-[10px] font-bold text-white flex items-center justify-between`}>
+              <span>অসমন্বিত / অপেক্ষমান ট্রিপ</span>
+              {pendingCount === 0 && (
+                <span className="px-1.5 py-0.2 rounded bg-white/25 text-[9px]">সব সমন্বিত</span>
+              )}
+            </div>
+            <div className="px-3 py-1.5">
+              <div className={`text-sm sm:text-base font-black tabular-nums ${pendingCount === 0 ? 'text-[#0f766e]' : 'text-amber-700'}`}>
+                {toBengaliDigits(pendingCount)} টি
+              </div>
+              <div className="text-[10px] text-slate-600">
+                {pendingCount === 0 ? 'সকল ট্রিপ সমন্বিত' : 'ডাউন বা আপ ট্রিপ অপেক্ষমান'}
+              </div>
+            </div>
           </div>
-          <div className={`text-2xl font-black mt-1 ${pendingCount === 0 ? 'text-emerald-700' : 'text-amber-600'}`}>
-            {toBengaliDigits(pendingCount)} {pendingCount === 0 && <span className="text-xs font-bold text-emerald-600">টি (কোনো অপেক্ষমান নেই)</span>}
-          </div>
-          <span className="text-[11px] text-slate-400">
-            {pendingCount === 0 ? 'আজকের সকল ট্রিপের সমন্বয় সম্পন্ন হয়েছে' : 'ডাউন বা আপ ট্রিপ অপেক্ষমান'}
-          </span>
         </div>
       </div>
 
       {/* Filter Tabs and Quick Batch Action Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 bg-white p-3 rounded-2xl border border-slate-200 shadow-xs">
-        <div className="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl text-xs font-bold border border-slate-200">
+      <div className="flex flex-wrap items-center justify-between gap-2.5 bg-white p-2.5 rounded-xl border border-[#a7d7c5] shadow-2xs">
+        <div className="flex flex-wrap items-center gap-1 bg-[#f0f9f6] p-1 rounded-xl text-xs font-bold border border-[#d1e7de]">
           <button
             type="button"
             onClick={() => setFilterTab('ALL')}
             className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
               filterTab === 'ALL'
-                ? 'bg-slate-900 text-white shadow-xs'
-                : 'text-slate-600 hover:text-slate-900'
+                ? 'bg-[#0b2820] text-white shadow-2xs'
+                : 'text-slate-700 hover:text-slate-950'
             }`}
           >
             সকল ট্রিপ ({toBengaliDigits(pairs.length)})
@@ -698,8 +709,8 @@ export const ReconciliationPage: React.FC = () => {
             onClick={() => setFilterTab('RECONCILED')}
             className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1 ${
               filterTab === 'RECONCILED'
-                ? 'bg-emerald-600 text-white shadow-xs'
-                : 'text-slate-600 hover:text-slate-900'
+                ? 'bg-[#0d9488] text-white shadow-2xs'
+                : 'text-slate-700 hover:text-slate-950'
             }`}
           >
             <CheckCircle className="w-3.5 h-3.5" />
@@ -710,8 +721,8 @@ export const ReconciliationPage: React.FC = () => {
             onClick={() => setFilterTab('PENDING')}
             className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1 ${
               filterTab === 'PENDING'
-                ? 'bg-amber-600 text-white shadow-xs'
-                : 'text-slate-600 hover:text-slate-900'
+                ? 'bg-amber-700 text-white shadow-2xs'
+                : 'text-slate-700 hover:text-slate-950'
             }`}
           >
             <Clock className="w-3.5 h-3.5" />
@@ -724,9 +735,9 @@ export const ReconciliationPage: React.FC = () => {
             type="button"
             disabled={batchReconciling}
             onClick={handleBatchReconcile}
-            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-xl text-xs font-bold shadow-xs hover:shadow-md transition-all cursor-pointer disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-[#0d9488] hover:bg-[#0f766e] text-white rounded-xl text-xs font-bold shadow-2xs transition-all cursor-pointer disabled:opacity-50"
           >
-            <ShieldCheck className="w-4 h-4 text-emerald-200" />
+            <ShieldCheck className="w-4 h-4 text-emerald-100" />
             <span>
               {batchReconciling
                 ? 'সমন্বয় হচ্ছে...'
@@ -737,12 +748,12 @@ export const ReconciliationPage: React.FC = () => {
       </div>
 
       {/* Pairs Reconciliation Table */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
-        <div className="p-4 border-b border-slate-200 flex items-center justify-between">
-          <h3 className="font-bold text-sm text-slate-800">
+      <div className="bg-white rounded-xl border border-[#a7d7c5] shadow-2xs overflow-hidden">
+        <div className="px-3.5 py-2.5 bg-[#0b2820] text-white flex flex-wrap items-center justify-between gap-2">
+          <h3 className="font-bold text-xs sm:text-sm text-white">
             গাড়িভিত্তিক আপ ও ডাউন ট্রিপ পেয়ারিং তালিকা
           </h3>
-          <span className="text-xs text-slate-500">
+          <span className="text-[11px] text-emerald-200">
             নাইট-হোল্ড ট্রিপ স্বয়ংক্রিয়ভাবে রিটার্ন ট্রিপের সাথে সংযুক্ত হয়
           </span>
         </div>
@@ -943,60 +954,74 @@ export const ReconciliationPage: React.FC = () => {
 
       {/* PDF / Printable Daily Financial Reconciliation Report Modal */}
       {showPrintModal && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-2 sm:p-4 overflow-y-auto animate-in fade-in duration-200">
-          <div className="bg-white w-full max-w-6xl rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[94vh]">
-            {/* Modal Header & Action Controls (hidden in print) */}
-            <div className="p-4 bg-slate-900 text-white flex items-center justify-between print:hidden">
-              <div className="flex items-center gap-2.5">
-                <FileText className="w-5 h-5 text-emerald-400" />
-                <div>
-                  <h3 className="font-bold text-sm sm:text-base">দৈনিক ট্রিপ সমন্বয় ডাটা টেবিল — ল্যান্ডস্কেপ প্রিভিউ</h3>
-                  <div className="text-[11px] text-slate-300">
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in duration-200">
+          <div className="bg-white w-full max-w-6xl rounded-t-2xl sm:rounded-2xl shadow-2xl border border-emerald-200 overflow-hidden flex flex-col max-h-[92dvh] sm:max-h-[90dvh]">
+            {/* Sticky Modal Header */}
+            <div className="shrink-0 px-4 py-3 bg-[#0b2820] text-white flex items-center justify-between gap-2 print:hidden">
+              <div className="flex items-center gap-2 min-w-0">
+                <FileText className="w-5 h-5 text-emerald-300 shrink-0" />
+                <div className="min-w-0">
+                  <h3 className="font-bold text-sm sm:text-base truncate">
+                    দৈনিক ট্রিপ সমন্বয় ডাটা টেবিল — প্রিভিউ
+                  </h3>
+                  <div className="text-[11px] text-emerald-200 truncate">
                     {user?.company?.name || 'কাউন্টার টিকেটিং'} • তারিখ: {date}
                   </div>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={exportToExcel}
-                  className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 transition-colors cursor-pointer"
-                >
-                  <FileSpreadsheet className="w-4 h-4" />
-                  <span>এক্সেল ডাউনলোড</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={handleDownloadTablePDF}
-                  className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 transition-colors cursor-pointer border border-slate-700 shadow-xs"
-                >
-                  <Download className="w-4 h-4 text-emerald-400" />
-                  <span>টেবিল PDF ডাউনলোড</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={handlePrintTableOnly}
-                  className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
-                >
-                  <Printer className="w-4 h-4" />
-                  <span>শুধু টেবিল প্রিন্ট (Landscape)</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setShowPrintModal(false)}
-                  className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors cursor-pointer"
-                  title="বন্ধ করুন"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={() => setShowPrintModal(false)}
+                className="p-2 text-emerald-200 hover:text-white rounded-xl hover:bg-white/10 transition-colors cursor-pointer shrink-0"
+                title="বন্ধ করুন"
+              >
+                <X className="w-5 h-5" />
+              </button>
             </div>
 
-            {renderPrintableTableNode()}
+            {/* Scrollable Preview Body */}
+            <div className="flex-1 overflow-y-auto overscroll-contain">
+              {renderPrintableTableNode()}
+            </div>
+
+            {/* Sticky Footer */}
+            <div className="shrink-0 px-4 py-3 bg-[#f0f9f6] border-t border-emerald-200 flex flex-wrap items-center justify-end gap-2 pb-[max(0.75rem,env(safe-area-inset-bottom))] print:hidden">
+              <button
+                type="button"
+                onClick={() => setShowPrintModal(false)}
+                className="min-h-[44px] px-4 py-2 bg-white border border-slate-300 text-slate-800 hover:bg-slate-100 text-xs font-bold rounded-xl cursor-pointer"
+              >
+                বন্ধ করুন
+              </button>
+
+              <button
+                type="button"
+                onClick={exportToExcel}
+                className="min-h-[44px] px-3.5 py-2 bg-[#0f766e] hover:bg-[#0d9488] text-white text-xs font-bold rounded-xl flex items-center gap-1.5 transition-colors cursor-pointer"
+              >
+                <FileSpreadsheet className="w-4 h-4" />
+                <span>এক্সেল</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={handleDownloadTablePDF}
+                className="min-h-[44px] px-3.5 py-2 bg-[#0b2820] hover:bg-[#071d17] text-white text-xs font-bold rounded-xl flex items-center gap-1.5 transition-colors cursor-pointer"
+              >
+                <Download className="w-4 h-4 text-emerald-300" />
+                <span>টেবিল PDF</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={handlePrintTableOnly}
+                className="min-h-[44px] px-4 py-2 bg-[#0d9488] hover:bg-[#0f766e] text-white text-xs font-bold rounded-xl flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
+              >
+                <Printer className="w-4 h-4" />
+                <span>প্রিন্ট (Landscape)</span>
+              </button>
+            </div>
           </div>
         </div>
       )}

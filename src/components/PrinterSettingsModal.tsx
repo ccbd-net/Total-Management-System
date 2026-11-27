@@ -98,17 +98,17 @@ export const PrinterSettingsModal: React.FC<PrinterSettingsModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-200">
-      <div className="bg-white w-full max-w-lg rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]">
-        {/* Header */}
-        <div className="px-6 py-4 bg-slate-900 text-white flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-xs p-0 sm:p-4 animate-in fade-in duration-200">
+      <div className="bg-white w-full max-w-lg rounded-t-2xl sm:rounded-2xl shadow-2xl border border-emerald-200 overflow-hidden flex flex-col max-h-[92dvh] sm:max-h-[88dvh]">
+        {/* Sticky Header */}
+        <div className="shrink-0 px-4 py-3 bg-[#0b2820] text-white flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="w-9 h-9 rounded-xl bg-[#0d9488]/30 text-emerald-300 flex items-center justify-center font-bold shrink-0">
               <Printer className="w-5 h-5" />
             </div>
-            <div>
-              <h3 className="font-bold text-base">এড প্রিন্টার ও প্রিন্ট কনফিগারেশন</h3>
-              <p className="text-[11px] text-slate-300">
+            <div className="min-w-0">
+              <h3 className="font-bold text-sm sm:text-base truncate">এড প্রিন্টার ও প্রিন্ট কনফিগারেশন</h3>
+              <p className="text-[11px] text-emerald-200 truncate">
                 ৫৮ মিমি / ৮০ মিমি পিওএস থার্মাল ও এ৪ প্রিন্টার সেটিংস
               </p>
             </div>
@@ -116,14 +116,14 @@ export const PrinterSettingsModal: React.FC<PrinterSettingsModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
+            className="p-1.5 text-emerald-200 hover:text-white rounded-lg hover:bg-white/10 transition-colors cursor-pointer shrink-0"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Content */}
-        <div className="p-6 overflow-y-auto space-y-5 text-xs text-slate-700">
+        {/* Scrollable Content */}
+        <div className="flex-1 p-4 sm:p-5 overflow-y-auto overscroll-contain space-y-4 text-xs text-slate-800">
           {savedSuccess && (
             <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 font-bold rounded-xl flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
@@ -136,10 +136,10 @@ export const PrinterSettingsModal: React.FC<PrinterSettingsModalProps> = ({
             <label className="block text-xs font-bold text-slate-900 mb-2">
               ১. প্রিন্টার ও কাগজের সাইজ নির্বাচন (Printer Paper Size)
             </label>
-            <div className="grid grid-cols-3 gap-2.5">
+            <div className="grid grid-cols-3 gap-2">
               {[
-                { id: '58mm', title: '৫৮ মিমি থার্মাল', desc: 'মিনি পিওএস রোল (2-inch)' },
-                { id: '80mm', title: '৮০ মিমি থার্মাল', desc: 'স্ট্যান্ডার্ড পিওএস (3-inch)' },
+                { id: '58mm', title: '৫৮ মিমি থার্মাল', desc: 'মিনি পিওএস রোল' },
+                { id: '80mm', title: '৮০ মিমি থার্মাল', desc: 'স্ট্যান্ডার্ড পিওএস' },
                 { id: 'A4', title: 'A4 / A5 লেটারহেড', desc: 'অফিস ডেক্সটপ প্রিন্টার' },
               ].map((p) => {
                 const isSelected = settings.paperSize === p.id;
@@ -148,15 +148,15 @@ export const PrinterSettingsModal: React.FC<PrinterSettingsModalProps> = ({
                     key={p.id}
                     type="button"
                     onClick={() => setSettings({ ...settings, paperSize: p.id as any })}
-                    className={`p-3 rounded-2xl border text-left transition-all cursor-pointer ${
+                    className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
                       isSelected
-                        ? 'border-emerald-600 bg-emerald-50 text-emerald-950 font-bold ring-2 ring-emerald-500/20'
-                        : 'border-slate-200 hover:border-slate-300 bg-slate-50 text-slate-700'
+                        ? 'border-[#0d9488] bg-emerald-50 text-[#0b2820] font-bold ring-2 ring-[#0d9488]/20'
+                        : 'border-[#a7d7c5] hover:border-[#0d9488] bg-[#f4fbf8] text-slate-800'
                     }`}
                   >
                     <div className="flex items-center justify-between mb-1">
-                      <span className="font-bold">{p.title}</span>
-                      {isSelected && <Check className="w-3.5 h-3.5 text-emerald-600" />}
+                      <span className="font-bold text-[11px] sm:text-xs">{p.title}</span>
+                      {isSelected && <Check className="w-3.5 h-3.5 text-[#0d9488] shrink-0" />}
                     </div>
                     <div className="text-[10px] text-slate-500 font-normal">{p.desc}</div>
                   </button>
@@ -170,11 +170,11 @@ export const PrinterSettingsModal: React.FC<PrinterSettingsModalProps> = ({
             <label className="block text-xs font-bold text-slate-900 mb-2">
               ২. ডিফল্ট প্রিন্ট কপি (Default Copies)
             </label>
-            <div className="grid grid-cols-3 gap-2.5">
+            <div className="grid grid-cols-3 gap-2">
               {[
                 { id: 'BOTH', title: 'উভয় কপি', desc: 'যাত্রী + অফিস কপি' },
                 { id: 'PASSENGER', title: 'যাত্রী কপি', desc: 'শুধু প্যাসেঞ্জার কপি' },
-                { id: 'OFFICE', title: 'অফিস কপি', desc: 'শুধু কাউন্টার অডিট কপি' },
+                { id: 'OFFICE', title: 'অফিস কপি', desc: 'শুধু কাউন্টার অডিট' },
               ].map((c) => {
                 const isSelected = settings.defaultCopy === c.id;
                 return (
@@ -182,15 +182,15 @@ export const PrinterSettingsModal: React.FC<PrinterSettingsModalProps> = ({
                     key={c.id}
                     type="button"
                     onClick={() => setSettings({ ...settings, defaultCopy: c.id as any })}
-                    className={`p-3 rounded-2xl border text-left transition-all cursor-pointer ${
+                    className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
                       isSelected
-                        ? 'border-purple-600 bg-purple-50 text-purple-950 font-bold ring-2 ring-purple-500/20'
-                        : 'border-slate-200 hover:border-slate-300 bg-slate-50 text-slate-700'
+                        ? 'border-[#0f766e] bg-teal-50 text-[#0b2820] font-bold ring-2 ring-[#0f766e]/20'
+                        : 'border-[#a7d7c5] hover:border-[#0d9488] bg-[#f4fbf8] text-slate-800'
                     }`}
                   >
                     <div className="flex items-center justify-between mb-1">
-                      <span className="font-bold">{c.title}</span>
-                      {isSelected && <Check className="w-3.5 h-3.5 text-purple-600" />}
+                      <span className="font-bold text-[11px] sm:text-xs">{c.title}</span>
+                      {isSelected && <Check className="w-3.5 h-3.5 text-[#0f766e] shrink-0" />}
                     </div>
                     <div className="text-[10px] text-slate-500 font-normal">{c.desc}</div>
                   </button>
@@ -200,10 +200,10 @@ export const PrinterSettingsModal: React.FC<PrinterSettingsModalProps> = ({
           </div>
 
           {/* Toggles */}
-          <div className="space-y-3 pt-2 border-t border-slate-100">
-            <div className="flex items-center justify-between p-3 bg-slate-50 rounded-2xl border border-slate-200">
+          <div className="space-y-2.5 pt-2 border-t border-emerald-100">
+            <label className="flex items-center justify-between p-3 bg-[#f4fbf8] rounded-xl border border-[#a7d7c5] cursor-pointer">
               <div>
-                <div className="font-bold text-slate-800">স্বয়ংক্রিয় প্রিন্ট ডায়লগ (Auto Print)</div>
+                <div className="font-bold text-slate-900">স্বয়ংক্রিয় প্রিন্ট ডায়লগ (Auto Print)</div>
                 <div className="text-[10px] text-slate-500">
                   সিট বুকিং নিশ্চিত হওয়ার সাথে সাথে প্রিন্ট উইন্ডো চালু হবে
                 </div>
@@ -212,13 +212,13 @@ export const PrinterSettingsModal: React.FC<PrinterSettingsModalProps> = ({
                 type="checkbox"
                 checked={settings.autoPrintOnBooking}
                 onChange={(e) => setSettings({ ...settings, autoPrintOnBooking: e.target.checked })}
-                className="w-4 h-4 accent-emerald-600 rounded cursor-pointer"
+                className="w-4 h-4 accent-[#0d9488] rounded cursor-pointer shrink-0"
               />
-            </div>
+            </label>
 
-            <div className="flex items-center justify-between p-3 bg-slate-50 rounded-2xl border border-slate-200">
+            <label className="flex items-center justify-between p-3 bg-[#f4fbf8] rounded-xl border border-[#a7d7c5] cursor-pointer">
               <div>
-                <div className="font-bold text-slate-800">কোম্পানি লোগো ও হেডার প্যাড প্রিন্ট</div>
+                <div className="font-bold text-slate-900">কোম্পানি লোগো ও হেডার প্যাড প্রিন্ট</div>
                 <div className="text-[10px] text-slate-500">
                   টিকিট ও রিপোর্টের উপরে কোম্পানির আসল নাম ও লোগো প্রদর্শন
                 </div>
@@ -227,43 +227,43 @@ export const PrinterSettingsModal: React.FC<PrinterSettingsModalProps> = ({
                 type="checkbox"
                 checked={settings.showLogoOnTicket}
                 onChange={(e) => setSettings({ ...settings, showLogoOnTicket: e.target.checked })}
-                className="w-4 h-4 accent-emerald-600 rounded cursor-pointer"
+                className="w-4 h-4 accent-[#0d9488] rounded cursor-pointer shrink-0"
               />
-            </div>
+            </label>
           </div>
 
           {/* Notice info */}
-          <div className="p-3 bg-blue-50 border border-blue-200 rounded-2xl text-[11px] text-blue-900 leading-relaxed">
-            💡 <strong>প্রিন্টার কানেকশন গাইড:</strong> ইউএসবি বা ব্লুটুথ থার্মাল প্রিন্টারটি আপনার পিসি/মোবাইলে কানেক্ট রাখুন। প্রিন্ট বাটনে চাপ দিলে সিস্টেম আপনার নির্বাচিত পেপার সাইজে বাংলা ফন্ট বিকৃত না করে সরাসরি নিখুঁতভাবে প্রিন্ট করবে।
+          <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-[11px] text-emerald-950 leading-relaxed">
+            <strong>প্রিন্টার কানেকশন গাইড:</strong> ইউএসবি বা ব্লুটুথ থার্মাল প্রিন্টারটি আপনার পিসি/মোবাইলে কানেক্ট রাখুন। প্রিন্ট বাটনে চাপ দিলে সিস্টেম আপনার নির্বাচিত পেপার সাইজে বাংলা ফন্ট বিকৃত না করে সরাসরি প্রিন্ট করবে।
           </div>
         </div>
 
-        {/* Footer */}
-        <div className="px-6 py-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between">
+        {/* Sticky Footer */}
+        <div className="shrink-0 px-4 py-3 bg-[#f0f9f6] border-t border-emerald-200 flex flex-wrap items-center justify-between gap-2 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
           <button
             type="button"
             onClick={handleTestPrint}
-            className="flex items-center gap-1.5 px-3.5 py-2 border border-slate-300 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition-colors"
+            className="min-h-[44px] flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-300 hover:bg-slate-100 text-slate-800 font-bold rounded-xl text-xs transition-colors cursor-pointer"
           >
-            <Printer className="w-3.5 h-3.5 text-purple-600" />
-            <span>টেস্ট প্রিন্ট দিন</span>
+            <Printer className="w-3.5 h-3.5 text-[#0d9488]" />
+            <span>টেস্ট প্রিন্ট</span>
           </button>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 ml-auto">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-slate-600 hover:bg-slate-200 font-bold rounded-xl text-xs transition-colors"
+              className="min-h-[44px] px-4 py-2 bg-white border border-slate-300 text-slate-700 hover:bg-slate-100 font-bold rounded-xl text-xs transition-colors cursor-pointer"
             >
               বাতিল
             </button>
             <button
               type="button"
               onClick={handleSave}
-              className="flex items-center gap-1.5 px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs shadow-md transition-all cursor-pointer"
+              className="min-h-[44px] flex items-center gap-1.5 px-4 py-2 bg-[#0d9488] hover:bg-[#0f766e] text-white font-bold rounded-xl text-xs shadow-xs transition-all cursor-pointer"
             >
               <Save className="w-3.5 h-3.5" />
-              <span>সেটিংস সংরক্ষণ করুন</span>
+              <span>সংরক্ষণ করুন</span>
             </button>
           </div>
         </div>
