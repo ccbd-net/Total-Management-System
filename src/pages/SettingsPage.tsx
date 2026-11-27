@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext.tsx';
 import { api } from '../services/api.ts';
 import { browserDb } from '../services/browserDb.ts';
 import { useDataSync } from '../hooks/useDataSync.ts';
-import { toBengaliDigits } from '../utils/formatters.ts';
+import { toBengaliDigits, formatBengaliDateTime } from '../utils/formatters.ts';
 import type { SystemSettings } from '../types/index.ts';
 import {
   Settings,
@@ -20,7 +20,16 @@ import {
   X,
   KeyRound,
   Lock,
+  Image as ImageIcon,
+  RotateCcw,
+  Smartphone,
 } from 'lucide-react';
+import {
+  useBrandLogoUrl,
+  getCurrentBrandVersion,
+  applyBrandVersionToDocument,
+  syncBrandAssetsFromServer,
+} from '../utils/brandAssets.ts';
 
 type LocalBackupStats = Awaited<ReturnType<typeof browserDb.getLocalStorageStats>>;
 
@@ -62,6 +71,14 @@ export const SettingsPage: React.FC = () => {
   const [updatingCreds, setUpdatingCreds] = useState<boolean>(false);
   const [credError, setCredError] = useState<string>('');
   const [credSuccess, setCredSuccess] = useState<string>('');
+
+  // Global App Icon, Favicon & Logo Upload State
+  const brandLogoUrl = useBrandLogoUrl();
+  const [uploadingBrand, setUploadingBrand] = useState<boolean>(false);
+  const [resettingBrand, setResettingBrand] = useState<boolean>(false);
+  const [brandSuccess, setBrandSuccess] = useState<string>('');
+  const [brandError, setBrandError] = useState<string>('');
+  const brandFileInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     if (user?.loginId) {
@@ -312,28 +329,80 @@ export const SettingsPage: React.FC = () => {
     }
   };
 
+  const handleUploadBrandIcon = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+
+    setBrandError('');
+    setBrandSuccess('');
+
+    if (!file.type.startsWith('image/')) {
+      setBrandError('অনুগ্রহ করে PNG, JPG অথবা WEBP ফরম্যাটের ছবি নির্বাচন করুন।');
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      setBrandError('ছবির সাইজ ১০ মেগাবাইটের কম হতে হবে।');
+      return;
+    }
+
+    setUploadingBrand(true);
+    const reader = new FileReader();
+    reader.onload = async () => {
+      try {
+        const dataUrl = String(reader.result || '');
+        const res = await api.uploadBrandIcon(dataUrl);
+        applyBrandVersionToDocument(res.version);
+        await syncBrandAssetsFromServer(true);
+        setBrandSuccess(
+          'অ্যাপ আইকন, ফেবিকন ও লোগো সফলভাবে আপডেট হয়েছে! সকল মোবাইল ও ইনস্টল করা PWA অ্যাপে স্বয়ংক্রিয়ভাবে নতুন আইকন সিঙ্ক হবে।'
+        );
+      } catch (err: any) {
+        setBrandError(err?.message || 'আইকন ও লোগো আপলোড ব্যর্থ হয়েছে।');
+      } finally {
+        setUploadingBrand(false);
+      }
+    };
+    reader.onerror = () => {
+      setBrandError('ছবি ফাইলটি পড়া যায়নি।');
+      setUploadingBrand(false);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleResetBrandIcon = async () => {
+    setResettingBrand(true);
+    setBrandError('');
+    setBrandSuccess('');
+    try {
+      const res = await api.resetBrandIcon();
+      applyBrandVersionToDocument(res.version);
+      await syncBrandAssetsFromServer(true);
+      setBrandSuccess('অ্যাপ আইকন ও লোগো ডিফল্ট DATA CODE ডিজাইনে রিস্টোর করা হয়েছে!');
+    } catch (err: any) {
+      setBrandError(err?.message || 'ডিফল্ট লোগো রিস্টোর করা যায়নি।');
+    } finally {
+      setResettingBrand(false);
+    }
+  };
+
   const canManageBackup = isSuperAdmin || isCompanyAdmin || isMasterAdmin;
   const formattedLocalTime = localStats?.updatedAt
-    ? new Date(localStats.updatedAt).toLocaleString('bn-BD', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-      })
+    ? formatBengaliDateTime(localStats.updatedAt)
     : 'এখনো সংরক্ষিত হয়নি';
 
   return (
     <div className="max-w-3xl mx-auto space-y-3">
       {/* Compact Header */}
-      <div className="bg-white rounded-xl border border-[#a7d7c5] shadow-2xs overflow-hidden">
-        <div className="bg-[#0b2820] px-3 py-2.5 text-white flex items-center gap-2">
-          <Settings className="w-4 h-4 text-emerald-300 shrink-0" />
+      <div className="bg-white rounded-xl border border-slate-200 shadow-2xs overflow-hidden">
+        <div className="bg-[#1d4ed8] px-3 py-2.5 text-white flex items-center gap-2">
+          <Settings className="w-4 h-4 text-[#93c5fd] shrink-0" />
           <div className="min-w-0">
             <h2 className="text-xs sm:text-sm font-bold leading-tight truncate">
               সিস্টেম কনফিগারেশন ও সেটিংস
             </h2>
-            <p className="hidden sm:block text-[10px] text-emerald-200 leading-tight truncate">
+            <p className="hidden sm:block text-[10px] text-[#dbeafe] leading-tight truncate">
               প্রতিষ্ঠানের নাম, সহায়তা হটলাইন, নোটিশ, একাউন্ট নিরাপত্তা ও ব্যাকআপ
             </p>
           </div>
@@ -341,32 +410,32 @@ export const SettingsPage: React.FC = () => {
       </div>
 
       {successMsg && (
-        <div className="p-2.5 bg-emerald-50 text-emerald-800 rounded-xl text-xs font-semibold border border-emerald-200 flex items-center justify-between gap-2">
+        <div className="p-2.5 bg-[#eff6ff] text-[#1e3a8a] rounded-xl text-xs font-semibold border border-[#bfdbfe] flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <CheckCircle className="w-4 h-4 shrink-0 text-emerald-600" />
+            <CheckCircle className="w-4 h-4 shrink-0 text-[#1d4ed8]" />
             <span>{successMsg}</span>
           </div>
-          <button type="button" onClick={() => setSuccessMsg('')} className="text-emerald-700 hover:text-emerald-900 cursor-pointer">
+          <button type="button" onClick={() => setSuccessMsg('')} className="text-[#1d4ed8] hover:text-[#1e3a8a] cursor-pointer">
             <X className="w-4 h-4" />
           </button>
         </div>
       )}
 
       {errorMsg && (
-        <div className="p-2.5 bg-rose-50 text-rose-700 rounded-xl text-xs font-semibold border border-rose-200 flex items-center justify-between gap-2">
+        <div className="p-2.5 bg-red-50 text-red-700 rounded-xl text-xs font-semibold border border-red-200 flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 shrink-0" />
+            <AlertCircle className="w-4 h-4 shrink-0 text-red-600" />
             <span>{errorMsg}</span>
           </div>
-          <button type="button" onClick={() => setErrorMsg('')} className="text-rose-700 hover:text-rose-900 cursor-pointer">
+          <button type="button" onClick={() => setErrorMsg('')} className="text-red-600 hover:text-red-800 cursor-pointer">
             <X className="w-4 h-4" />
           </button>
         </div>
       )}
 
-      <form onSubmit={handleSave} className="bg-white rounded-xl border border-[#a7d7c5] shadow-2xs overflow-hidden">
-        <div className="bg-[#0f766e] px-3 py-2 text-white text-xs font-bold flex items-center gap-1.5">
-          <Settings className="w-3.5 h-3.5" />
+      <form onSubmit={handleSave} className="bg-white rounded-xl border border-slate-200 shadow-2xs overflow-hidden">
+        <div className="bg-[#1d4ed8] px-3 py-2 text-white text-xs font-bold flex items-center gap-1.5">
+          <Settings className="w-3.5 h-3.5 text-[#93c5fd]" />
           <span>প্রতিষ্ঠান ও অপারেশনাল সেটিংস</span>
         </div>
         <div className="p-3.5 space-y-3.5">
@@ -380,7 +449,7 @@ export const SettingsPage: React.FC = () => {
               value={settings.companyName ?? ''}
               onChange={(e) => setSettings({ ...settings, companyName: e.target.value })}
               disabled={loading}
-              className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold outline-none focus:bg-white"
+              className="w-full px-3 py-2.5 bg-[#f8fafc] border border-slate-200 rounded-xl text-xs font-bold outline-none focus:bg-white focus:ring-2 focus:ring-[#1d4ed8]"
               required
             />
           </div>
@@ -394,7 +463,7 @@ export const SettingsPage: React.FC = () => {
               value={settings.subTitle ?? ''}
               onChange={(e) => setSettings({ ...settings, subTitle: e.target.value })}
               disabled={loading}
-              className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:bg-white"
+              className="w-full px-3 py-2.5 bg-[#f8fafc] border border-slate-200 rounded-xl text-xs outline-none focus:bg-white focus:ring-2 focus:ring-[#1d4ed8]"
             />
           </div>
         </div>
@@ -409,7 +478,7 @@ export const SettingsPage: React.FC = () => {
               value={settings.hotline ?? ''}
               onChange={(e) => setSettings({ ...settings, hotline: e.target.value })}
               disabled={loading}
-              className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono outline-none focus:bg-white"
+              className="w-full px-3 py-2.5 bg-[#f8fafc] border border-slate-200 rounded-xl text-xs font-mono outline-none focus:bg-white focus:ring-2 focus:ring-[#1d4ed8]"
             />
           </div>
 
@@ -422,7 +491,7 @@ export const SettingsPage: React.FC = () => {
               value={settings.defaultFare ?? ''}
               onChange={(e) => setSettings({ ...settings, defaultFare: Number(e.target.value) })}
               disabled={loading}
-              className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold tabular-nums outline-none focus:bg-white"
+              className="w-full px-3 py-2.5 bg-[#f8fafc] border border-slate-200 rounded-xl text-xs font-bold tabular-nums outline-none focus:bg-white focus:ring-2 focus:ring-[#1d4ed8]"
             />
           </div>
         </div>
@@ -430,21 +499,21 @@ export const SettingsPage: React.FC = () => {
         {/* Global Notice Text */}
         <div>
           <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-1.5">
-            <Bell className="w-3.5 h-3.5 text-amber-600" />
+            <Bell className="w-3.5 h-3.5 text-[#1d4ed8]" />
             <span>কাউন্টার নোটিশ বোর্ড বার্তা</span>
           </label>
           <textarea
             value={settings.noticeText ?? ''}
             onChange={(e) => setSettings({ ...settings, noticeText: e.target.value })}
             disabled={loading}
-            className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:bg-white"
+            className="w-full px-3 py-2.5 bg-[#f8fafc] border border-slate-200 rounded-xl text-xs outline-none focus:bg-white focus:ring-2 focus:ring-[#1d4ed8]"
             rows={3}
             placeholder="কাউন্টার অপারেটরদের জন্য কোনো গুরুত্বপূর্ণ নোটিশ বা নির্দেশিকা..."
           />
         </div>
 
         {/* System Fixed Settings */}
-        <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+        <div className="p-4 bg-[#f8fafc] rounded-2xl border border-slate-200 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
           <div>
             <span className="text-slate-500 font-medium">মুদ্রা প্রতীক (Currency):</span>
             <div className="font-bold text-slate-800 text-sm mt-0.5">৳ (বাংলাদেশি টাকা)</div>
@@ -459,7 +528,7 @@ export const SettingsPage: React.FC = () => {
           <button
             type="submit"
             disabled={saving}
-            className="w-full min-h-[44px] py-2.5 bg-[#0d9488] hover:bg-[#0f766e] text-white rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
+            className="w-full min-h-[44px] py-2.5 bg-[#1d4ed8] hover:bg-[#1e40af] text-white rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
           >
             <Save className="w-4 h-4" />
             <span>{saving ? 'সংরক্ষিত হচ্ছে...' : 'সেটিংস সংরক্ষণ করুন'}</span>
@@ -468,14 +537,123 @@ export const SettingsPage: React.FC = () => {
         </div>
       </form>
 
+      {/* Global App Icon, Favicon & Logo Management (Multi-Device PWA Sync) */}
+      {isMasterAdmin && (
+        <div className="bg-white rounded-xl border border-slate-200 shadow-2xs overflow-hidden">
+          <div className="bg-[#1d4ed8] px-3 py-2 text-white flex flex-wrap items-center justify-between gap-2">
+            <h3 className="text-xs font-bold flex items-center gap-1.5">
+              <ImageIcon className="w-3.5 h-3.5 text-[#93c5fd]" />
+              <span>অ্যাপ আইকন, ফেবিকন ও লোগো আপলোড (সকল ডিভাইস সিঙ্ক)</span>
+            </h3>
+            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-white/15 border border-white/25 text-[10px] font-mono font-bold">
+              <Smartphone className="w-3 h-3" />
+              <span>v{getCurrentBrandVersion()}</span>
+            </span>
+          </div>
+
+          <div className="p-3.5 space-y-3">
+            <p className="text-[11px] text-slate-600 leading-relaxed">
+              এখানে নতুন ছবি আপলোড করলে অ্যাপের <strong>লোগো, ব্রাউজার ফেবিকন, এবং অন্য সকল মোবাইল ও পিসিতে ইনস্টল করা PWA আইকন</strong> একসাথে আপডেট হবে।
+            </p>
+
+            {brandSuccess && (
+              <div className="p-2.5 bg-[#eff6ff] text-[#1e3a8a] rounded-xl text-xs font-semibold border border-[#bfdbfe] flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4 shrink-0 text-[#1d4ed8]" />
+                  <span>{brandSuccess}</span>
+                </div>
+                <button type="button" onClick={() => setBrandSuccess('')} className="text-[#1d4ed8] cursor-pointer">
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            )}
+
+            {brandError && (
+              <div className="p-2.5 bg-red-50 text-red-700 rounded-xl text-xs font-semibold border border-red-200 flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 shrink-0 text-red-600" />
+                  <span>{brandError}</span>
+                </div>
+                <button type="button" onClick={() => setBrandError('')} className="text-red-600 cursor-pointer">
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            )}
+
+            {/* Live Previews of Logo, Favicon & Mobile PWA Icon */}
+            <div className="grid grid-cols-3 gap-2 sm:gap-3 bg-[#f8fafc] border border-slate-200 rounded-xl p-3">
+              <div className="flex flex-col items-center text-center gap-1.5">
+                <img
+                  src={brandLogoUrl}
+                  alt="App Logo"
+                  className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl object-cover border border-slate-300 bg-[#030b1a] shadow-2xs"
+                />
+                <span className="text-[10px] font-bold text-slate-700">অ্যাপ লোগো</span>
+              </div>
+
+              <div className="flex flex-col items-center text-center gap-1.5">
+                <img
+                  src={`/pwa-maskable-512x512.png?v=${encodeURIComponent(getCurrentBrandVersion())}`}
+                  alt="Mobile App Icon"
+                  className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl object-cover border border-slate-300 bg-[#030b1a] shadow-2xs"
+                />
+                <span className="text-[10px] font-bold text-slate-700">মোবাইল আইকন</span>
+              </div>
+
+              <div className="flex flex-col items-center text-center gap-1.5">
+                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl border border-slate-300 bg-white flex items-center justify-center shadow-2xs">
+                  <img
+                    src={`/favicon.png?v=${encodeURIComponent(getCurrentBrandVersion())}`}
+                    alt="Favicon"
+                    className="w-8 h-8 rounded object-cover"
+                  />
+                </div>
+                <span className="text-[10px] font-bold text-slate-700">ফেবিকন</span>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2">
+              <label className="flex-1 min-h-[44px] px-4 py-2.5 bg-[#1d4ed8] hover:bg-[#1e40af] text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-colors cursor-pointer whitespace-nowrap shadow-xs">
+                {uploadingBrand ? (
+                  <RefreshCw className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Upload className="w-4 h-4" />
+                )}
+                <span>
+                  {uploadingBrand ? 'আইকন ও লোগো আপডেট হচ্ছে...' : 'নতুন আইকন / লোগো আপলোড করুন'}
+                </span>
+                <input
+                  ref={brandFileInputRef}
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp"
+                  onChange={handleUploadBrandIcon}
+                  disabled={uploadingBrand || resettingBrand}
+                  className="hidden"
+                />
+              </label>
+
+              <button
+                type="button"
+                onClick={handleResetBrandIcon}
+                disabled={uploadingBrand || resettingBrand}
+                className="min-h-[44px] px-3.5 py-2.5 bg-[#f8fafc] hover:bg-[#eff6ff] text-slate-800 border border-slate-200 hover:border-[#bfdbfe] rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50 whitespace-nowrap"
+              >
+                <RotateCcw className={`w-3.5 h-3.5 text-[#1d4ed8] ${resettingBrand ? 'animate-spin' : ''}`} />
+                <span>ডিফল্ট রিস্টোর</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Own Account Security — Change Login ID & PIN */}
-      <form onSubmit={handleUpdateCredentials} className="bg-white rounded-xl border border-[#a7d7c5] shadow-2xs overflow-hidden">
-        <div className="bg-[#0b2820] px-3 py-2 text-white flex items-center justify-between gap-2">
+      <form onSubmit={handleUpdateCredentials} className="bg-white rounded-xl border border-slate-200 shadow-2xs overflow-hidden">
+        <div className="bg-[#1e3a8a] px-3 py-2 text-white flex items-center justify-between gap-2">
           <h3 className="text-xs font-bold flex items-center gap-1.5">
-            <KeyRound className="w-3.5 h-3.5 text-emerald-300" />
+            <KeyRound className="w-3.5 h-3.5 text-[#93c5fd]" />
             <span>একাউন্ট নিরাপত্তা — লগইন আইডি ও পিন পরিবর্তন</span>
           </h3>
-          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-white/15 text-[10px] font-bold">
+          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-white/15 border border-white/25 text-[10px] font-bold">
             <Lock className="w-3 h-3" />
             <span>সুরক্ষিত</span>
           </span>
@@ -486,15 +664,15 @@ export const SettingsPage: React.FC = () => {
           </p>
 
         {credSuccess && (
-          <div className="p-3 bg-emerald-50 text-emerald-800 rounded-xl text-xs font-semibold border border-emerald-200 flex items-center gap-2">
-            <CheckCircle className="w-4 h-4 shrink-0 text-emerald-600" />
+          <div className="p-3 bg-[#eff6ff] text-[#1e3a8a] rounded-xl text-xs font-semibold border border-[#bfdbfe] flex items-center gap-2">
+            <CheckCircle className="w-4 h-4 shrink-0 text-[#1d4ed8]" />
             <span>{credSuccess}</span>
           </div>
         )}
 
         {credError && (
           <div className="p-3 bg-red-50 text-red-700 rounded-xl text-xs font-semibold border border-red-200 flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 shrink-0" />
+            <AlertCircle className="w-4 h-4 shrink-0 text-red-600" />
             <span>{credError}</span>
           </div>
         )}
@@ -510,7 +688,7 @@ export const SettingsPage: React.FC = () => {
               value={credCurrentPin}
               onChange={(e) => setCredCurrentPin(e.target.value.replace(/\D/g, '').slice(0, 6))}
               placeholder="আপনার বর্তমান পিন"
-              className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono font-bold outline-none focus:bg-white focus:ring-2 focus:ring-emerald-500"
+              className="w-full px-3 py-2.5 bg-[#f8fafc] border border-slate-200 rounded-xl text-xs font-mono font-bold outline-none focus:bg-white focus:ring-2 focus:ring-[#1d4ed8]"
               required
             />
           </div>
@@ -524,7 +702,7 @@ export const SettingsPage: React.FC = () => {
               value={credNewLoginId}
               onChange={(e) => setCredNewLoginId(e.target.value.replace(/\s+/g, ''))}
               placeholder="নতুন লগইন আইডি লিখুন"
-              className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono font-bold outline-none focus:bg-white focus:ring-2 focus:ring-emerald-500"
+              className="w-full px-3 py-2.5 bg-[#f8fafc] border border-slate-200 rounded-xl text-xs font-mono font-bold outline-none focus:bg-white focus:ring-2 focus:ring-[#1d4ed8]"
               required
             />
           </div>
@@ -539,7 +717,7 @@ export const SettingsPage: React.FC = () => {
               value={credNewPin}
               onChange={(e) => setCredNewPin(e.target.value.replace(/\D/g, '').slice(0, 6))}
               placeholder="পিন না বদলালে খালি রাখুন"
-              className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono font-bold outline-none focus:bg-white focus:ring-2 focus:ring-emerald-500"
+              className="w-full px-3 py-2.5 bg-[#f8fafc] border border-slate-200 rounded-xl text-xs font-mono font-bold outline-none focus:bg-white focus:ring-2 focus:ring-[#1d4ed8]"
             />
           </div>
 
@@ -553,7 +731,7 @@ export const SettingsPage: React.FC = () => {
               value={credConfirmPin}
               onChange={(e) => setCredConfirmPin(e.target.value.replace(/\D/g, '').slice(0, 6))}
               placeholder="নতুন পিন পুনরায় লিখুন"
-              className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono font-bold outline-none focus:bg-white focus:ring-2 focus:ring-emerald-500"
+              className="w-full px-3 py-2.5 bg-[#f8fafc] border border-slate-200 rounded-xl text-xs font-mono font-bold outline-none focus:bg-white focus:ring-2 focus:ring-[#1d4ed8]"
               disabled={!credNewPin.trim()}
             />
           </div>
@@ -562,7 +740,7 @@ export const SettingsPage: React.FC = () => {
         <button
           type="submit"
           disabled={updatingCreds}
-          className="w-full min-h-[44px] py-2.5 bg-[#0d9488] hover:bg-[#0f766e] text-white rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
+          className="w-full min-h-[44px] py-2.5 bg-[#1d4ed8] hover:bg-[#1e40af] text-white rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
         >
           <KeyRound className="w-3.5 h-3.5" />
           <span>{updatingCreds ? 'আপডেট হচ্ছে...' : 'লগইন আইডি ও পিন আপডেট করুন'}</span>
@@ -572,13 +750,13 @@ export const SettingsPage: React.FC = () => {
 
       {/* Local Storage & Backup Section */}
       {canManageBackup && (
-        <div className="bg-white rounded-xl border border-[#a7d7c5] shadow-2xs overflow-hidden">
-          <div className="bg-[#0f766e] px-3 py-2 text-white flex flex-wrap items-center justify-between gap-2">
+        <div className="bg-white rounded-xl border border-slate-200 shadow-2xs overflow-hidden">
+          <div className="bg-[#1d4ed8] px-3 py-2 text-white flex flex-wrap items-center justify-between gap-2">
             <h3 className="text-xs font-bold flex items-center gap-1.5">
-              <HardDrive className="w-3.5 h-3.5" />
+              <HardDrive className="w-3.5 h-3.5 text-[#93c5fd]" />
               <span>লোকাল স্টোরেজ ও ব্যাকআপ সংরক্ষণ</span>
             </h3>
-            <span className="text-[10px] text-emerald-100 tabular-nums">
+            <span className="text-[10px] text-[#dbeafe] tabular-nums">
               শেষ: {formattedLocalTime} ·{' '}
               {localStats?.hasLocalBackup
                 ? `${toBengaliDigits(Math.max(1, Math.round((localStats.localStorageBytes || 0) / 1024)))} KB`
@@ -588,7 +766,7 @@ export const SettingsPage: React.FC = () => {
           <div className="p-3.5 space-y-3">
 
           {/* Unboxed Inline Metadata Summary */}
-          <div className="text-xs text-slate-600 bg-slate-50 px-4 py-3 rounded-xl border border-slate-200 flex flex-wrap items-center gap-x-2 gap-y-1 tabular-nums">
+          <div className="text-xs text-slate-600 bg-[#f8fafc] px-4 py-3 rounded-xl border border-slate-200 flex flex-wrap items-center gap-x-2 gap-y-1 tabular-nums">
             <span className="font-bold text-slate-800">সংরক্ষিত ডাটা:</span>
             {isSuperAdmin && (
               <>
@@ -611,21 +789,21 @@ export const SettingsPage: React.FC = () => {
 
           {/* Pending JSON Restore Confirmation Box */}
           {pendingRestoreVault && (
-            <div className="p-4 bg-amber-50 border border-amber-200 rounded-2xl space-y-3">
+            <div className="p-4 bg-[#eff6ff] border border-[#bfdbfe] rounded-2xl space-y-3">
               <div className="flex items-start justify-between gap-2">
-                <div className="flex items-center gap-2 text-amber-900 font-bold text-xs">
-                  <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+                <div className="flex items-center gap-2 text-[#1e3a8a] font-bold text-xs">
+                  <AlertTriangle className="w-4 h-4 text-[#1d4ed8] shrink-0" />
                   <span>ব্যাকআপ ফাইল রিস্টোর নিশ্চিতকরণ ({pendingRestoreVault.fileName})</span>
                 </div>
                 <button
                   type="button"
                   onClick={() => !restoringBackup && setPendingRestoreVault(null)}
-                  className="text-amber-700 hover:text-amber-900 cursor-pointer"
+                  className="text-[#1d4ed8] hover:text-[#1e3a8a] cursor-pointer"
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
-              <div className="text-xs text-amber-800 leading-relaxed tabular-nums">
+              <div className="text-xs text-[#1e3a8a] leading-relaxed tabular-nums">
                 এই ব্যাকআপ ফাইলে <strong>{toBengaliDigits(pendingRestoreVault.companiesCount)} টি কোম্পানি</strong> ও সংশ্লিষ্ট{' '}
                 <strong>{toBengaliDigits(pendingRestoreVault.recordsCount)} টি রেকর্ড</strong> রয়েছে। রিস্টোর করলে বর্তমান ডাটাবেইজের সাথে যুক্ত হবে এবং সুপার এডমিন অ্যাকাউন্ট সুরক্ষিত থাকবে।
               </div>
@@ -634,7 +812,7 @@ export const SettingsPage: React.FC = () => {
                   type="button"
                   onClick={() => setPendingRestoreVault(null)}
                   disabled={restoringBackup}
-                  className="px-3.5 py-2 bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 rounded-xl text-xs font-bold whitespace-nowrap cursor-pointer disabled:opacity-50"
+                  className="px-3.5 py-2 bg-white hover:bg-[#f8fafc] text-slate-700 border border-slate-200 rounded-xl text-xs font-bold whitespace-nowrap cursor-pointer disabled:opacity-50"
                 >
                   বাতিল
                 </button>
@@ -642,7 +820,7 @@ export const SettingsPage: React.FC = () => {
                   type="button"
                   onClick={handleConfirmRestore}
                   disabled={restoringBackup}
-                  className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 whitespace-nowrap cursor-pointer disabled:opacity-50"
+                  className="px-4 py-2 bg-[#1d4ed8] hover:bg-[#1e40af] text-white rounded-xl text-xs font-bold flex items-center gap-1.5 whitespace-nowrap cursor-pointer disabled:opacity-50"
                 >
                   <Upload className="w-3.5 h-3.5" />
                   <span>{restoringBackup ? 'রিস্টোর হচ্ছে...' : 'এখনই রিস্টোর করুন'}</span>
@@ -657,7 +835,7 @@ export const SettingsPage: React.FC = () => {
               type="button"
               onClick={handleSaveLocalSnapshot}
               disabled={savingLocal}
-              className="min-h-[44px] px-4 py-2.5 bg-[#0d9488] hover:bg-[#0f766e] text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-colors whitespace-nowrap cursor-pointer disabled:opacity-50"
+              className="min-h-[44px] px-4 py-2.5 bg-[#1d4ed8] hover:bg-[#1e40af] text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-colors whitespace-nowrap cursor-pointer disabled:opacity-50"
             >
               <HardDrive className={`w-4 h-4 ${savingLocal ? 'animate-pulse' : ''}`} />
               <span>{savingLocal ? 'জমা হচ্ছে...' : 'লোকাল স্টোরেজে ডাটা জমা করুন'}</span>
@@ -667,16 +845,16 @@ export const SettingsPage: React.FC = () => {
               type="button"
               onClick={handleDownloadBackupJson}
               disabled={exportingJson}
-              className="min-h-[44px] px-4 py-2.5 bg-[#0b2820] hover:bg-[#071d17] text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-colors whitespace-nowrap cursor-pointer disabled:opacity-50"
+              className="min-h-[44px] px-4 py-2.5 bg-[#1e3a8a] hover:bg-[#1e40af] text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-colors whitespace-nowrap cursor-pointer disabled:opacity-50"
             >
-              <Download className="w-4 h-4 text-emerald-300" />
+              <Download className="w-4 h-4 text-[#93c5fd]" />
               <span>{exportingJson ? 'প্রস্তুত হচ্ছে...' : 'ব্যাকআপ ফাইল ডাউনলোড (.JSON)'}</span>
             </button>
 
             {isSuperAdmin && (
               <>
-                <label className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-colors whitespace-nowrap cursor-pointer">
-                  <Upload className="w-4 h-4 text-slate-600" />
+                <label className="px-4 py-2.5 bg-[#f8fafc] hover:bg-[#eff6ff] text-slate-800 border border-slate-200 hover:border-[#bfdbfe] rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-colors whitespace-nowrap cursor-pointer">
+                  <Upload className="w-4 h-4 text-[#1d4ed8]" />
                   <span>ফাইল থেকে রিস্টোর করুন</span>
                   <input
                     ref={restoreInputRef}
@@ -691,12 +869,12 @@ export const SettingsPage: React.FC = () => {
                   type="button"
                   onClick={handleCleanupOrphans}
                   disabled={cleaningOrphans}
-                  className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-colors whitespace-nowrap cursor-pointer disabled:opacity-50"
+                  className="px-4 py-2.5 bg-[#f8fafc] hover:bg-[#eff6ff] text-slate-700 border border-slate-200 hover:border-[#bfdbfe] rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-colors whitespace-nowrap cursor-pointer disabled:opacity-50"
                 >
                   {cleaningOrphans ? (
-                    <RefreshCw className="w-4 h-4 animate-spin text-slate-600" />
+                    <RefreshCw className="w-4 h-4 animate-spin text-[#1d4ed8]" />
                   ) : (
-                    <Database className="w-4 h-4 text-slate-600" />
+                    <Database className="w-4 h-4 text-[#1d4ed8]" />
                   )}
                   <span>{cleaningOrphans ? 'পরিষ্কার হচ্ছে...' : 'অবশিষ্ট অরফান ডাটা পরিষ্কার'}</span>
                 </button>

@@ -5,23 +5,23 @@
   body {
     max-width: 100%;
     overflow-x: clip;
-    background-color: #f0f9f6;
+    background-color: #f8fafc;
     color: #0f172a;
   }
 }
 
 @layer utilities {
-  /* Professional Deep Forest Green & Emerald-Teal Enterprise Tokens */
+  /* Royal Cobalt Blue (#1d4ed8 / #1e40af) + Milk White (#f8fafc) Tokens */
   .vms-surface-forest {
-    background-color: #0b2820;
+    background-color: #1e40af;
     color: #ffffff;
   }
   .vms-surface-emerald {
-    background: linear-gradient(135deg, #0b2820 0%, #0f4c3a 100%);
+    background-color: #1d4ed8;
     color: #ffffff;
   }
   .vms-surface-teal {
-    background: linear-gradient(135deg, #0f766e 0%, #0d9488 100%);
+    background-color: #1d4ed8;
     color: #ffffff;
   }
 
@@ -76,7 +76,7 @@
 
   .vms-excel-shell table:not(.no-excel-table) thead th {
     padding: 0.45rem 0.55rem;
-    border: 1px solid #a7d7c5;
+    border: 1px solid #1e40af;
     font-weight: 700;
     font-size: 10.5px;
     white-space: nowrap;
@@ -84,24 +84,28 @@
 
   .vms-excel-shell table:not(.no-excel-table) tbody td {
     padding: 0.4rem 0.55rem;
-    border: 1px solid #d1e7de;
+    border: 1px solid #e2e8f0;
     color: #0f172a;
   }
 
+  .vms-excel-shell table:not(.no-excel-table) tbody tr:nth-child(odd) {
+    background-color: #ffffff;
+  }
+
   .vms-excel-shell table:not(.no-excel-table) tbody tr:nth-child(even) {
-    background-color: #f4fbf8;
+    background-color: #f1f5f9;
   }
 
   .vms-excel-shell table:not(.no-excel-table) tbody tr:hover {
-    background-color: #dcf5ec;
+    background-color: #eff6ff;
   }
 
   .vms-excel-shell table:not(.no-excel-table) tfoot td,
   .vms-excel-shell table:not(.no-excel-table) tfoot th {
     padding: 0.45rem 0.55rem;
-    border: 1px solid #a7d7c5;
+    border: 1px solid #cbd5e1;
     font-weight: 800;
-    color: #0b2820;
+    color: #1e3a8a;
   }
 
   @media print {

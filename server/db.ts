@@ -112,6 +112,8 @@ function getInitialDatabase(): DatabaseSchema {
     noticeText: 'সকল কাউন্টারকে দ্রুত বুকিং ও প্রিন্ট সেবা নিশ্চিত করতে অনুরোধ করা হচ্ছে।',
     currency: '৳',
     timezone: 'Asia/Dhaka',
+    brandAssetVersion: 2026112701,
+    brandLogoUpdatedAt: new Date().toISOString(),
   };
 
   return {
@@ -194,6 +196,8 @@ class Database {
             noticeText: parsed.settings?.noticeText || '',
             currency: parsed.settings?.currency || '৳',
             timezone: parsed.settings?.timezone || 'Asia/Dhaka',
+            brandAssetVersion: parsed.settings?.brandAssetVersion || 2026112701,
+            brandLogoUpdatedAt: parsed.settings?.brandLogoUpdatedAt,
           };
 
           // Clean any orphaned records from deleted companies automatically on load
@@ -828,6 +832,25 @@ class Database {
     this.data.companySettings[companyId] = { ...current, ...newSettings };
     this.save();
     return this.data.companySettings[companyId];
+  }
+
+  public getBrandAssetVersion(): number {
+    return this.data.settings?.brandAssetVersion || 2026112701;
+  }
+
+  public getBrandLogoUpdatedAt(): string | undefined {
+    return this.data.settings?.brandLogoUpdatedAt;
+  }
+
+  public bumpBrandAssetVersion(version?: number): number {
+    const nextVersion = version || Date.now();
+    this.data.settings = {
+      ...this.data.settings,
+      brandAssetVersion: nextVersion,
+      brandLogoUpdatedAt: new Date().toISOString(),
+    };
+    this.save();
+    return nextVersion;
   }
 
   // Audit Log Helper

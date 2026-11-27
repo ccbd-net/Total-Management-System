@@ -18,6 +18,7 @@ import { CompanyAdminPage } from './pages/CompanyAdminPage.tsx';
 import { DatabasePage } from './pages/DatabasePage.tsx';
 import { FuelManagementPage } from './pages/FuelManagementPage.tsx';
 import { PWAInstallBanner } from './components/PWAInstallBanner.tsx';
+import { useBrandLogoUrl } from './utils/brandAssets.ts';
 
 const TAB_TITLES: Record<NavTab, string> = {
   dashboard: 'ড্যাশবোর্ড',
@@ -39,6 +40,7 @@ const TAB_TITLES: Record<NavTab, string> = {
 const VALID_TABS = new Set<NavTab>(Object.keys(TAB_TITLES) as NavTab[]);
 
 function MainLayout() {
+  const brandLogoUrl = useBrandLogoUrl();
   const { user, loading, isFuelManager, isChecker, isSuperAdmin, isMasterAdmin, isModerator, canManageTrips, canManageFuel } = useAuth();
   const [currentTab, setCurrentTabState] = useState<NavTab>(() => {
     try {
@@ -58,16 +60,16 @@ function MainLayout() {
 
   if (loading) {
     return (
-      <div className="min-h-[100dvh] bg-[#f0f9f6] flex flex-col items-center justify-center text-slate-900 p-4">
-        <div className="w-full max-w-xs bg-white border border-emerald-200 rounded-2xl overflow-hidden shadow-lg text-center">
-          <div className="h-1.5 w-full bg-[#0d9488]" />
+      <div className="min-h-[100dvh] bg-[#f8fafc] flex flex-col items-center justify-center text-slate-900 p-4">
+        <div className="w-full max-w-xs bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-lg text-center">
+          <div className="h-1.5 w-full bg-[#1d4ed8]" />
           <div className="p-6">
             <img
-              src="/assets/aistudio/1795651588938_2_f0f59799.jpg"
+              src={brandLogoUrl}
               alt="Vehicles Management System"
-              className="w-16 h-16 rounded-2xl object-cover shadow-sm border border-emerald-200 mx-auto mb-3"
+              className="w-16 h-16 rounded-2xl object-cover shadow-sm border border-[#1e3a8a] bg-[#1e40af] mx-auto mb-3"
             />
-            <div className="w-6 h-6 border-2 border-[#0d9488] border-t-transparent rounded-full animate-spin mx-auto mb-2.5" />
+            <div className="w-6 h-6 border-2 border-[#1d4ed8] border-t-transparent rounded-full animate-spin mx-auto mb-2.5" />
             <div className="text-xs font-bold text-slate-900 tracking-wide">
               Vehicles Management System লোড হচ্ছে...
             </div>
@@ -154,8 +156,8 @@ function MainLayout() {
   };
 
   return (
-    <div className="h-[100dvh] w-full max-w-full bg-[#f0f9f6] text-slate-900 flex overflow-hidden">
-      {/* Deep Forest-Green Sidebar Navigation */}
+    <div className="h-[100dvh] w-full max-w-full bg-[#f8fafc] text-slate-900 flex overflow-hidden">
+      {/* Royal Cobalt Blue Sidebar Navigation */}
       <Sidebar
         currentTab={effectiveTab}
         onSelectTab={setCurrentTab}

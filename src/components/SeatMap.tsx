@@ -51,7 +51,7 @@ export const SeatMap: React.FC<SeatMapProps> = ({
     const isBooked = Boolean(isBookedInfo);
     const isSelected = selectedSeats.includes(seatId);
 
-    let bgColor = 'bg-white hover:bg-emerald-50 text-slate-800 border-slate-300 shadow-sm';
+    let bgColor = 'bg-white hover:bg-[#eff6ff] text-slate-800 border-slate-300 shadow-sm';
     let borderColor = 'border-slate-300';
     let customStyle: React.CSSProperties = {};
 
@@ -60,8 +60,8 @@ export const SeatMap: React.FC<SeatMapProps> = ({
       borderColor = 'border-transparent';
       customStyle = { backgroundColor: isBookedInfo.color };
     } else if (isSelected) {
-      bgColor = 'text-white font-bold ring-2 ring-emerald-500 shadow-md transform scale-105';
-      borderColor = 'border-emerald-600';
+      bgColor = 'text-white font-bold ring-2 ring-[#2563eb] shadow-md transform scale-105';
+      borderColor = 'border-[#1d4ed8]';
       customStyle = { backgroundColor: currentCounterColor };
     }
 
@@ -80,7 +80,7 @@ export const SeatMap: React.FC<SeatMapProps> = ({
         className={`relative flex flex-col items-center justify-center ${
           isRear ? 'flex-1 h-[54px] sm:h-[60px]' : 'w-[54px] h-[54px] sm:w-[64px] sm:h-[60px]'
         } rounded-xl border text-xs sm:text-sm transition-all duration-150 ${bgColor} ${borderColor} ${
-          isBooked ? 'opacity-95' : 'cursor-pointer hover:border-emerald-400'
+          isBooked ? 'opacity-95' : 'cursor-pointer hover:border-[#60a5fa]'
         }`}
       >
         <span className="text-xs sm:text-sm font-extrabold tracking-tight leading-none">{label || seatId}</span>
@@ -105,20 +105,20 @@ export const SeatMap: React.FC<SeatMapProps> = ({
           </div>
 
           {/* Central Aisle label */}
-          <div className="text-center text-[11px] text-blue-700 font-bold bg-blue-50 px-2 py-1 rounded-lg border border-blue-200">
+          <div className="text-center text-[11px] text-[#1d4ed8] font-bold bg-[#eff6ff] px-2 py-1 rounded-lg border border-[#bfdbfe]">
             সামনে
           </div>
 
           {/* Right: Driver Indicator */}
-          <div className="flex flex-col items-center justify-center w-28 sm:w-32 h-[54px] sm:h-[60px] bg-slate-800 text-white rounded-xl shadow-xs">
+          <div className="flex flex-col items-center justify-center w-28 sm:w-32 h-[54px] sm:h-[60px] bg-[#1d4ed8] text-white rounded-xl shadow-xs border border-[#1e40af]">
             <div className="flex items-center gap-1.5 text-xs sm:text-sm font-bold">
               <span>চালক</span>
-              <svg className="w-4 h-4 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <svg className="w-4 h-4 text-[#93c5fd]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <circle cx="12" cy="12" r="9" />
                 <path d="M12 3v18M3 12h18" />
               </svg>
             </div>
-            <span className="text-[10px] text-slate-300">Driver Cabin</span>
+            <span className="text-[10px] text-[#dbeafe]">Driver Cabin</span>
           </div>
         </div>
 

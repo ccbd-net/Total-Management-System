@@ -11,6 +11,7 @@ import {
   WifiOff,
   Sparkles,
 } from 'lucide-react';
+import { useBrandLogoUrl } from '../utils/brandAssets.ts';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -18,6 +19,7 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 export const PWAInstallBanner: React.FC = () => {
+  const brandLogoUrl = useBrandLogoUrl();
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(() => {
     if (typeof window !== 'undefined' && (window as any).__deferredPwaPrompt) {
       return (window as any).__deferredPwaPrompt as BeforeInstallPromptEvent;
@@ -124,26 +126,26 @@ export const PWAInstallBanner: React.FC = () => {
     <>
       {/* Offline Mode Bar */}
       {!isOnline && (
-        <div className="bg-amber-600 text-white px-3 py-1.5 text-[11px] sm:text-xs font-bold flex items-center justify-center gap-1.5 w-full">
-          <WifiOff className="w-3.5 h-3.5 shrink-0" />
+        <div className="bg-[#1e3a8a] text-white border-b border-white/15 px-3 py-1.5 text-[11px] sm:text-xs font-bold flex items-center justify-center gap-1.5 w-full">
+          <WifiOff className="w-3.5 h-3.5 text-[#93c5fd] shrink-0" />
           <span>অফলাইন মোড — ইন্টারনেট সংযোগ বিচ্ছিন্ন রয়েছে, ক্যাশ করা তথ্য প্রদর্শিত হচ্ছে</span>
         </div>
       )}
 
       {/* Top Install Notification Banner */}
       {!isInstalled && !dismissed && (
-        <div className="bg-[#0b2820] text-white px-3 sm:px-4 py-1.5 shadow-sm flex items-center justify-between gap-2 text-xs border-b border-[#164236] w-full max-w-full overflow-hidden">
+        <div className="bg-[#1e40af] text-white px-3 sm:px-4 py-1.5 shadow-sm flex items-center justify-between gap-2 text-xs border-b border-white/15 w-full max-w-full overflow-hidden">
           <div className="flex items-center gap-2 min-w-0 flex-1">
             <img
-              src="/logo.png"
+              src={brandLogoUrl}
               alt="Vehicles Management System"
-              className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg object-cover border border-emerald-400/40 shrink-0"
+              className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg object-cover border border-white/25 shrink-0"
             />
             <div className="min-w-0 truncate">
               <span className="font-bold text-white tracking-wide text-[11px] sm:text-xs">
                 অ্যাপ ইনস্টল (PWA)
               </span>
-              <span className="text-emerald-200 hidden md:inline ml-1.5 text-xs">
+              <span className="text-[#bfdbfe] hidden md:inline ml-1.5 text-xs">
                 — মোবাইল বা কম্পিউটারে সরাসরি ইনস্টল করে দ্রুত ব্যবহার করুন।
               </span>
             </div>
@@ -155,7 +157,7 @@ export const PWAInstallBanner: React.FC = () => {
                 href={directUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-2.5 py-1 bg-white hover:bg-emerald-50 text-[#0b2820] font-extrabold rounded-lg shadow-xs flex items-center gap-1 transition-all text-[11px] whitespace-nowrap"
+                className="px-2.5 py-1 bg-white hover:bg-[#eff6ff] text-[#1d4ed8] font-extrabold rounded-lg shadow-xs flex items-center gap-1 transition-all text-[11px] whitespace-nowrap"
                 title="অ্যাপটি নতুন ট্যাবে খুলুন"
               >
                 <ExternalLink className="w-3 h-3 shrink-0" />
@@ -165,7 +167,7 @@ export const PWAInstallBanner: React.FC = () => {
               <button
                 type="button"
                 onClick={handleInstallButtonClick}
-                className="px-2.5 py-1 bg-[#0d9488] hover:bg-[#0f766e] text-white font-extrabold rounded-lg shadow-xs flex items-center gap-1 transition-all text-[11px] cursor-pointer whitespace-nowrap"
+                className="px-2.5 py-1 bg-white/15 hover:bg-white/25 text-white border border-white/25 font-extrabold rounded-lg shadow-xs flex items-center gap-1 transition-all text-[11px] cursor-pointer whitespace-nowrap"
               >
                 <Download className="w-3 h-3 shrink-0" />
                 <span>{deferredPrompt ? 'ইনস্টল করুন' : 'ইনস্টল'}</span>
@@ -175,17 +177,17 @@ export const PWAInstallBanner: React.FC = () => {
             <button
               type="button"
               onClick={() => setShowModal(true)}
-              className="px-2 py-1 bg-[#133b30] hover:bg-[#194d3f] text-emerald-100 rounded-lg transition-colors text-[11px] font-semibold flex items-center gap-1 cursor-pointer"
+              className="px-2 py-1 bg-white/15 hover:bg-white/25 text-white rounded-lg transition-colors text-[11px] font-semibold flex items-center gap-1 cursor-pointer border border-white/20"
               title="ইনস্টল সহায়িকা ও নির্দেশিকা"
             >
-              <HelpCircle className="w-3.5 h-3.5" />
+              <HelpCircle className="w-3.5 h-3.5 text-[#bfdbfe]" />
               <span className="hidden md:inline">সহায়িকা</span>
             </button>
 
             <button
               type="button"
               onClick={() => setDismissed(true)}
-              className="p-1 text-emerald-200 hover:text-white hover:bg-[#133b30] rounded-lg transition-colors cursor-pointer"
+              className="p-1 text-[#bfdbfe] hover:text-white hover:bg-white/15 rounded-lg transition-colors cursor-pointer"
               title="ব্যানার বন্ধ করুন"
             >
               <X className="w-3.5 h-3.5" />
@@ -197,24 +199,24 @@ export const PWAInstallBanner: React.FC = () => {
       {/* Comprehensive PWA Installation Guide Modal */}
       {showModal && (
         <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
-          <div className="bg-white text-slate-900 rounded-t-2xl sm:rounded-2xl max-w-lg w-full shadow-2xl border border-emerald-200 overflow-hidden flex flex-col max-h-[92dvh] sm:max-h-[88dvh]">
+          <div className="bg-white text-slate-900 rounded-t-2xl sm:rounded-2xl max-w-lg w-full shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[92dvh] sm:max-h-[88dvh]">
             {/* Modal Header */}
-            <div className="shrink-0 bg-[#0b2820] text-white p-4 flex items-center justify-between">
+            <div className="shrink-0 bg-[#1d4ed8] text-white p-4 flex items-center justify-between border-b border-[#1e40af]">
               <div className="flex items-center gap-3 min-w-0">
                 <img
-                  src="/logo.png"
+                  src={brandLogoUrl}
                   alt="Vehicles Management System"
-                  className="w-9 h-9 rounded-xl object-cover border border-emerald-400/40 shrink-0"
+                  className="w-9 h-9 rounded-xl object-cover border border-white/25 shrink-0"
                 />
                 <div className="min-w-0">
                   <h3 className="font-bold text-sm sm:text-base text-white truncate">Vehicles Management System (PWA)</h3>
-                  <p className="text-[11px] text-emerald-300 truncate">মোবাইল ও পিসিতে ইনস্টল করার সহজ নিয়ম</p>
+                  <p className="text-[11px] text-[#bfdbfe] truncate">মোবাইল ও পিসিতে ইনস্টল করার সহজ নিয়ম</p>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => setShowModal(false)}
-                className="min-h-[36px] min-w-[36px] flex items-center justify-center text-emerald-200 hover:text-white hover:bg-[#133b30] rounded-lg transition-colors cursor-pointer shrink-0"
+                className="min-h-[36px] min-w-[36px] flex items-center justify-center text-[#dbeafe] hover:text-white hover:bg-white/15 rounded-lg transition-colors cursor-pointer shrink-0"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -224,9 +226,9 @@ export const PWAInstallBanner: React.FC = () => {
             <div className="flex-1 p-4 overflow-y-auto overscroll-contain space-y-3.5">
               {/* If in iframe alert box */}
               {isInIframe && (
-                <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-900 text-xs">
-                  <div className="font-bold flex items-center gap-1.5 text-amber-950 mb-1">
-                    <Sparkles className="w-4 h-4 text-amber-600" />
+                <div className="p-3 bg-[#eff6ff] border border-[#bfdbfe] rounded-xl text-[#1e3a8a] text-xs">
+                  <div className="font-bold flex items-center gap-1.5 text-[#1e3a8a] mb-1">
+                    <Sparkles className="w-4 h-4 text-[#1d4ed8]" />
                     <span>প্রিভিউ মোড সতর্কবার্তা:</span>
                   </div>
                   <p className="leading-relaxed mb-2">
@@ -236,9 +238,9 @@ export const PWAInstallBanner: React.FC = () => {
                     href={directUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full py-2 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-lg flex items-center justify-center gap-2 shadow-xs"
+                    className="w-full py-2 bg-[#1e40af] hover:bg-[#1e3a8a] text-white font-bold rounded-lg flex items-center justify-center gap-2 shadow-xs"
                   >
-                    <ExternalLink className="w-4 h-4" />
+                    <ExternalLink className="w-4 h-4 text-[#93c5fd]" />
                     <span>সরাসরি নতুন ট্যাবে অ্যাপটি খুলুন</span>
                   </a>
                 </div>
@@ -246,14 +248,14 @@ export const PWAInstallBanner: React.FC = () => {
 
               {/* Direct Prompt Button if available */}
               {deferredPrompt && (
-                <div className="p-3.5 bg-emerald-50 border border-emerald-200 rounded-xl text-center">
-                  <p className="text-xs text-emerald-900 font-semibold mb-2">
+                <div className="p-3.5 bg-[#eff6ff] border border-[#bfdbfe] rounded-xl text-center">
+                  <p className="text-xs text-[#1e3a8a] font-semibold mb-2">
                     আপনার ক্রোম ব্রাউজার অ্যাপটি সরাসরি ইনস্টল করার জন্য প্রস্তুত!
                   </p>
                   <button
                     type="button"
                     onClick={handleInstallButtonClick}
-                    className="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg flex items-center justify-center gap-2 shadow-sm cursor-pointer text-xs sm:text-sm"
+                    className="w-full py-2 bg-[#1d4ed8] hover:bg-[#1e40af] text-white font-bold rounded-lg flex items-center justify-center gap-2 shadow-sm cursor-pointer text-xs sm:text-sm"
                   >
                     <Download className="w-4 h-4" />
                     <span>সরাসরি অ্যাপ ইনস্টল করুন</span>
@@ -264,14 +266,14 @@ export const PWAInstallBanner: React.FC = () => {
               {/* Device Selector Tabs */}
               <div>
                 <div className="text-xs font-bold text-slate-700 mb-1.5">আপনার ডিভাইস নির্বাচন করুন:</div>
-                <div className="grid grid-cols-3 gap-1.5 bg-slate-100 p-1 rounded-xl">
+                <div className="grid grid-cols-3 gap-1.5 bg-[#f8fafc] border border-slate-200 p-1 rounded-xl">
                   <button
                     type="button"
                     onClick={() => setActiveTab('android')}
                     className={`py-1.5 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                       activeTab === 'android'
-                        ? 'bg-white text-emerald-700 shadow-xs'
-                        : 'text-slate-600 hover:text-slate-900'
+                        ? 'bg-[#1d4ed8] text-white shadow-xs'
+                        : 'text-slate-700 hover:text-slate-950'
                     }`}
                   >
                     <Smartphone className="w-3.5 h-3.5" />
@@ -283,8 +285,8 @@ export const PWAInstallBanner: React.FC = () => {
                     onClick={() => setActiveTab('desktop')}
                     className={`py-1.5 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                       activeTab === 'desktop'
-                        ? 'bg-white text-emerald-700 shadow-xs'
-                        : 'text-slate-600 hover:text-slate-900'
+                        ? 'bg-[#1d4ed8] text-white shadow-xs'
+                        : 'text-slate-700 hover:text-slate-950'
                     }`}
                   >
                     <Laptop className="w-3.5 h-3.5" />
@@ -296,8 +298,8 @@ export const PWAInstallBanner: React.FC = () => {
                     onClick={() => setActiveTab('ios')}
                     className={`py-1.5 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                       activeTab === 'ios'
-                        ? 'bg-white text-emerald-700 shadow-xs'
-                        : 'text-slate-600 hover:text-slate-900'
+                        ? 'bg-[#1d4ed8] text-white shadow-xs'
+                        : 'text-slate-700 hover:text-slate-950'
                     }`}
                   >
                     <Apple className="w-3.5 h-3.5" />
@@ -308,9 +310,9 @@ export const PWAInstallBanner: React.FC = () => {
 
               {/* Tab Contents */}
               {activeTab === 'android' && (
-                <div className="bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-xs space-y-2.5">
+                <div className="bg-[#f8fafc] border border-slate-200 rounded-xl p-3.5 text-xs space-y-2.5">
                   <div className="font-bold text-slate-900 flex items-center gap-2">
-                    <Smartphone className="w-4 h-4 text-emerald-600" />
+                    <Smartphone className="w-4 h-4 text-[#1d4ed8]" />
                     <span>Android Chrome ব্রাউজারে ইনস্টল করার নিয়ম:</span>
                   </div>
                   <ol className="space-y-1.5 text-slate-700 leading-relaxed font-medium">
@@ -331,9 +333,9 @@ export const PWAInstallBanner: React.FC = () => {
               )}
 
               {activeTab === 'desktop' && (
-                <div className="bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-xs space-y-2.5">
+                <div className="bg-[#f8fafc] border border-slate-200 rounded-xl p-3.5 text-xs space-y-2.5">
                   <div className="font-bold text-slate-900 flex items-center gap-2">
-                    <Laptop className="w-4 h-4 text-teal-600" />
+                    <Laptop className="w-4 h-4 text-[#1d4ed8]" />
                     <span>Chrome / Microsoft Edge (PC / Mac) এ ইনস্টল:</span>
                   </div>
                   <ol className="space-y-1.5 text-slate-700 leading-relaxed font-medium">
@@ -350,9 +352,9 @@ export const PWAInstallBanner: React.FC = () => {
               )}
 
               {activeTab === 'ios' && (
-                <div className="bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-xs space-y-2.5">
+                <div className="bg-[#f8fafc] border border-slate-200 rounded-xl p-3.5 text-xs space-y-2.5">
                   <div className="font-bold text-slate-900 flex items-center gap-2">
-                    <Apple className="w-4 h-4 text-slate-800" />
+                    <Apple className="w-4 h-4 text-[#1e40af]" />
                     <span>iPhone / iPad (Safari) ব্রাউজারে ইনস্টল:</span>
                   </div>
                   <ol className="space-y-1.5 text-slate-700 leading-relaxed font-medium">
@@ -369,12 +371,12 @@ export const PWAInstallBanner: React.FC = () => {
               )}
 
               {/* Advantages */}
-              <div className="bg-emerald-50/60 border border-emerald-100 rounded-xl p-3 text-[11px] text-emerald-950">
-                <div className="font-bold mb-1 flex items-center gap-1.5 text-emerald-800">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+              <div className="bg-[#eff6ff] border border-[#bfdbfe] rounded-xl p-3 text-[11px] text-[#1e3a8a]">
+                <div className="font-bold mb-1 flex items-center gap-1.5 text-[#1e3a8a]">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-[#1d4ed8]" />
                   <span>PWA ইনস্টল করার সুবিধাসমূহ:</span>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 text-slate-700">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 text-slate-800">
                   <div>✓ ব্রাউজার বার ছাড়া ফুল-স্ক্রিন অ্যাপ মোড</div>
                   <div>✓ দ্রুত টিকিট বুকিং ও প্রিন্ট</div>
                   <div>✓ অফলাইন ও দ্রুত ক্যাশ লোডিং</div>
@@ -384,11 +386,11 @@ export const PWAInstallBanner: React.FC = () => {
             </div>
 
             {/* Modal Footer */}
-            <div className="shrink-0 bg-[#f0f9f6] px-4 py-3 border-t border-emerald-200 flex items-center justify-between gap-2 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+            <div className="shrink-0 bg-[#f8fafc] px-4 py-3 border-t border-slate-200 flex items-center justify-between gap-2 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
               <button
                 type="button"
                 onClick={() => setShowModal(false)}
-                className="min-h-[44px] px-4 py-2 bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 font-bold rounded-xl text-xs transition-colors cursor-pointer"
+                className="min-h-[44px] px-4 py-2 bg-white hover:bg-[#eff6ff] text-slate-900 border border-slate-200 font-bold rounded-xl text-xs transition-colors cursor-pointer"
               >
                 বন্ধ করুন
               </button>
@@ -397,7 +399,7 @@ export const PWAInstallBanner: React.FC = () => {
                 href={directUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="min-h-[44px] px-4 py-2 bg-[#0d9488] hover:bg-[#0f766e] text-white font-bold rounded-xl text-xs transition-colors flex items-center gap-1.5 shadow-xs"
+                className="min-h-[44px] px-4 py-2 bg-[#1d4ed8] hover:bg-[#1e40af] text-white font-bold rounded-xl text-xs transition-colors flex items-center gap-1.5 shadow-xs"
               >
                 <ExternalLink className="w-3.5 h-3.5" />
                 <span>নতুন ট্যাবে খুলুন</span>

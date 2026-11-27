@@ -397,15 +397,15 @@ export const UsersPage: React.FC = () => {
   return (
     <div className="space-y-3">
       {/* Compact Header */}
-      <div className="bg-white rounded-xl border border-emerald-200 shadow-2xs overflow-hidden">
-        <div className="bg-[#0b2820] px-3 py-2 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+      <div className="bg-white rounded-xl border border-slate-200 shadow-2xs overflow-hidden">
+        <div className="bg-[#1d4ed8] px-3 py-2 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div className="flex items-center gap-2 min-w-0">
-            <Users className="w-4 h-4 shrink-0 text-emerald-300" />
+            <Users className="w-4 h-4 shrink-0 text-[#bfdbfe]" />
             <div className="min-w-0">
               <h2 className="text-xs sm:text-sm font-bold leading-tight truncate text-white">
                 ইউজার, সুপারভাইজার ও ড্রাইভার ব্যবস্থাপনা
               </h2>
-              <p className="hidden sm:block text-[10px] text-emerald-200/80 leading-tight truncate">
+              <p className="hidden sm:block text-[10px] text-[#dbeafe] leading-tight truncate">
                 লগইন অপারেটর, সুপারভাইজার ও ড্রাইভারদের তালিকা পরিচালনা
               </p>
             </div>
@@ -415,7 +415,7 @@ export const UsersPage: React.FC = () => {
             <button
               type="button"
               onClick={fetchData}
-              className="p-1.5 bg-white/15 hover:bg-white/25 text-white rounded-lg transition-colors cursor-pointer"
+              className="p-1.5 bg-white/15 hover:bg-white/25 border border-white/25 text-white rounded-lg transition-colors cursor-pointer"
               title="রিফ্রেশ"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
@@ -426,7 +426,7 @@ export const UsersPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={openAddUserModal}
-                  className="px-2.5 py-1 bg-[#0d9488] hover:bg-[#0f766e] text-white text-[11px] font-extrabold rounded-lg shadow-2xs transition-all flex items-center gap-1 cursor-pointer border border-emerald-400/30"
+                  className="px-2.5 py-1 bg-white hover:bg-[#eff6ff] text-[#1d4ed8] text-[11px] font-extrabold rounded-lg shadow-2xs transition-all flex items-center gap-1 cursor-pointer border border-white/80"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>নতুন ইউজার</span>
@@ -435,7 +435,7 @@ export const UsersPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={openAddSupModal}
-                  className="px-2.5 py-1 bg-[#0d9488] hover:bg-[#0f766e] text-white text-[11px] font-extrabold rounded-lg shadow-2xs transition-all flex items-center gap-1 cursor-pointer border border-emerald-400/30"
+                  className="px-2.5 py-1 bg-white hover:bg-[#eff6ff] text-[#1d4ed8] text-[11px] font-extrabold rounded-lg shadow-2xs transition-all flex items-center gap-1 cursor-pointer border border-white/80"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>নতুন সুপারভাইজার</span>
@@ -444,7 +444,7 @@ export const UsersPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={openAddDriverModal}
-                  className="px-2.5 py-1 bg-[#0d9488] hover:bg-[#0f766e] text-white text-[11px] font-extrabold rounded-lg shadow-2xs transition-all flex items-center gap-1 cursor-pointer border border-emerald-400/30"
+                  className="px-2.5 py-1 bg-white hover:bg-[#eff6ff] text-[#1d4ed8] text-[11px] font-extrabold rounded-lg shadow-2xs transition-all flex items-center gap-1 cursor-pointer border border-white/80"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>নতুন ড্রাইভার</span>
@@ -456,14 +456,14 @@ export const UsersPage: React.FC = () => {
       </div>
 
       {/* Compact Excel Tabs */}
-      <div className="bg-white p-1.5 rounded-xl border border-emerald-200 shadow-2xs flex flex-wrap gap-1.5">
+      <div className="bg-[#1e3a8a] p-1.5 rounded-xl border border-[#1e40af] shadow-2xs flex flex-wrap gap-1.5">
         <button
           type="button"
           onClick={() => setActiveTab('users')}
           className={`px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
             activeTab === 'users'
-              ? 'bg-[#0b2820] text-white shadow-2xs'
-              : 'bg-[#e6f4ef] text-slate-700 hover:text-slate-900'
+              ? 'bg-white/15 text-white border border-white/25 shadow-2xs'
+              : 'text-[#dbeafe] hover:bg-white/10 border border-transparent'
           }`}
         >
           <Shield className="w-3.5 h-3.5" />
@@ -475,8 +475,8 @@ export const UsersPage: React.FC = () => {
           onClick={() => setActiveTab('supervisors')}
           className={`px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
             activeTab === 'supervisors'
-              ? 'bg-[#0d9488] text-white shadow-2xs'
-              : 'bg-[#e6f4ef] text-slate-700 hover:text-slate-900'
+              ? 'bg-white/15 text-white border border-white/25 shadow-2xs'
+              : 'text-[#dbeafe] hover:bg-white/10 border border-transparent'
           }`}
         >
           <Briefcase className="w-3.5 h-3.5" />
@@ -488,8 +488,8 @@ export const UsersPage: React.FC = () => {
           onClick={() => setActiveTab('drivers')}
           className={`px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
             activeTab === 'drivers'
-              ? 'bg-[#0f766e] text-white shadow-2xs'
-              : 'bg-[#e6f4ef] text-slate-700 hover:text-slate-900'
+              ? 'bg-white/15 text-white border border-white/25 shadow-2xs'
+              : 'text-[#dbeafe] hover:bg-white/10 border border-transparent'
           }`}
         >
           <Truck className="w-3.5 h-3.5" />
@@ -499,21 +499,21 @@ export const UsersPage: React.FC = () => {
 
       {/* Messages */}
       {successMsg && (
-        <div className="p-2.5 bg-emerald-50 text-emerald-800 rounded-xl text-xs font-semibold border border-emerald-200 flex items-center gap-2">
-          <CheckCircle className="w-4 h-4 shrink-0 text-emerald-600" />
+        <div className="p-2.5 bg-[#eff6ff] text-[#1e3a8a] rounded-xl text-xs font-semibold border border-[#bfdbfe] flex items-center gap-2">
+          <CheckCircle className="w-4 h-4 shrink-0 text-[#1d4ed8]" />
           <span>{successMsg}</span>
         </div>
       )}
 
       {errorMsg && (
-        <div className="p-2.5 bg-rose-50 text-rose-700 rounded-xl text-xs font-semibold border border-rose-200 flex items-center gap-2">
-          <AlertTriangle className="w-4 h-4 shrink-0" />
+        <div className="p-2.5 bg-red-50 text-red-700 rounded-xl text-xs font-semibold border border-red-200 flex items-center gap-2">
+          <AlertTriangle className="w-4 h-4 shrink-0 text-red-600" />
           <span>{errorMsg}</span>
         </div>
       )}
 
       {/* Search Input */}
-      <div className="bg-white p-2.5 rounded-xl border border-slate-300 shadow-2xs flex items-center gap-2">
+      <div className="bg-white p-2.5 rounded-xl border border-slate-200 shadow-2xs flex items-center gap-2">
         <div className="relative flex-1">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
             <Search className="w-3.5 h-3.5" />
@@ -529,28 +529,28 @@ export const UsersPage: React.FC = () => {
                 ? 'সুপারভাইজারের নাম খুঁজুন...'
                 : 'ড্রাইভারের নাম খুঁজুন...'
             }
-            className="w-full pl-8 pr-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-violet-500 focus:bg-white outline-none"
+            className="w-full pl-8 pr-3 py-1.5 bg-[#f8fafc] border border-slate-200 rounded-lg text-xs text-slate-900 focus:ring-2 focus:ring-[#1d4ed8] focus:bg-white outline-none"
           />
         </div>
       </div>
 
       {/* TAB 1: USERS TABLE */}
       {activeTab === 'users' && (
-        <div className="bg-white rounded-xl border border-emerald-200 shadow-2xs overflow-hidden">
+        <div className="bg-white rounded-xl border border-slate-200 shadow-2xs overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse text-xs">
+            <table className="w-full text-left border-collapse border border-slate-200 text-xs">
               <thead>
-                <tr className="bg-[#0b2820] text-white font-bold text-[11px]">
-                  <th className="py-3 px-4">ব্যবহারকারী</th>
-                  <th className="py-3 px-4">লগইন আইডি</th>
-                  <th className="py-3 px-4">ভূমিকা (Role)</th>
-                  <th className="py-3 px-4">নিযুক্ত কাউন্টার</th>
-                  <th className="py-3 px-4">মোবাইল</th>
-                  <th className="py-3 px-4 text-center">স্ট্যাটাস</th>
-                  {isMasterAdmin && <th className="py-3 px-4 text-right">একশন</th>}
+                <tr className="bg-[#1d4ed8] text-white font-bold text-[11px] border-b border-[#1e40af]">
+                  <th className="py-2.5 px-3 border-r border-blue-600/60">ব্যবহারকারী</th>
+                  <th className="py-2.5 px-3 border-r border-blue-600/60">লগইন আইডি</th>
+                  <th className="py-2.5 px-3 border-r border-blue-600/60">ভূমিকা (Role)</th>
+                  <th className="py-2.5 px-3 border-r border-blue-600/60">নিযুক্ত কাউন্টার</th>
+                  <th className="py-2.5 px-3 border-r border-blue-600/60">মোবাইল</th>
+                  <th className="py-2.5 px-3 border-r border-blue-600/60 text-center">স্ট্যাটাস</th>
+                  {isMasterAdmin && <th className="py-2.5 px-3 text-right">একশন</th>}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 font-medium">
+              <tbody className="divide-y divide-slate-200 font-medium">
                 {filteredUsers.length === 0 ? (
                   <tr>
                     <td colSpan={7} className="py-8 text-center text-slate-400">
@@ -559,17 +559,17 @@ export const UsersPage: React.FC = () => {
                   </tr>
                 ) : (
                   filteredUsers.map((u) => (
-                    <tr key={u.id} className="hover:bg-slate-50 transition-colors">
-                      <td className="py-3 px-4">
+                    <tr key={u.id} className="odd:bg-white even:bg-[#f1f5f9] hover:bg-[#eff6ff] transition-colors">
+                      <td className="py-2.5 px-3 border-r border-slate-200">
                         <div className="font-bold text-slate-900">{u.name}</div>
                         <div className="text-[10px] text-slate-400 font-mono">
                           তৈরি: {formatBengaliDateTime(u.createdAt)}
                         </div>
                       </td>
 
-                      <td className="py-3 px-4 font-mono font-bold text-slate-700">
+                      <td className="py-2.5 px-3 border-r border-slate-200 font-mono font-bold text-slate-700">
                         {u.isCredentialHidden || u.loginId === '••••••••' ? (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-700 text-[11px] font-sans font-bold">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#eff6ff] border border-[#bfdbfe] text-[#1d4ed8] text-[11px] font-sans font-bold">
                             <Lock className="w-3 h-3" />
                             <span>গোপন (সুরক্ষিত)</span>
                           </span>
@@ -578,20 +578,16 @@ export const UsersPage: React.FC = () => {
                         )}
                       </td>
 
-                      <td className="py-3 px-4">
+                      <td className="py-2.5 px-3 border-r border-slate-200">
                         <span
-                          className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                            u.role === 'master_admin'
-                              ? 'bg-purple-100 text-purple-800'
-                              : u.role === 'super_admin'
-                              ? 'bg-rose-100 text-rose-800'
-                              : u.role === 'moderator'
-                              ? 'bg-blue-100 text-blue-800'
+                          className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${
+                            u.role === 'master_admin' || u.role === 'super_admin' || u.role === 'company_admin'
+                              ? 'bg-[#1e3a8a] text-white'
+                              : u.role === 'moderator' || u.role === 'checker'
+                              ? 'bg-[#1d4ed8] text-white'
                               : u.role === 'fuel_manager'
-                              ? 'bg-amber-100 text-amber-800'
-                              : u.role === 'checker'
-                              ? 'bg-indigo-100 text-indigo-800'
-                              : 'bg-emerald-100 text-emerald-800'
+                              ? 'bg-[#1e40af] text-white'
+                              : 'bg-[#eff6ff] text-[#1d4ed8] border border-[#bfdbfe]'
                           }`}
                         >
                           {u.role === 'master_admin'
@@ -610,7 +606,7 @@ export const UsersPage: React.FC = () => {
                         </span>
                       </td>
 
-                      <td className="py-3 px-4">
+                      <td className="py-2.5 px-3 border-r border-slate-200">
                         {u.counterName ? (
                           <div className="flex items-center gap-1.5 font-bold text-slate-800">
                             <span
@@ -625,16 +621,16 @@ export const UsersPage: React.FC = () => {
                         )}
                       </td>
 
-                      <td className="py-3 px-4 font-mono text-slate-600">
+                      <td className="py-2.5 px-3 border-r border-slate-200 font-mono text-slate-600">
                         {u.phone || 'ফোন নেই'}
                       </td>
 
-                      <td className="py-3 px-4 text-center">
+                      <td className="py-2.5 px-3 border-r border-slate-200 text-center">
                         <span
-                          className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                          className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${
                             u.status === 'active'
-                              ? 'bg-emerald-100 text-emerald-800'
-                              : 'bg-slate-100 text-slate-600'
+                              ? 'bg-[#eff6ff] text-[#1d4ed8] border border-[#bfdbfe]'
+                              : 'bg-[#f8fafc] text-slate-600 border border-slate-200'
                           }`}
                         >
                           {u.status === 'active' ? 'সক্রিয়' : 'নিষ্ক্রিয়'}
@@ -642,12 +638,12 @@ export const UsersPage: React.FC = () => {
                       </td>
 
                       {isMasterAdmin && (
-                        <td className="py-3 px-4 text-right">
+                        <td className="py-2.5 px-3 text-right">
                           <div className="flex items-center justify-end gap-1.5">
                             <button
                               type="button"
                               onClick={() => openEditUserModal(u)}
-                              className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-xl transition-colors font-semibold"
+                              className="p-1.5 text-[#1d4ed8] hover:bg-[#eff6ff] rounded-xl transition-colors font-semibold cursor-pointer"
                               title="সম্পাদনা ও পিন পরিবর্তন"
                             >
                               <Edit className="w-3.5 h-3.5" />
@@ -655,7 +651,7 @@ export const UsersPage: React.FC = () => {
                             <button
                               type="button"
                               onClick={() => handleDeleteUser(u)}
-                              className="p-1.5 text-red-600 hover:bg-red-50 rounded-xl transition-colors font-semibold"
+                              className="p-1.5 text-red-600 hover:bg-red-50 rounded-xl transition-colors font-semibold cursor-pointer"
                               title="মুছে ফেলুন"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
@@ -678,15 +674,15 @@ export const UsersPage: React.FC = () => {
           {isMasterAdmin && (
             <form
               onSubmit={handleQuickAddSupervisors}
-              className="bg-blue-50/80 border border-blue-200 rounded-2xl p-4 space-y-2.5"
+              className="bg-[#eff6ff] border border-[#bfdbfe] rounded-2xl p-4 space-y-2.5"
             >
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
-                <label className="text-xs font-bold text-blue-950 flex items-center gap-1.5">
-                  <Briefcase className="w-4 h-4 text-blue-600" />
+                <label className="text-xs font-bold text-[#1e3a8a] flex items-center gap-1.5">
+                  <Briefcase className="w-4 h-4 text-[#1d4ed8]" />
                   <span>একসাথে কমা (,) দিয়ে একাধিক সুপারভাইজারের নাম যুক্ত করুন</span>
                 </label>
                 {quickSupNames.trim() && (
-                  <span className="text-[11px] font-bold text-blue-700 bg-white px-2.5 py-0.5 rounded-full border border-blue-200">
+                  <span className="text-[11px] font-bold text-[#1d4ed8] bg-white px-2.5 py-0.5 rounded-full border border-[#bfdbfe]">
                     {toBengaliDigits(parseCommaNames(quickSupNames).length)} টি নাম পাওয়া গেছে
                   </span>
                 )}
@@ -697,12 +693,12 @@ export const UsersPage: React.FC = () => {
                   value={quickSupNames}
                   onChange={(e) => setQuickSupNames(e.target.value)}
                   placeholder="যেমন: কানন, সবুজ, সিরাজ, রফিক, মামুন"
-                  className="flex-1 px-3.5 py-2.5 bg-white border border-blue-300 rounded-xl text-xs font-bold text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-blue-500 outline-none"
+                  className="flex-1 px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-[#1d4ed8] outline-none"
                 />
                 <button
                   type="submit"
                   disabled={supSubmitting || parseCommaNames(quickSupNames).length === 0}
-                  className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-xs transition-all flex items-center justify-center gap-1.5 disabled:opacity-50 cursor-pointer shrink-0"
+                  className="px-5 py-2.5 bg-[#1d4ed8] hover:bg-[#1e40af] text-white text-xs font-bold rounded-xl shadow-xs transition-all flex items-center justify-center gap-1.5 disabled:opacity-50 cursor-pointer shrink-0"
                 >
                   <Plus className="w-4 h-4" />
                   <span>{supSubmitting ? 'যুক্ত হচ্ছে...' : 'নাম যুক্ত করুন'}</span>
@@ -711,14 +707,14 @@ export const UsersPage: React.FC = () => {
             </form>
           )}
 
-          <div className="bg-white rounded-xl border border-slate-300 shadow-2xs overflow-hidden">
+          <div className="bg-white rounded-xl border border-slate-200 shadow-2xs overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse border border-slate-300 text-xs">
+              <table className="w-full text-left border-collapse border border-slate-200 text-xs">
                 <thead>
-                  <tr className="bg-[#0b2820] text-white font-bold text-[11px]">
-                    <th className="py-2 px-3 border-r border-white/25 text-center w-20">ক্রম</th>
-                    <th className="py-2 px-4 border-r border-white/25">সুপারভাইজারের নাম</th>
-                    <th className="py-2 px-3 border-r border-white/25 text-center w-44">
+                  <tr className="bg-[#1d4ed8] text-white font-bold text-[11px] border-b border-[#1e40af]">
+                    <th className="py-2 px-3 border-r border-blue-600/60 text-center w-20">ক্রম</th>
+                    <th className="py-2 px-4 border-r border-blue-600/60">সুপারভাইজারের নাম</th>
+                    <th className="py-2 px-3 border-r border-blue-600/60 text-center w-44">
                       মোট পূর্ণাঙ্গ ট্রিপ
                     </th>
                     {isMasterAdmin && <th className="py-2 px-3 text-right w-24">একশন</th>}
@@ -727,21 +723,21 @@ export const UsersPage: React.FC = () => {
                 <tbody className="divide-y divide-slate-200 font-medium">
                   {filteredSupervisors.length === 0 ? (
                     <tr>
-                      <td colSpan={4} className="py-8 text-center text-slate-400 border border-slate-300">
-                        কোনো সুপারভাইজার পাওয়া যায়নি। কমা দিয়ে নাম লিখে অথবা "+ নতুন সুপারভাইজার যোগ করুন" বাটনে ক্লিক করে যুক্ত করুন।
+                      <td colSpan={4} className="py-8 text-center text-slate-400 border border-slate-200">
+                        কোনো সুপারভাইজার পাওয়া যায়নি। কমা দিয়ে নাম লিখে অথবা "+ নতুন সুপারভাইজার" বাটনে ক্লিক করে যুক্ত করুন।
                       </td>
                     </tr>
                   ) : (
                     filteredSupervisors.map((s, idx) => (
-                      <tr key={s.id} className="hover:bg-slate-50 transition-colors">
+                      <tr key={s.id} className="odd:bg-white even:bg-[#f1f5f9] hover:bg-[#eff6ff] transition-colors">
                         <td className="py-2.5 px-3 border-r border-slate-200 text-center font-bold text-slate-700 tabular-nums">
                           #{toBengaliDigits(idx + 1)}
                         </td>
                         <td className="py-2.5 px-4 border-r border-slate-200">
                           <div className="font-bold text-slate-900">{s.name}</div>
                         </td>
-                        <td className="py-2.5 px-3 border-r border-slate-200 text-center bg-blue-50/20 font-bold">
-                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-black bg-blue-100 text-blue-900 border border-blue-200 tabular-nums">
+                        <td className="py-2.5 px-3 border-r border-slate-200 text-center font-bold">
+                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-xs font-black bg-[#eff6ff] text-[#1d4ed8] border border-[#bfdbfe] tabular-nums">
                             {toBengaliDigits(s.totalTrips || 0)} টি ট্রিপ
                           </span>
                         </td>
@@ -751,7 +747,7 @@ export const UsersPage: React.FC = () => {
                               <button
                                 type="button"
                                 onClick={() => openEditSupModal(s)}
-                                className="p-1.5 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors font-semibold cursor-pointer"
+                                className="p-1.5 text-[#1d4ed8] hover:bg-[#eff6ff] rounded-lg transition-colors font-semibold cursor-pointer"
                                 title="নাম সম্পাদনা"
                               >
                                 <Edit className="w-3.5 h-3.5" />
@@ -759,7 +755,7 @@ export const UsersPage: React.FC = () => {
                               <button
                                 type="button"
                                 onClick={() => handleDeleteSupervisor(s)}
-                                className="p-1.5 text-red-600 hover:bg-red-100 rounded-lg transition-colors font-semibold cursor-pointer"
+                                className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors font-semibold cursor-pointer"
                                 title="মুছে ফেলুন"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
@@ -783,15 +779,15 @@ export const UsersPage: React.FC = () => {
           {isMasterAdmin && (
             <form
               onSubmit={handleQuickAddDrivers}
-              className="bg-indigo-50/80 border border-indigo-200 rounded-2xl p-4 space-y-2.5"
+              className="bg-[#eff6ff] border border-[#bfdbfe] rounded-2xl p-4 space-y-2.5"
             >
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
-                <label className="text-xs font-bold text-indigo-950 flex items-center gap-1.5">
-                  <Truck className="w-4 h-4 text-indigo-600" />
+                <label className="text-xs font-bold text-[#1e3a8a] flex items-center gap-1.5">
+                  <Truck className="w-4 h-4 text-[#1d4ed8]" />
                   <span>একসাথে কমা (,) দিয়ে একাধিক ড্রাইভারের নাম যুক্ত করুন</span>
                 </label>
                 {quickDriverNames.trim() && (
-                  <span className="text-[11px] font-bold text-indigo-700 bg-white px-2.5 py-0.5 rounded-full border border-indigo-200">
+                  <span className="text-[11px] font-bold text-[#1d4ed8] bg-white px-2.5 py-0.5 rounded-full border border-[#bfdbfe]">
                     {toBengaliDigits(parseCommaNames(quickDriverNames).length)} টি নাম পাওয়া গেছে
                   </span>
                 )}
@@ -802,12 +798,12 @@ export const UsersPage: React.FC = () => {
                   value={quickDriverNames}
                   onChange={(e) => setQuickDriverNames(e.target.value)}
                   placeholder="যেমন: জামাল, আনু, ফটিক, কুদ্দুস, আল আমিন"
-                  className="flex-1 px-3.5 py-2.5 bg-white border border-indigo-300 rounded-xl text-xs font-bold text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-indigo-500 outline-none"
+                  className="flex-1 px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-[#1d4ed8] outline-none"
                 />
                 <button
                   type="submit"
                   disabled={driverSubmitting || parseCommaNames(quickDriverNames).length === 0}
-                  className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-xs transition-all flex items-center justify-center gap-1.5 disabled:opacity-50 cursor-pointer shrink-0"
+                  className="px-5 py-2.5 bg-[#1d4ed8] hover:bg-[#1e40af] text-white text-xs font-bold rounded-xl shadow-xs transition-all flex items-center justify-center gap-1.5 disabled:opacity-50 cursor-pointer shrink-0"
                 >
                   <Plus className="w-4 h-4" />
                   <span>{driverSubmitting ? 'যুক্ত হচ্ছে...' : 'নাম যুক্ত করুন'}</span>
@@ -816,14 +812,14 @@ export const UsersPage: React.FC = () => {
             </form>
           )}
 
-          <div className="bg-white rounded-xl border border-slate-300 shadow-2xs overflow-hidden">
+          <div className="bg-white rounded-xl border border-slate-200 shadow-2xs overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse border border-slate-300 text-xs">
+              <table className="w-full text-left border-collapse border border-slate-200 text-xs">
                 <thead>
-                  <tr className="bg-[#0b2820] text-white font-bold text-[11px]">
-                    <th className="py-2 px-3 border-r border-white/25 text-center w-20">ক্রম</th>
-                    <th className="py-2 px-4 border-r border-white/25">ড্রাইভারের নাম</th>
-                    <th className="py-2 px-3 border-r border-white/25 text-center w-44">
+                  <tr className="bg-[#1d4ed8] text-white font-bold text-[11px] border-b border-[#1e40af]">
+                    <th className="py-2 px-3 border-r border-blue-600/60 text-center w-20">ক্রম</th>
+                    <th className="py-2 px-4 border-r border-blue-600/60">ড্রাইভারের নাম</th>
+                    <th className="py-2 px-3 border-r border-blue-600/60 text-center w-44">
                       মোট পূর্ণাঙ্গ ট্রিপ
                     </th>
                     {isMasterAdmin && <th className="py-2 px-3 text-right w-24">একশন</th>}
@@ -832,21 +828,21 @@ export const UsersPage: React.FC = () => {
                 <tbody className="divide-y divide-slate-200 font-medium">
                   {filteredDrivers.length === 0 ? (
                     <tr>
-                      <td colSpan={4} className="py-8 text-center text-slate-400 border border-slate-300">
-                        কোনো ড্রাইভার পাওয়া যায়নি। কমা দিয়ে নাম লিখে অথবা "+ নতুন ড্রাইভার যোগ করুন" বাটনে ক্লিক করে যুক্ত করুন।
+                      <td colSpan={4} className="py-8 text-center text-slate-400 border border-slate-200">
+                        কোনো ড্রাইভার পাওয়া যায়নি। কমা দিয়ে নাম লিখে অথবা "+ নতুন ড্রাইভার" বাটনে ক্লিক করে যুক্ত করুন।
                       </td>
                     </tr>
                   ) : (
                     filteredDrivers.map((d, idx) => (
-                      <tr key={d.id} className="hover:bg-slate-50 transition-colors">
+                      <tr key={d.id} className="odd:bg-white even:bg-[#f1f5f9] hover:bg-[#eff6ff] transition-colors">
                         <td className="py-2.5 px-3 border-r border-slate-200 text-center font-bold text-slate-700 tabular-nums">
                           #{toBengaliDigits(idx + 1)}
                         </td>
                         <td className="py-2.5 px-4 border-r border-slate-200">
                           <div className="font-bold text-slate-900">{d.name}</div>
                         </td>
-                        <td className="py-2.5 px-3 border-r border-slate-200 text-center bg-indigo-50/20 font-bold">
-                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-black bg-indigo-100 text-indigo-900 border border-indigo-200 tabular-nums">
+                        <td className="py-2.5 px-3 border-r border-slate-200 text-center font-bold">
+                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-xs font-black bg-[#eff6ff] text-[#1d4ed8] border border-[#bfdbfe] tabular-nums">
                             {toBengaliDigits(d.totalTrips || 0)} টি ট্রিপ
                           </span>
                         </td>
@@ -856,7 +852,7 @@ export const UsersPage: React.FC = () => {
                               <button
                                 type="button"
                                 onClick={() => openEditDriverModal(d)}
-                                className="p-1.5 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors font-semibold cursor-pointer"
+                                className="p-1.5 text-[#1d4ed8] hover:bg-[#eff6ff] rounded-lg transition-colors font-semibold cursor-pointer"
                                 title="নাম সম্পাদনা"
                               >
                                 <Edit className="w-3.5 h-3.5" />
@@ -864,7 +860,7 @@ export const UsersPage: React.FC = () => {
                               <button
                                 type="button"
                                 onClick={() => handleDeleteDriver(d)}
-                                className="p-1.5 text-red-600 hover:bg-red-100 rounded-lg transition-colors font-semibold cursor-pointer"
+                                className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors font-semibold cursor-pointer"
                                 title="মুছে ফেলুন"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
@@ -885,15 +881,15 @@ export const UsersPage: React.FC = () => {
       {/* Add / Edit User Modal */}
       {isUserModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
-          <div className="bg-white rounded-t-2xl sm:rounded-2xl max-w-md w-full shadow-2xl border border-emerald-200 flex flex-col max-h-[92dvh] sm:max-h-[88dvh] overflow-hidden">
-            <div className="shrink-0 px-4 py-3 bg-[#0b2820] text-white flex items-center justify-between gap-2">
+          <div className="bg-white rounded-t-2xl sm:rounded-2xl max-w-md w-full shadow-2xl border border-slate-200 flex flex-col max-h-[92dvh] sm:max-h-[88dvh] overflow-hidden">
+            <div className="shrink-0 px-4 py-3 bg-[#1d4ed8] text-white flex items-center justify-between gap-2">
               <h3 className="text-sm sm:text-base font-bold text-white">
                 {editingUser ? 'ইউজার ও পিন সম্পাদনা' : 'নতুন ইউজার তৈরি করুন'}
               </h3>
               <button
                 type="button"
                 onClick={() => setIsUserModalOpen(false)}
-                className="p-1.5 text-emerald-100 hover:text-white hover:bg-white/15 rounded-lg cursor-pointer"
+                className="p-1.5 text-[#dbeafe] hover:text-white hover:bg-white/15 rounded-lg cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -902,8 +898,8 @@ export const UsersPage: React.FC = () => {
             <form onSubmit={handleSaveUser} className="flex-1 flex flex-col min-h-0 overflow-hidden">
               <div className="flex-1 overflow-y-auto overscroll-contain p-4 space-y-3.5 text-slate-900">
                 {errorMsg && (
-                  <div className="p-3 bg-rose-50 text-rose-700 text-xs font-semibold rounded-xl border border-rose-200 flex items-center gap-2">
-                    <AlertTriangle className="w-4 h-4 shrink-0" />
+                  <div className="p-3 bg-red-50 text-red-700 text-xs font-semibold rounded-xl border border-red-200 flex items-center gap-2">
+                    <AlertTriangle className="w-4 h-4 shrink-0 text-red-600" />
                     <span>{errorMsg}</span>
                   </div>
                 )}
@@ -918,7 +914,7 @@ export const UsersPage: React.FC = () => {
                       value={loginId ?? ''}
                       onChange={(e) => setLoginId(e.target.value.toLowerCase().replace(/\s+/g, ''))}
                       placeholder="e.g. counter01, mod02"
-                      className="w-full px-3 py-2 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs text-slate-900 font-mono font-bold focus:bg-white focus:ring-2 focus:ring-emerald-600 outline-none"
+                      className="w-full px-3 py-2 bg-[#f8fafc] border border-slate-200 rounded-xl text-xs text-slate-900 font-mono font-bold focus:bg-white focus:ring-2 focus:ring-[#1d4ed8] outline-none"
                       required
                     />
                   </div>
@@ -933,7 +929,7 @@ export const UsersPage: React.FC = () => {
                     value={name ?? ''}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="e.g. মোঃ করিম হোসেন"
-                    className="w-full px-3 py-2 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs text-slate-900 font-semibold focus:bg-white focus:ring-2 focus:ring-emerald-600 outline-none"
+                    className="w-full px-3 py-2 bg-[#f8fafc] border border-slate-200 rounded-xl text-xs text-slate-900 font-semibold focus:bg-white focus:ring-2 focus:ring-[#1d4ed8] outline-none"
                     required
                   />
                 </div>
@@ -943,7 +939,7 @@ export const UsersPage: React.FC = () => {
                   <select
                     value={role ?? 'booking_point'}
                     onChange={(e) => setRole(e.target.value as any)}
-                    className="w-full px-3 py-2 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs text-slate-900 font-bold focus:bg-white outline-none"
+                    className="w-full px-3 py-2 bg-[#f8fafc] border border-slate-200 rounded-xl text-xs text-slate-900 font-bold focus:bg-white outline-none"
                   >
                     <option value="booking_point">কাউন্টার বুকিং পয়েন্ট (Booking Operator)</option>
                     <option value="fuel_manager">ফুয়েল ম্যানেজার (Fuel Manager)</option>
@@ -961,7 +957,7 @@ export const UsersPage: React.FC = () => {
                     <select
                       value={counterId ?? ''}
                       onChange={(e) => setCounterId(e.target.value)}
-                      className="w-full px-3 py-2 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs text-slate-900 font-bold focus:bg-white outline-none"
+                      className="w-full px-3 py-2 bg-[#f8fafc] border border-slate-200 rounded-xl text-xs text-slate-900 font-bold focus:bg-white outline-none"
                       required
                     >
                       <option value="">-- কাউন্টার সিলেক্ট করুন --</option>
@@ -981,7 +977,7 @@ export const UsersPage: React.FC = () => {
                     value={phone ?? ''}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="017xxxxxxxx"
-                    className="w-full px-3 py-2 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs text-slate-900 font-mono focus:bg-white outline-none"
+                    className="w-full px-3 py-2 bg-[#f8fafc] border border-slate-200 rounded-xl text-xs text-slate-900 font-mono focus:bg-white outline-none"
                   />
                 </div>
 
@@ -994,7 +990,7 @@ export const UsersPage: React.FC = () => {
                     value={pin ?? ''}
                     onChange={(e) => setPin(e.target.value.replace(/\D/g, '').slice(0, 6))}
                     placeholder={editingUser ? 'পিন অপরিবর্তিত রাখতে খালি রাখুন' : '৪ থেকে ৬ সংখ্যার পিন'}
-                    className="w-full px-3 py-2 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs text-slate-900 font-mono tracking-widest text-center font-bold focus:bg-white focus:ring-2 focus:ring-emerald-600 outline-none"
+                    className="w-full px-3 py-2 bg-[#f8fafc] border border-slate-200 rounded-xl text-xs text-slate-900 font-mono tracking-widest text-center font-bold focus:bg-white focus:ring-2 focus:ring-[#1d4ed8] outline-none"
                     required={!editingUser}
                   />
                 </div>
@@ -1005,7 +1001,7 @@ export const UsersPage: React.FC = () => {
                     <select
                       value={status ?? 'active'}
                       onChange={(e) => setStatus(e.target.value as any)}
-                      className="w-full px-3 py-2 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs text-slate-900 font-bold focus:bg-white outline-none"
+                      className="w-full px-3 py-2 bg-[#f8fafc] border border-slate-200 rounded-xl text-xs text-slate-900 font-bold focus:bg-white outline-none"
                     >
                       <option value="active">সক্রিয় (Active)</option>
                       <option value="inactive">নিষ্ক্রিয় (Inactive)</option>
@@ -1014,17 +1010,17 @@ export const UsersPage: React.FC = () => {
                 )}
               </div>
 
-              <div className="shrink-0 px-4 py-3 bg-[#f0f9f6] border-t border-emerald-200 flex items-center justify-end gap-2 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+              <div className="shrink-0 px-4 py-3 bg-[#eff6ff] border-t border-[#bfdbfe] flex items-center justify-end gap-2 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
                 <button
                   type="button"
                   onClick={() => setIsUserModalOpen(false)}
-                  className="px-4 py-2.5 min-h-[44px] bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 rounded-xl text-xs font-bold cursor-pointer"
+                  className="px-4 py-2.5 min-h-[44px] bg-white hover:bg-[#f8fafc] border border-slate-200 text-[#1e3a8a] rounded-xl text-xs font-bold cursor-pointer"
                 >
                   বাতিল
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 sm:flex-none px-5 py-2.5 min-h-[44px] bg-[#0d9488] hover:bg-[#0f766e] text-white rounded-xl text-xs font-bold shadow-md transition-all cursor-pointer"
+                  className="flex-1 sm:flex-none px-5 py-2.5 min-h-[44px] bg-[#1d4ed8] hover:bg-[#1e40af] text-white rounded-xl text-xs font-bold shadow-md transition-all cursor-pointer"
                 >
                   {editingUser ? 'তথ্য আপডেট করুন' : 'নতুন ব্যবহারকারী তৈরি করুন'}
                 </button>
@@ -1037,15 +1033,15 @@ export const UsersPage: React.FC = () => {
       {/* Add / Edit Supervisor Modal (NAME ONLY, comma-separated bulk supported) */}
       {isSupModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
-          <div className="bg-white rounded-t-2xl sm:rounded-2xl max-w-md w-full shadow-2xl border border-emerald-200 flex flex-col max-h-[92dvh] sm:max-h-[88dvh] overflow-hidden">
-            <div className="shrink-0 px-4 py-3 bg-[#0b2820] text-white flex items-center justify-between gap-2">
+          <div className="bg-white rounded-t-2xl sm:rounded-2xl max-w-md w-full shadow-2xl border border-slate-200 flex flex-col max-h-[92dvh] sm:max-h-[88dvh] overflow-hidden">
+            <div className="shrink-0 px-4 py-3 bg-[#1d4ed8] text-white flex items-center justify-between gap-2">
               <h3 className="text-sm sm:text-base font-bold text-white">
                 {editingSup ? 'সুপারভাইজারের নাম সম্পাদনা' : 'নতুন সুপারভাইজার যোগ করুন'}
               </h3>
               <button
                 type="button"
                 onClick={() => setIsSupModalOpen(false)}
-                className="p-1.5 text-emerald-100 hover:text-white hover:bg-white/15 rounded-lg cursor-pointer"
+                className="p-1.5 text-[#dbeafe] hover:text-white hover:bg-white/15 rounded-lg cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -1054,8 +1050,8 @@ export const UsersPage: React.FC = () => {
             <form onSubmit={handleSaveSupervisor} className="flex-1 flex flex-col min-h-0 overflow-hidden">
               <div className="flex-1 overflow-y-auto overscroll-contain p-4 space-y-3.5 text-slate-900">
                 {errorMsg && (
-                  <div className="p-3 bg-rose-50 text-rose-700 text-xs font-semibold rounded-xl border border-rose-200 flex items-center gap-2">
-                    <AlertTriangle className="w-4 h-4 shrink-0" />
+                  <div className="p-3 bg-red-50 text-red-700 text-xs font-semibold rounded-xl border border-red-200 flex items-center gap-2">
+                    <AlertTriangle className="w-4 h-4 shrink-0 text-red-600" />
                     <span>{errorMsg}</span>
                   </div>
                 )}
@@ -1070,7 +1066,7 @@ export const UsersPage: React.FC = () => {
                       value={supName ?? ''}
                       onChange={(e) => setSupName(e.target.value)}
                       placeholder="যেমন: মোঃ কানন"
-                      className="w-full px-3.5 py-2.5 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs text-slate-900 font-bold focus:bg-white focus:ring-2 focus:ring-emerald-600 outline-none"
+                      className="w-full px-3.5 py-2.5 bg-[#f8fafc] border border-slate-200 rounded-xl text-xs text-slate-900 font-bold focus:bg-white focus:ring-2 focus:ring-[#1d4ed8] outline-none"
                       required
                     />
                   ) : (
@@ -1079,21 +1075,21 @@ export const UsersPage: React.FC = () => {
                       value={supName ?? ''}
                       onChange={(e) => setSupName(e.target.value)}
                       placeholder="যেমন: মোঃ কানন, সবুজ, সিরাজ, রফিক"
-                      className="w-full px-3.5 py-2.5 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs text-slate-900 font-bold focus:bg-white focus:ring-2 focus:ring-emerald-600 outline-none resize-none"
+                      className="w-full px-3.5 py-2.5 bg-[#f8fafc] border border-slate-200 rounded-xl text-xs text-slate-900 font-bold focus:bg-white focus:ring-2 focus:ring-[#1d4ed8] outline-none resize-none"
                       required
                     />
                   )}
                 </div>
 
                 {!editingSup && parseCommaNames(supName).length > 0 && (
-                  <div className="flex flex-wrap gap-1.5 p-2.5 bg-emerald-50 border border-emerald-200 rounded-xl">
-                    <span className="text-[11px] font-bold text-emerald-950 w-full">
+                  <div className="flex flex-wrap gap-1.5 p-2.5 bg-[#eff6ff] border border-[#bfdbfe] rounded-xl">
+                    <span className="text-[11px] font-bold text-[#1e3a8a] w-full">
                       মোট {toBengaliDigits(parseCommaNames(supName).length)} জন যুক্ত হবে:
                     </span>
                     {parseCommaNames(supName).map((n, i) => (
                       <span
                         key={`${n}-${i}`}
-                        className="px-2 py-0.5 bg-white text-emerald-900 border border-emerald-200 rounded-md text-[11px] font-bold"
+                        className="px-2 py-0.5 bg-white text-[#1d4ed8] border border-[#bfdbfe] rounded-md text-[11px] font-bold"
                       >
                         {n}
                       </span>
@@ -1102,18 +1098,18 @@ export const UsersPage: React.FC = () => {
                 )}
               </div>
 
-              <div className="shrink-0 px-4 py-3 bg-[#f0f9f6] border-t border-emerald-200 flex items-center justify-end gap-2 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+              <div className="shrink-0 px-4 py-3 bg-[#eff6ff] border-t border-[#bfdbfe] flex items-center justify-end gap-2 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
                 <button
                   type="button"
                   onClick={() => setIsSupModalOpen(false)}
-                  className="px-4 py-2.5 min-h-[44px] bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 rounded-xl text-xs font-bold cursor-pointer"
+                  className="px-4 py-2.5 min-h-[44px] bg-white hover:bg-[#f8fafc] border border-slate-200 text-[#1e3a8a] rounded-xl text-xs font-bold cursor-pointer"
                 >
                   বাতিল
                 </button>
                 <button
                   type="submit"
                   disabled={supSubmitting}
-                  className="flex-1 sm:flex-none px-5 py-2.5 min-h-[44px] bg-[#0d9488] hover:bg-[#0f766e] text-white rounded-xl text-xs font-bold shadow-md transition-all cursor-pointer disabled:opacity-50"
+                  className="flex-1 sm:flex-none px-5 py-2.5 min-h-[44px] bg-[#1d4ed8] hover:bg-[#1e40af] text-white rounded-xl text-xs font-bold shadow-md transition-all cursor-pointer disabled:opacity-50"
                 >
                   {supSubmitting
                     ? 'সংরক্ষণ হচ্ছে...'
@@ -1130,15 +1126,15 @@ export const UsersPage: React.FC = () => {
       {/* Add / Edit Driver Modal (NAME ONLY, comma-separated bulk supported) */}
       {isDriverModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
-          <div className="bg-white rounded-t-2xl sm:rounded-2xl max-w-md w-full shadow-2xl border border-emerald-200 flex flex-col max-h-[92dvh] sm:max-h-[88dvh] overflow-hidden">
-            <div className="shrink-0 px-4 py-3 bg-[#0b2820] text-white flex items-center justify-between gap-2">
+          <div className="bg-white rounded-t-2xl sm:rounded-2xl max-w-md w-full shadow-2xl border border-slate-200 flex flex-col max-h-[92dvh] sm:max-h-[88dvh] overflow-hidden">
+            <div className="shrink-0 px-4 py-3 bg-[#1d4ed8] text-white flex items-center justify-between gap-2">
               <h3 className="text-sm sm:text-base font-bold text-white">
                 {editingDriver ? 'ড্রাইভারের নাম সম্পাদনা' : 'নতুন ড্রাইভার যোগ করুন'}
               </h3>
               <button
                 type="button"
                 onClick={() => setIsDriverModalOpen(false)}
-                className="p-1.5 text-emerald-100 hover:text-white hover:bg-white/15 rounded-lg cursor-pointer"
+                className="p-1.5 text-[#dbeafe] hover:text-white hover:bg-white/15 rounded-lg cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -1147,8 +1143,8 @@ export const UsersPage: React.FC = () => {
             <form onSubmit={handleSaveDriver} className="flex-1 flex flex-col min-h-0 overflow-hidden">
               <div className="flex-1 overflow-y-auto overscroll-contain p-4 space-y-3.5 text-slate-900">
                 {errorMsg && (
-                  <div className="p-3 bg-rose-50 text-rose-700 text-xs font-semibold rounded-xl border border-rose-200 flex items-center gap-2">
-                    <AlertTriangle className="w-4 h-4 shrink-0" />
+                  <div className="p-3 bg-red-50 text-red-700 text-xs font-semibold rounded-xl border border-red-200 flex items-center gap-2">
+                    <AlertTriangle className="w-4 h-4 shrink-0 text-red-600" />
                     <span>{errorMsg}</span>
                   </div>
                 )}
@@ -1163,7 +1159,7 @@ export const UsersPage: React.FC = () => {
                       value={driverName ?? ''}
                       onChange={(e) => setDriverName(e.target.value)}
                       placeholder="যেমন: জামাল"
-                      className="w-full px-3.5 py-2.5 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs text-slate-900 font-bold focus:bg-white focus:ring-2 focus:ring-emerald-600 outline-none"
+                      className="w-full px-3.5 py-2.5 bg-[#f8fafc] border border-slate-200 rounded-xl text-xs text-slate-900 font-bold focus:bg-white focus:ring-2 focus:ring-[#1d4ed8] outline-none"
                       required
                     />
                   ) : (
@@ -1172,21 +1168,21 @@ export const UsersPage: React.FC = () => {
                       value={driverName ?? ''}
                       onChange={(e) => setDriverName(e.target.value)}
                       placeholder="যেমন: জামাল, আনু, ফটিক, কুদ্দুস"
-                      className="w-full px-3.5 py-2.5 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs text-slate-900 font-bold focus:bg-white focus:ring-2 focus:ring-emerald-600 outline-none resize-none"
+                      className="w-full px-3.5 py-2.5 bg-[#f8fafc] border border-slate-200 rounded-xl text-xs text-slate-900 font-bold focus:bg-white focus:ring-2 focus:ring-[#1d4ed8] outline-none resize-none"
                       required
                     />
                   )}
                 </div>
 
                 {!editingDriver && parseCommaNames(driverName).length > 0 && (
-                  <div className="flex flex-wrap gap-1.5 p-2.5 bg-emerald-50 border border-emerald-200 rounded-xl">
-                    <span className="text-[11px] font-bold text-emerald-950 w-full">
+                  <div className="flex flex-wrap gap-1.5 p-2.5 bg-[#eff6ff] border border-[#bfdbfe] rounded-xl">
+                    <span className="text-[11px] font-bold text-[#1e3a8a] w-full">
                       মোট {toBengaliDigits(parseCommaNames(driverName).length)} জন যুক্ত হবে:
                     </span>
                     {parseCommaNames(driverName).map((n, i) => (
                       <span
                         key={`${n}-${i}`}
-                        className="px-2 py-0.5 bg-white text-emerald-900 border border-emerald-200 rounded-md text-[11px] font-bold"
+                        className="px-2 py-0.5 bg-white text-[#1d4ed8] border border-[#bfdbfe] rounded-md text-[11px] font-bold"
                       >
                         {n}
                       </span>
@@ -1195,18 +1191,18 @@ export const UsersPage: React.FC = () => {
                 )}
               </div>
 
-              <div className="shrink-0 px-4 py-3 bg-[#f0f9f6] border-t border-emerald-200 flex items-center justify-end gap-2 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+              <div className="shrink-0 px-4 py-3 bg-[#eff6ff] border-t border-[#bfdbfe] flex items-center justify-end gap-2 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
                 <button
                   type="button"
                   onClick={() => setIsDriverModalOpen(false)}
-                  className="px-4 py-2.5 min-h-[44px] bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 rounded-xl text-xs font-bold cursor-pointer"
+                  className="px-4 py-2.5 min-h-[44px] bg-white hover:bg-[#f8fafc] border border-slate-200 text-[#1e3a8a] rounded-xl text-xs font-bold cursor-pointer"
                 >
                   বাতিল
                 </button>
                 <button
                   type="submit"
                   disabled={driverSubmitting}
-                  className="flex-1 sm:flex-none px-5 py-2.5 min-h-[44px] bg-[#0d9488] hover:bg-[#0f766e] text-white rounded-xl text-xs font-bold shadow-md transition-all cursor-pointer disabled:opacity-50"
+                  className="flex-1 sm:flex-none px-5 py-2.5 min-h-[44px] bg-[#1d4ed8] hover:bg-[#1e40af] text-white rounded-xl text-xs font-bold shadow-md transition-all cursor-pointer disabled:opacity-50"
                 >
                   {driverSubmitting
                     ? 'সংরক্ষণ হচ্ছে...'
@@ -1227,17 +1223,17 @@ export const UsersPage: React.FC = () => {
           role="dialog"
           aria-modal="true"
         >
-          <div className="bg-white w-full sm:max-w-sm rounded-t-2xl sm:rounded-2xl shadow-2xl border border-rose-200 flex flex-col max-h-[90dvh] overflow-hidden">
-            <div className="shrink-0 px-4 py-3 bg-rose-700 text-white flex items-center justify-between">
+          <div className="bg-white w-full sm:max-w-sm rounded-t-2xl sm:rounded-2xl shadow-2xl border border-slate-200 flex flex-col max-h-[90dvh] overflow-hidden">
+            <div className="shrink-0 px-4 py-3 bg-[#1d4ed8] text-white flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <AlertTriangle className="w-4 h-4 shrink-0" />
+                <AlertTriangle className="w-4 h-4 shrink-0 text-[#bfdbfe]" />
                 <h3 className="font-bold text-sm">মুছে ফেলার নিশ্চিতকরণ</h3>
               </div>
               <button
                 type="button"
                 onClick={() => !deletingTarget && setDeleteConfirmTarget(null)}
                 disabled={deletingTarget}
-                className="p-1 text-rose-100 hover:text-white rounded-lg cursor-pointer"
+                className="p-1 text-[#dbeafe] hover:text-white hover:bg-white/15 rounded-lg cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -1254,12 +1250,12 @@ export const UsersPage: React.FC = () => {
                 তালিকা থেকে স্থায়ীভাবে মুছে ফেলতে চান?
               </p>
             </div>
-            <div className="shrink-0 px-4 py-3 bg-[#f0f9f6] border-t border-slate-200 flex items-center justify-end gap-2 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+            <div className="shrink-0 px-4 py-3 bg-[#eff6ff] border-t border-[#bfdbfe] flex items-center justify-end gap-2 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
               <button
                 type="button"
                 onClick={() => setDeleteConfirmTarget(null)}
                 disabled={deletingTarget}
-                className="px-4 py-2.5 min-h-[44px] bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 rounded-xl text-xs font-bold cursor-pointer disabled:opacity-50"
+                className="px-4 py-2.5 min-h-[44px] bg-white hover:bg-[#f8fafc] border border-slate-200 text-[#1e3a8a] rounded-xl text-xs font-bold cursor-pointer disabled:opacity-50"
               >
                 বাতিল
               </button>
@@ -1267,7 +1263,7 @@ export const UsersPage: React.FC = () => {
                 type="button"
                 onClick={confirmDeleteTargetAction}
                 disabled={deletingTarget}
-                className="px-4 py-2.5 min-h-[44px] bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                className="px-4 py-2.5 min-h-[44px] bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
               >
                 <Trash2 className="w-3.5 h-3.5" />
                 <span>{deletingTarget ? 'মুছে ফেলা হচ্ছে...' : 'মুছে ফেলুন'}</span>

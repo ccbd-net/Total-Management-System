@@ -1528,4 +1528,21 @@ export const api = {
     }
     return result;
   },
+
+  async uploadBrandIcon(imageDataUrl: string): Promise<{ success: boolean; version: number; logoUrl: string }> {
+    const res = await fetchWithAutoRehydrate(`${API_BASE}/brand/upload`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+      body: JSON.stringify({ imageDataUrl }),
+    });
+    return handleResponse<{ success: boolean; version: number; logoUrl: string }>(res);
+  },
+
+  async resetBrandIcon(): Promise<{ success: boolean; version: number; logoUrl: string }> {
+    const res = await fetchWithAutoRehydrate(`${API_BASE}/brand/reset`, {
+      method: 'POST',
+      headers: { ...getAuthHeader() },
+    });
+    return handleResponse<{ success: boolean; version: number; logoUrl: string }>(res);
+  },
 };

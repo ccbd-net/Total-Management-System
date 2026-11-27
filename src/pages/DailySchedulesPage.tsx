@@ -8,6 +8,7 @@ import {
   toBengaliDigits,
   getTodayDhakaDate,
   formatBengaliDate,
+  formatTime12Hour,
 } from '../utils/formatters.ts';
 import {
   groupSchedulesByRouteNumber,
@@ -19,6 +20,7 @@ import { downloadDailyTripsPDF, printElementById } from '../utils/pdfGenerator.t
 import { DigitalClockPicker } from '../components/DigitalClockPicker.tsx';
 import { ForwardUpTripsModal } from '../components/ForwardUpTripsModal.tsx';
 import { OwnerWhatsAppModal } from '../components/OwnerWhatsAppModal.tsx';
+import { DateInput } from '../components/DateInput.tsx';
 import { normalizeRegNo, type OwnerReportSummaryItem } from '../utils/whatsapp.ts';
 import {
   WeeklyScheduleTimeline,
@@ -186,7 +188,7 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
       const res = await api.updateSchedule(scheduleId, updates);
       if (res.success && res.schedule) {
         setActionSuccessMsg(
-          `সফল! ট্রিপ ${res.schedule.tripNo} (${res.schedule.vehicleRegNo}, তারিখ: ${res.schedule.date}, সময়: ${res.schedule.departureTime}) সফলভাবে পুনর্বিন্যাস করা হয়েছে।`
+          `সফল! ট্রিপ ${res.schedule.tripNo} (${res.schedule.vehicleRegNo}, তারিখ: ${formatBengaliDate(res.schedule.date)}, সময়: ${formatTime12Hour(res.schedule.departureTime)}) সফলভাবে পুনর্বিন্যাস করা হয়েছে।`
         );
       }
       await fetchSchedules();
@@ -444,11 +446,11 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
     const rows = filtered.map((s) => {
       const fares = getScheduleFares(s);
       return [
-        s.date,
+        formatBengaliDate(s.date),
         s.tripNo,
         s.direction === 'UP' ? 'আপ ট্রিপ' : 'ডাউন ট্রিপ',
         s.tripSequenceLabel || '১ম ট্রিপ',
-        s.departureTime,
+        formatTime12Hour(s.departureTime),
         s.vehicleRegNo,
         s.vehicleOwnerName || 'সাধারণ',
         s.routeName,
@@ -521,7 +523,7 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
       entry.cargoFare = (entry.cargoFare || 0) + fares.cargoCol;
       entry.totalFare += fares.totalCol;
       entry.customLines?.push(
-        `${s.direction === 'UP' ? 'আপ' : 'ডাউন'} (${s.departureTime}) • ${s.vehicleRegNo} • ${s.routeName} • ${formatTaka(fares.totalCol)}`
+        `${s.direction === 'UP' ? 'আপ' : 'ডাউন'} (${formatTime12Hour(s.departureTime)}) • ${s.vehicleRegNo} • ${s.routeName} • ${formatTaka(fares.totalCol)}`
       );
     });
 
@@ -534,7 +536,7 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
   const handlePrint = () => {
     printElementById(
       'printable-trip-report',
-      `দৈনিক ট্রিপ রিপোর্ট — ${dateMode === 'single' ? date : `${startDate}_to_${endDate}`}`,
+      `দৈনিক ট্রিপ রিপোর্ট — ${dateMode === 'single' ? formatBengaliDate(date) : `${formatBengaliDate(startDate)} হতে ${formatBengaliDate(endDate)}`}`,
       'A4-landscape'
     );
   };
@@ -570,7 +572,7 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
     };
     const dateRangeTitle =
       dateMode === 'single'
-        ? `তারিখ: ${date} (${formatBengaliDate(date)})`
+        ? `তারিখ: ${formatBengaliDate(date)}`
         : `তারিখ রেঞ্জ: ${formatBengaliDate(startDate)} হতে ${formatBengaliDate(endDate)}`;
 
     const renderDirectionRouteTable = (
@@ -639,7 +641,7 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
                           {toBengaliDigits(s.serialInRoute)}
                         </td>
                         <td style={{ ...cellStyle, fontWeight: 800 }}>{s.tripNo}</td>
-                        <td style={{ ...cellStyle, textAlign: 'center', fontWeight: 700 }}>{s.departureTime}</td>
+                        <td style={{ ...cellStyle, textAlign: 'center', fontWeight: 700 }}>{formatTime12Hour(s.departureTime)}</td>
                         <td style={{ ...cellStyle, fontWeight: 700 }}>{s.vehicleRegNo}</td>
                         <td style={cellStyle}>{s.vehicleOwnerName || 'সাধারণ'}</td>
                         <td style={cellStyle}>{s.supervisor || '-'}</td>
@@ -791,15 +793,15 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
     <div className="space-y-3">
       <div className="space-y-3 print:hidden">
       {/* Compact Excel Top Header Card */}
-      <div className="bg-white rounded-xl border border-emerald-200 shadow-2xs overflow-hidden">
-        <div className="bg-[#0b2820] px-3 py-2 text-white flex flex-col md:flex-row md:items-center justify-between gap-2">
+      <div className="bg-white rounded-xl border border-slate-200 shadow-2xs overflow-hidden">
+        <div className="bg-[#1d4ed8] px-3 py-2 text-white flex flex-col md:flex-row md:items-center justify-between gap-2">
           <div className="flex items-center gap-2 min-w-0">
-            <CalendarDays className="w-4 h-4 shrink-0 text-emerald-300" />
+            <CalendarDays className="w-4 h-4 shrink-0 text-[#93c5fd]" />
             <div className="min-w-0">
               <h2 className="text-xs sm:text-sm font-bold leading-tight truncate text-white">
                 দৈনিক ট্রিপ শিডিউল ও গাড়ি পর্যবেক্ষণ শীট
               </h2>
-              <p className="hidden sm:block text-[10px] text-emerald-200/80 leading-tight">
+              <p className="hidden sm:block text-[10px] text-[#dbeafe] leading-tight">
                 আপ ও ডাউন ট্রিপ হিসাব, মাল্টি-ট্রিপ ট্র্যাকিং, প্রিন্ট ও এক্সেল রিপোর্ট
               </p>
             </div>
@@ -811,7 +813,7 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
               <button
                 type="button"
                 onClick={() => setShowForwardModal(true)}
-                className="px-2.5 py-1 bg-[#0d9488] hover:bg-[#0f766e] text-white rounded-lg text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer shadow-2xs border border-emerald-400/30"
+                className="px-2.5 py-1 bg-[#1e40af] hover:bg-white/15 text-white border border-white/25 rounded-lg text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer shadow-2xs"
                 title="গতকালের আপ ট্রিপ আজকের বা নির্ধারিত তারিখে ফরোয়ার্ড করুন"
               >
                 <Forward className="w-3.5 h-3.5" />
@@ -822,7 +824,7 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
             <button
               type="button"
               onClick={fetchSchedules}
-              className="p-1.5 bg-white/15 hover:bg-white/25 text-white rounded-lg transition-colors cursor-pointer"
+              className="p-1.5 bg-[#1e40af] hover:bg-white/15 text-white border border-white/25 rounded-lg transition-colors cursor-pointer"
               title="রিফ্রেশ"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
@@ -831,26 +833,26 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
             <button
               type="button"
               onClick={() => downloadDailyTripsPDF(schedules, dateMode === 'single' ? date : `${startDate}_to_${endDate}`)}
-              className="px-2.5 py-1 bg-[#071d17] hover:bg-[#134235] text-white rounded-lg text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer shadow-2xs border border-emerald-500/30"
+              className="px-2.5 py-1 bg-[#1e40af] hover:bg-white/15 text-white rounded-lg text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer shadow-2xs border border-white/25"
               title="শুধু ডাটা টেবিল পিডিএফ ডাউনলোড"
             >
-              <Download className="w-3.5 h-3.5 text-emerald-300" />
+              <Download className="w-3.5 h-3.5 text-[#93c5fd]" />
               <span>PDF</span>
             </button>
 
             <button
               type="button"
               onClick={handleExportCSV}
-              className="px-2.5 py-1 bg-white hover:bg-emerald-50 text-emerald-950 rounded-lg text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer"
+              className="px-2.5 py-1 bg-white hover:bg-[#eff6ff] text-[#1e3a8a] rounded-lg text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer"
             >
-              <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-700" />
+              <FileSpreadsheet className="w-3.5 h-3.5 text-[#1d4ed8]" />
               <span>CSV</span>
             </button>
 
             <button
               type="button"
               onClick={() => setShowWhatsAppModal(true)}
-              className="px-2.5 py-1 bg-[#0f766e] hover:bg-[#0d9488] text-white rounded-lg text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer shadow-2xs"
+              className="px-2.5 py-1 bg-[#1e40af] hover:bg-white/15 text-white border border-white/25 rounded-lg text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer shadow-2xs"
               title="মালিকদের মোবাইলে হোয়াটসঅ্যাপে হিসাব পাঠান"
             >
               <MessageCircle className="w-3.5 h-3.5" />
@@ -860,17 +862,17 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
             <button
               type="button"
               onClick={handlePrint}
-              className="px-2.5 py-1 bg-white hover:bg-slate-100 text-slate-900 rounded-lg text-[11px] font-bold shadow-2xs transition-all flex items-center gap-1 cursor-pointer"
+              className="px-2.5 py-1 bg-white hover:bg-[#eff6ff] text-[#1e3a8a] rounded-lg text-[11px] font-bold shadow-2xs transition-all flex items-center gap-1 cursor-pointer"
               title="শুধু টেবিল প্রিন্ট"
             >
-              <Printer className="w-3.5 h-3.5 text-[#0f766e]" />
+              <Printer className="w-3.5 h-3.5 text-[#1d4ed8]" />
               <span>প্রিন্ট</span>
             </button>
 
             <button
               type="button"
               onClick={() => setShowReportModal(true)}
-              className="px-2.5 py-1 bg-[#0d9488] hover:bg-[#0f766e] text-white rounded-lg text-[11px] font-bold shadow-2xs transition-all flex items-center gap-1 cursor-pointer"
+              className="px-2.5 py-1 bg-[#1e3a8a] hover:bg-white/15 text-white border border-white/25 rounded-lg text-[11px] font-bold shadow-2xs transition-all flex items-center gap-1 cursor-pointer"
             >
               <Printer className="w-3.5 h-3.5" />
               <span>প্রিভিউ</span>
@@ -880,21 +882,21 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
       </div>
 
       {/* Advanced Filter Bar (Single Date vs Date Range, Direction, Vehicle, Search) */}
-      <div className="bg-white p-3 rounded-xl border border-slate-300 shadow-2xs space-y-2.5">
-        <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-100">
+      <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-2xs space-y-2.5">
+        <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-200">
           {/* Mode Switch: Single Date vs Date-to-Date */}
           <div className="flex items-center gap-2">
             <span className="text-xs font-bold text-slate-600 flex items-center gap-1">
-              <Filter className="w-3.5 h-3.5 text-emerald-600" />
+              <Filter className="w-3.5 h-3.5 text-[#1d4ed8]" />
               তারিখের ফিল্টার:
             </span>
-            <div className="flex bg-slate-100 p-1 rounded-xl text-xs font-bold border border-slate-200">
+            <div className="flex bg-[#f8fafc] p-1 rounded-xl text-xs font-bold border border-slate-200">
               <button
                 type="button"
                 onClick={() => setDateMode('single')}
                 className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
                   dateMode === 'single'
-                    ? 'bg-emerald-600 text-white shadow-xs'
+                    ? 'bg-[#1d4ed8] text-white shadow-xs'
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
@@ -905,7 +907,7 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
                 onClick={() => setDateMode('range')}
                 className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
                   dateMode === 'range'
-                    ? 'bg-emerald-600 text-white shadow-xs'
+                    ? 'bg-[#1d4ed8] text-white shadow-xs'
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
@@ -915,13 +917,13 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
           </div>
 
           {/* Direction Filter Tabs */}
-          <div className="flex bg-slate-100 p-1 rounded-xl text-xs font-bold border border-slate-200">
+          <div className="flex bg-[#f8fafc] p-1 rounded-xl text-xs font-bold border border-slate-200">
             <button
               type="button"
               onClick={() => setDirectionTab('ALL')}
               className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
                 directionTab === 'ALL'
-                  ? 'bg-slate-900 text-white shadow-xs'
+                  ? 'bg-[#1e3a8a] text-white shadow-xs'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
@@ -932,7 +934,7 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
               onClick={() => setDirectionTab('UP')}
               className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
                 directionTab === 'UP'
-                  ? 'bg-blue-600 text-white shadow-xs'
+                  ? 'bg-[#1d4ed8] text-white shadow-xs'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
@@ -943,7 +945,7 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
               onClick={() => setDirectionTab('DOWN')}
               className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
                 directionTab === 'DOWN'
-                  ? 'bg-emerald-600 text-white shadow-xs'
+                  ? 'bg-[#1d4ed8] text-white shadow-xs'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
@@ -954,7 +956,7 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
               onClick={() => setDirectionTab('PENDING_RETURN')}
               className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
                 directionTab === 'PENDING_RETURN'
-                  ? 'bg-amber-600 text-white shadow-xs'
+                  ? 'bg-[#1e3a8a] text-white shadow-xs'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
@@ -963,8 +965,8 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
                 <span
                   className={`px-1.5 py-0.2 rounded-full text-[10px] font-black ${
                     directionTab === 'PENDING_RETURN'
-                      ? 'bg-white text-amber-700'
-                      : 'bg-amber-200 text-amber-900'
+                      ? 'bg-white/15 text-white'
+                      : 'bg-[#eff6ff] text-[#1e3a8a] border border-[#bfdbfe]'
                   }`}
                 >
                   {toBengaliDigits(pendingReturnTrips.length)}
@@ -977,50 +979,47 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
         {/* Inputs row: Dates & Vehicle Select & Search */}
         <div className="flex flex-wrap items-center gap-3">
           {dateMode === 'single' ? (
-            <div className="flex items-center gap-2 bg-slate-50 px-3 py-2 rounded-xl border border-slate-300 text-xs font-semibold">
-              <Calendar className="w-4 h-4 text-emerald-600" />
+            <div className="flex items-center gap-2 bg-[#f8fafc] px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold">
+              <Calendar className="w-4 h-4 text-[#1d4ed8]" />
               <span className="text-slate-500 text-[11px]">তারিখ:</span>
-              <input
-                type="date"
+              <DateInput
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                className="bg-transparent outline-none cursor-pointer font-bold text-slate-800"
+                className="bg-transparent outline-none cursor-pointer font-bold text-[#1e3a8a]"
               />
             </div>
           ) : (
             <div className="flex flex-wrap items-center gap-2">
-              <div className="flex items-center gap-2 bg-slate-50 px-3 py-2 rounded-xl border border-slate-300 text-xs font-semibold">
-                <Calendar className="w-4 h-4 text-emerald-600" />
+              <div className="flex items-center gap-2 bg-[#f8fafc] px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold">
+                <Calendar className="w-4 h-4 text-[#1d4ed8]" />
                 <span className="text-slate-500 text-[11px]">শুরু:</span>
-                <input
-                  type="date"
+                <DateInput
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
-                  className="bg-transparent outline-none cursor-pointer font-bold text-slate-800"
+                  className="bg-transparent outline-none cursor-pointer font-bold text-[#1e3a8a]"
                 />
               </div>
               <span className="text-xs text-slate-400 font-bold">হতে</span>
-              <div className="flex items-center gap-2 bg-slate-50 px-3 py-2 rounded-xl border border-slate-300 text-xs font-semibold">
-                <Calendar className="w-4 h-4 text-emerald-600" />
+              <div className="flex items-center gap-2 bg-[#f8fafc] px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold">
+                <Calendar className="w-4 h-4 text-[#1d4ed8]" />
                 <span className="text-slate-500 text-[11px]">শেষ:</span>
-                <input
-                  type="date"
+                <DateInput
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
-                  className="bg-transparent outline-none cursor-pointer font-bold text-slate-800"
+                  className="bg-transparent outline-none cursor-pointer font-bold text-[#1e3a8a]"
                 />
               </div>
             </div>
           )}
 
           {/* Vehicle Filter Dropdown */}
-          <div className="flex items-center gap-2 bg-slate-50 px-3 py-2 rounded-xl border border-slate-300 text-xs font-semibold">
-            <Bus className="w-4 h-4 text-indigo-600" />
+          <div className="flex items-center gap-2 bg-[#f8fafc] px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold">
+            <Bus className="w-4 h-4 text-[#1d4ed8]" />
             <span className="text-slate-500 text-[11px]">গাড়ি ফিল্টার:</span>
             <select
               value={selectedVehicle}
               onChange={(e) => setSelectedVehicle(e.target.value)}
-              className="bg-transparent outline-none cursor-pointer font-bold text-slate-800"
+              className="bg-transparent outline-none cursor-pointer font-bold text-[#1e3a8a]"
             >
               <option value="ALL">সকল গাড়ি ({vehicles.length} টি)</option>
               {vehicles.map((v) => (
@@ -1039,7 +1038,7 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="ট্রিপ নং, গাড়ি, মালিক বা সুপারভাইজার..."
-              className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:bg-white focus:ring-1 focus:ring-emerald-500 font-medium"
+              className="w-full pl-9 pr-3 py-2 bg-[#f8fafc] border border-slate-200 rounded-xl text-xs outline-none focus:bg-white focus:ring-1 focus:ring-[#1d4ed8] font-medium"
             />
           </div>
         </div>
@@ -1048,12 +1047,12 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
       {/* Up & Down Trip Analytics / KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* UP Trip KPI */}
-        <div className="bg-white p-4 rounded-2xl border border-blue-200 shadow-xs relative overflow-hidden">
+        <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs relative overflow-hidden">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-blue-700 uppercase tracking-wide">
+            <span className="text-xs font-bold text-[#1e3a8a] uppercase tracking-wide">
               আপ ট্রিপ (UP Trips)
             </span>
-            <span className="w-7 h-7 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-xs">
+            <span className="w-7 h-7 rounded-lg bg-[#1e3a8a] text-white flex items-center justify-center font-bold text-xs">
               UP
             </span>
           </div>
@@ -1061,19 +1060,19 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
             <span className="text-2xl font-black text-slate-900">{toBengaliDigits(upTrips.length)}</span>
             <span className="text-xs text-slate-500 font-semibold">টি ট্রিপ সম্পন্ন</span>
           </div>
-          <div className="mt-2 pt-2 border-t border-slate-100 text-xs text-slate-600 flex items-center justify-between">
+          <div className="mt-2 pt-2 border-t border-slate-200 text-xs text-slate-600 flex items-center justify-between">
             <span>অংশগ্রহণকারী গাড়ি:</span>
-            <strong className="text-blue-800 font-bold">{toBengaliDigits(uniqueUpVehicles)} টি অনন্য বাস</strong>
+            <strong className="text-[#1e3a8a] font-bold">{toBengaliDigits(uniqueUpVehicles)} টি অনন্য বাস</strong>
           </div>
         </div>
 
         {/* DOWN Trip KPI */}
-        <div className="bg-white p-4 rounded-2xl border border-emerald-200 shadow-xs relative overflow-hidden">
+        <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs relative overflow-hidden">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-emerald-700 uppercase tracking-wide">
+            <span className="text-xs font-bold text-[#1d4ed8] uppercase tracking-wide">
               ডাউন ট্রিপ (DOWN Trips)
             </span>
-            <span className="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-xs">
+            <span className="w-7 h-7 rounded-lg bg-[#1d4ed8] text-white flex items-center justify-center font-bold text-xs">
               DN
             </span>
           </div>
@@ -1081,19 +1080,19 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
             <span className="text-2xl font-black text-slate-900">{toBengaliDigits(downTrips.length)}</span>
             <span className="text-xs text-slate-500 font-semibold">টি ট্রিপ সম্পন্ন</span>
           </div>
-          <div className="mt-2 pt-2 border-t border-slate-100 text-xs text-slate-600 flex items-center justify-between">
+          <div className="mt-2 pt-2 border-t border-slate-200 text-xs text-slate-600 flex items-center justify-between">
             <span>অংশগ্রহণকারী গাড়ি:</span>
-            <strong className="text-emerald-800 font-bold">{toBengaliDigits(uniqueDownVehicles)} টি অনন্য বাস</strong>
+            <strong className="text-[#1d4ed8] font-bold">{toBengaliDigits(uniqueDownVehicles)} টি অনন্য বাস</strong>
           </div>
         </div>
 
         {/* Overall Fleet Activity */}
-        <div className="bg-white p-4 rounded-2xl border border-purple-200 shadow-xs relative overflow-hidden">
+        <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs relative overflow-hidden">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-purple-700 uppercase tracking-wide">
+            <span className="text-xs font-bold text-[#1e3a8a] uppercase tracking-wide">
               মোট সক্রিয় গাড়ি ও ট্রিপ
             </span>
-            <span className="w-7 h-7 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center font-bold text-xs">
+            <span className="w-7 h-7 rounded-lg bg-[#1e40af] text-[#93c5fd] flex items-center justify-center font-bold text-xs">
               <Bus className="w-4 h-4" />
             </span>
           </div>
@@ -1101,19 +1100,19 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
             <span className="text-2xl font-black text-slate-900">{toBengaliDigits(filtered.length)}</span>
             <span className="text-xs text-slate-500 font-semibold">টি মোট ট্রিপ</span>
           </div>
-          <div className="mt-2 pt-2 border-t border-slate-100 text-xs text-slate-600 flex items-center justify-between">
+          <div className="mt-2 pt-2 border-t border-slate-200 text-xs text-slate-600 flex items-center justify-between">
             <span>চলমান মোট গাড়ি:</span>
-            <strong className="text-purple-800 font-bold">{toBengaliDigits(totalUniqueVehicles)} টি গাড়ি</strong>
+            <strong className="text-[#1e3a8a] font-bold">{toBengaliDigits(totalUniqueVehicles)} টি গাড়ি</strong>
           </div>
         </div>
 
         {/* Passenger & Revenue */}
-        <div className="bg-white p-4 rounded-2xl border border-amber-200 shadow-xs relative overflow-hidden">
+        <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs relative overflow-hidden">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-amber-700 uppercase tracking-wide">
+            <span className="text-xs font-bold text-[#1d4ed8] uppercase tracking-wide">
               যাত্রী ও মোট ভাড়া আদায়
             </span>
-            <span className="w-7 h-7 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-xs">
+            <span className="w-7 h-7 rounded-lg bg-[#eff6ff] text-[#1d4ed8] border border-[#bfdbfe] flex items-center justify-center font-bold text-xs">
               <TrendingUp className="w-4 h-4" />
             </span>
           </div>
@@ -1121,10 +1120,10 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
             <span className="text-2xl font-black text-slate-900">{toBengaliDigits(totalBookedSeats)}</span>
             <span className="text-xs text-slate-500 font-semibold">টি বুকড সিট</span>
           </div>
-          <div className="mt-2 pt-2 border-t border-slate-100 text-xs text-slate-600 space-y-1">
+          <div className="mt-2 pt-2 border-t border-slate-200 text-xs text-slate-600 space-y-1">
             <div className="flex items-center justify-between">
               <span>মোট আদায় (সিট+মাল):</span>
-              <strong className="text-emerald-800 font-black tabular-nums">{formatTaka(totalRevenue)}</strong>
+              <strong className="text-[#1d4ed8] font-black tabular-nums">{formatTaka(totalRevenue)}</strong>
             </div>
             <div className="flex items-center justify-between text-[10px] text-slate-500">
               <span>সিট: {formatTaka(totalSeatRevenue)}</span>
@@ -1136,15 +1135,15 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
 
       {/* Action Success Alert */}
       {actionSuccessMsg && (
-        <div className="p-4 bg-emerald-50 border border-emerald-300 rounded-2xl text-xs font-bold text-emerald-900 flex items-center justify-between shadow-xs">
+        <div className="p-4 bg-[#eff6ff] border border-[#bfdbfe] rounded-2xl text-xs font-bold text-[#1e3a8a] flex items-center justify-between shadow-xs">
           <div className="flex items-center gap-2">
-            <CheckCircle className="w-5 h-5 text-emerald-600 shrink-0" />
+            <CheckCircle className="w-5 h-5 text-[#1d4ed8] shrink-0" />
             <span>{actionSuccessMsg}</span>
           </div>
           <button
             type="button"
             onClick={() => setActionSuccessMsg('')}
-            className="text-emerald-700 hover:text-emerald-900 font-black px-2 cursor-pointer"
+            className="text-[#1e3a8a] hover:text-[#1d4ed8] font-black px-2 cursor-pointer"
           >
             ✕
           </button>
@@ -1153,43 +1152,43 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
 
       {/* Arrived Vehicles with Pending Return Legs (ফিরতি বাকি — ঢাকায় আসা গাড়ি) */}
       {pendingReturnTrips.length > 0 && (
-        <div className="bg-white rounded-3xl border border-amber-200/90 shadow-xs overflow-hidden">
-          <div className="bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent px-5 py-3.5 border-b border-amber-200/70 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+          <div className="bg-[#1e3a8a] px-5 py-3 border-b border-[#1e40af] flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-white">
             <div>
               <div className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse" />
-                <h3 className="text-sm font-black text-slate-800 flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-[#93c5fd] animate-pulse" />
+                <h3 className="text-sm font-black text-white flex items-center gap-2">
                   <span>ফিরতি বাকি — ঢাকায় আসা গাড়ি</span>
-                  <span className="text-xs font-bold text-amber-800 bg-amber-100 border border-amber-300 px-2 py-0.5 rounded-full">
+                  <span className="text-xs font-bold text-white bg-white/15 px-2 py-0.5 rounded-full">
                     {toBengaliDigits(pendingReturnTrips.length)} টি বাকি
                   </span>
                 </h3>
               </div>
-              <p className="text-[11px] text-slate-500 mt-0.5">
+              <p className="text-[11px] text-[#dbeafe] mt-0.5">
                 &quot;ফিরতি ট্রিপ&quot; চেপে ডাউন রুট, তারিখ ও সময় দিন। আপ ও ডাউন মিলে ওই গাড়ির ১টি পূর্ণাঙ্গ ট্রিপ কাউন্ট হবে।
               </p>
             </div>
-            <div className="text-[11px] text-amber-700 font-semibold bg-amber-50 px-3 py-1 rounded-xl border border-amber-200 shrink-0">
+            <div className="text-[11px] text-[#dbeafe] font-semibold bg-white/15 px-3 py-1 rounded-xl border border-white/20 shrink-0">
               ১টি আপ + ১টি ডাউন = ১টি পূর্ণাঙ্গ ট্রিপ
             </div>
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full text-xs">
+            <table className="w-full text-xs border-collapse">
               <thead>
-                <tr className="bg-slate-50 text-slate-600 font-bold border-b border-slate-200">
-                  <th className="px-4 py-2.5 text-left">গাড়ি নম্বর ও মালিক</th>
-                  <th className="px-4 py-2.5 text-left">আপ রুট ও ট্রিপ নং</th>
-                  <th className="px-4 py-2.5 text-left">সুপারভাইজার</th>
-                  <th className="px-4 py-2.5 text-center">আগমনের সময়</th>
-                  <th className="px-4 py-2.5 text-center">স্ট্যাটাস</th>
+                <tr className="bg-[#1d4ed8] text-white font-bold border-b border-[#1e40af]">
+                  <th className="px-4 py-2.5 text-left border-r border-blue-600/60">গাড়ি নম্বর ও মালিক</th>
+                  <th className="px-4 py-2.5 text-left border-r border-blue-600/60">আপ রুট ও ট্রিপ নং</th>
+                  <th className="px-4 py-2.5 text-left border-r border-blue-600/60">সুপারভাইজার</th>
+                  <th className="px-4 py-2.5 text-center border-r border-blue-600/60">আগমনের সময়</th>
+                  <th className="px-4 py-2.5 text-center border-r border-blue-600/60">স্ট্যাটাস</th>
                   <th className="px-4 py-2.5 text-right">পদক্ষেপ</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-slate-200">
                 {pendingReturnTrips.map((trip) => (
-                  <tr key={trip.id} className="hover:bg-amber-50/40 transition-colors">
-                    <td className="px-4 py-3 font-mono font-black text-slate-900">
+                  <tr key={trip.id} className="odd:bg-white even:bg-[#f1f5f9] hover:bg-[#eff6ff] transition-colors">
+                    <td className="px-4 py-3 font-mono font-black text-slate-900 border-r border-slate-200">
                       <div>{trip.vehicleRegNo}</div>
                       {trip.vehicleOwnerName && (
                         <span className="text-[10px] text-slate-500 font-sans font-normal">
@@ -1197,18 +1196,18 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
                         </span>
                       )}
                     </td>
-                    <td className="px-4 py-3 font-medium text-slate-700">
+                    <td className="px-4 py-3 font-medium text-slate-700 border-r border-slate-200">
                       <div className="font-semibold text-slate-800">{trip.routeName}</div>
-                      <div className="text-[10px] text-blue-600 font-mono font-bold">{trip.tripNo}</div>
+                      <div className="text-[10px] text-[#1d4ed8] font-mono font-bold">{trip.tripNo}</div>
                     </td>
-                    <td className="px-4 py-3 font-medium text-slate-700">
+                    <td className="px-4 py-3 font-medium text-slate-700 border-r border-slate-200">
                       {trip.supervisor}
                     </td>
-                    <td className="px-4 py-3 text-center text-slate-600 font-mono">
-                      {trip.departureTime}
+                    <td className="px-4 py-3 text-center text-slate-600 font-mono border-r border-slate-200">
+                      {formatTime12Hour(trip.departureTime)}
                     </td>
-                    <td className="px-4 py-3 text-center">
-                      <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800 border border-amber-300 inline-flex items-center gap-1">
+                    <td className="px-4 py-3 text-center border-r border-slate-200">
+                      <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-[#1e40af] text-white inline-flex items-center gap-1">
                         <span>ফিরতি বাকি</span>
                       </span>
                     </td>
@@ -1216,7 +1215,7 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
                       <button
                         type="button"
                         onClick={() => handleOpenReturnModal(trip)}
-                        className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-xs shadow-xs hover:shadow-md transition-all inline-flex items-center gap-1 cursor-pointer"
+                        className="px-3.5 py-1.5 bg-[#1d4ed8] hover:bg-[#1e40af] text-white rounded-xl font-bold text-xs shadow-xs hover:shadow-md transition-all inline-flex items-center gap-1 cursor-pointer"
                       >
                         <span>➔ ফিরতি ট্রিপ</span>
                       </button>
@@ -1233,19 +1232,19 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
         <h3 className="text-sm font-black text-slate-800 flex items-center gap-2">
           <span>ট্রিপের পূর্ণাঙ্গ তালিকা</span>
-          <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200">
+          <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-[#eff6ff] text-[#1e3a8a] border border-[#bfdbfe]">
             {toBengaliDigits(filtered.length)} টি ট্রিপ
           </span>
         </h3>
 
         {/* View Toggle */}
-        <div className="flex flex-wrap items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs font-bold">
+        <div className="flex flex-wrap items-center gap-1 bg-[#f8fafc] p-1 rounded-xl border border-slate-200 text-xs font-bold">
           <button
             type="button"
             onClick={() => setDisplayMode('excel')}
             className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all cursor-pointer whitespace-nowrap ${
               displayMode === 'excel'
-                ? 'bg-slate-900 text-white shadow-xs'
+                ? 'bg-[#1d4ed8] text-white shadow-xs'
                 : 'text-slate-600 hover:text-slate-900'
             }`}
           >
@@ -1257,7 +1256,7 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
             onClick={() => setDisplayMode('weekly')}
             className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all cursor-pointer whitespace-nowrap ${
               displayMode === 'weekly'
-                ? 'bg-indigo-600 text-white shadow-xs'
+                ? 'bg-[#1d4ed8] text-white shadow-xs'
                 : 'text-slate-600 hover:text-slate-900'
             }`}
           >
@@ -1269,7 +1268,7 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
             onClick={() => setDisplayMode('cards')}
             className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all cursor-pointer whitespace-nowrap ${
               displayMode === 'cards'
-                ? 'bg-slate-900 text-white shadow-xs'
+                ? 'bg-[#1d4ed8] text-white shadow-xs'
                 : 'text-slate-600 hover:text-slate-900'
             }`}
           >
@@ -1312,20 +1311,20 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
               return (
                 <div
                   key={`${direction}-${group.routeNumber}`}
-                  className="mb-6 bg-white rounded-2xl border border-slate-300 shadow-xs overflow-hidden"
+                  className="mb-6 bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden"
                 >
                   {/* Route Header Banner */}
                   <div
-                    className={`px-4 py-2.5 border-b flex flex-col sm:flex-row sm:items-center justify-between gap-2 ${
+                    className={`px-4 py-2.5 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2 ${
                       direction === 'UP'
-                        ? 'bg-blue-50/90 border-blue-200 text-blue-900'
-                        : 'bg-emerald-50/90 border-emerald-200 text-emerald-900'
+                        ? 'bg-[#f8fafc] text-[#1e3a8a]'
+                        : 'bg-[#eff6ff] text-[#1e3a8a]'
                     }`}
                   >
                     <div className="flex items-center gap-2">
                       <span
                         className={`px-2.5 py-0.5 rounded text-xs font-black text-white shadow-2xs ${
-                          direction === 'UP' ? 'bg-blue-700' : 'bg-emerald-700'
+                          direction === 'UP' ? 'bg-[#1e3a8a]' : 'bg-[#1d4ed8]'
                         }`}
                       >
                         {toBengaliDigits(group.routeNumber)} নং রুট
@@ -1346,19 +1345,19 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
                   <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse text-xs">
                       <thead>
-                        <tr className="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold uppercase text-[11px]">
-                          <th className="py-2.5 px-2.5 border-r border-slate-300 text-center w-12">সিরিয়াল</th>
-                          <th className="py-2.5 px-2.5 border-r border-slate-300">ট্রিপ নং</th>
-                          <th className="py-2.5 px-2.5 border-r border-slate-300">ছাড়ার সময়</th>
-                          <th className="py-2.5 px-2.5 border-r border-slate-300">গাড়ি নম্বর</th>
-                          <th className="py-2.5 px-2.5 border-r border-slate-300">মালিকের নাম</th>
-                          <th className="py-2.5 px-2.5 border-r border-slate-300">সুপারভাইজার</th>
-                          <th className="py-2.5 px-2.5 border-r border-slate-300">ড্রাইভার</th>
-                          <th className="py-2.5 px-2.5 border-r border-slate-300 text-center">সিট বুকিং</th>
-                          <th className="py-2.5 px-2.5 border-r border-slate-300 text-right bg-blue-50/70">সিট ভাড়া</th>
-                          <th className="py-2.5 px-2.5 border-r border-slate-300 text-right bg-amber-50/70">মালের ভাড়া</th>
-                          <th className="py-2.5 px-2.5 border-r border-slate-300 text-right bg-emerald-50/80 font-black">মোট টাকা</th>
-                          <th className="py-2.5 px-2.5 border-r border-slate-300 text-center">ফিরতি / সমন্বয়</th>
+                        <tr className="bg-[#1d4ed8] border-b border-[#1e40af] text-white font-bold uppercase text-[11px]">
+                          <th className="py-2.5 px-2.5 border-r border-blue-600/60 text-center w-12">সিরিয়াল</th>
+                          <th className="py-2.5 px-2.5 border-r border-blue-600/60">ট্রিপ নং</th>
+                          <th className="py-2.5 px-2.5 border-r border-blue-600/60">ছাড়ার সময়</th>
+                          <th className="py-2.5 px-2.5 border-r border-blue-600/60">গাড়ি নম্বর</th>
+                          <th className="py-2.5 px-2.5 border-r border-blue-600/60">মালিকের নাম</th>
+                          <th className="py-2.5 px-2.5 border-r border-blue-600/60">সুপারভাইজার</th>
+                          <th className="py-2.5 px-2.5 border-r border-blue-600/60">ড্রাইভার</th>
+                          <th className="py-2.5 px-2.5 border-r border-blue-600/60 text-center">সিট বুকিং</th>
+                          <th className="py-2.5 px-2.5 border-r border-blue-600/60 text-right">সিট ভাড়া</th>
+                          <th className="py-2.5 px-2.5 border-r border-blue-600/60 text-right">মালের ভাড়া</th>
+                          <th className="py-2.5 px-2.5 border-r border-blue-600/60 text-right font-black">মোট টাকা</th>
+                          <th className="py-2.5 px-2.5 border-r border-blue-600/60 text-center">ফিরতি / সমন্বয়</th>
                           <th className="py-2.5 px-2.5 text-right">পদক্ষেপ</th>
                         </tr>
                       </thead>
@@ -1369,19 +1368,19 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
                           const fares = getScheduleFares(sch);
 
                           return (
-                            <tr key={sch.id} className="hover:bg-blue-50/40 transition-colors">
-                              <td className="py-2.5 px-2.5 border-r border-slate-200 text-center font-mono font-bold text-slate-800 bg-slate-50/60">
+                            <tr key={sch.id} className="odd:bg-white even:bg-[#f1f5f9] hover:bg-[#eff6ff] transition-colors">
+                              <td className="py-2.5 px-2.5 border-r border-slate-200 text-center font-mono font-bold text-[#1e3a8a]">
                                 {toBengaliDigits(sch.serialInRoute)}
                               </td>
                               <td className="py-2.5 px-2.5 border-r border-slate-200 font-mono font-bold text-slate-900">
                                 {sch.tripNo}
                               </td>
                               <td className="py-2.5 px-2.5 border-r border-slate-200">
-                                <span className="font-bold text-slate-900 text-xs px-2 py-0.5 rounded bg-slate-100 font-mono">
-                                  {sch.departureTime}
+                                <span className="font-bold text-[#1e3a8a] text-xs px-2 py-0.5 rounded bg-[#f8fafc] border border-slate-200 font-mono whitespace-nowrap">
+                                  {formatTime12Hour(sch.departureTime)}
                                 </span>
                                 <span className="text-[10px] text-slate-500 block font-normal mt-0.5">
-                                  {sch.date}
+                                  {formatBengaliDate(sch.date)}
                                 </span>
                               </td>
                               <td className="py-2.5 px-2.5 border-r border-slate-200 font-bold text-slate-900">
@@ -1410,13 +1409,13 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
                                   {toBengaliDigits(percent)}% পূর্ণ
                                 </div>
                               </td>
-                              <td className="py-2.5 px-2.5 border-r border-slate-200 text-right font-bold text-blue-800 bg-blue-50/20 tabular-nums whitespace-nowrap">
+                              <td className="py-2.5 px-2.5 border-r border-slate-200 text-right font-bold text-[#1e3a8a] tabular-nums whitespace-nowrap">
                                 {formatTaka(fares.seatCol)}
                               </td>
-                              <td className="py-2.5 px-2.5 border-r border-slate-200 text-right font-bold text-amber-800 bg-amber-50/20 tabular-nums whitespace-nowrap">
+                              <td className="py-2.5 px-2.5 border-r border-slate-200 text-right font-bold text-[#1e3a8a] tabular-nums whitespace-nowrap">
                                 {formatTaka(fares.cargoCol)}
                               </td>
-                              <td className="py-2.5 px-2.5 border-r border-slate-200 text-right font-black text-emerald-800 bg-emerald-50/30 tabular-nums whitespace-nowrap">
+                              <td className="py-2.5 px-2.5 border-r border-slate-200 text-right font-black text-[#1d4ed8] tabular-nums whitespace-nowrap">
                                 {formatTaka(fares.totalCol)}
                               </td>
                               <td className="py-2.5 px-2.5 border-r border-slate-200 text-center">
@@ -1424,25 +1423,25 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
                                   <button
                                     type="button"
                                     onClick={() => handleOpenReturnModal(sch)}
-                                    className="px-2.5 py-1 bg-amber-500 hover:bg-amber-600 text-white rounded text-[11px] font-bold shadow-xs cursor-pointer inline-flex items-center gap-1"
+                                    className="px-2.5 py-1 bg-[#1e40af] hover:bg-[#1e3a8a] text-white rounded text-[11px] font-bold shadow-xs cursor-pointer inline-flex items-center gap-1"
                                   >
                                     <span>➔ ফিরতি ট্রিপ</span>
                                   </button>
                                 )}
                                 {sch.direction === 'UP' && sch.returnTripCreated && (
-                                  <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200 inline-flex items-center gap-1">
-                                    <CheckCircle className="w-3 h-3 text-emerald-600" />
+                                  <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#eff6ff] text-[#1d4ed8] border border-[#bfdbfe] inline-flex items-center gap-1">
+                                    <CheckCircle className="w-3 h-3 text-[#1d4ed8]" />
                                     <span>১টি পূর্ণাঙ্গ ট্রিপ সম্পন্ন</span>
                                   </span>
                                 )}
                                 {sch.direction === 'DOWN' && sch.linkedTripId && (
-                                  <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-800 border border-blue-200 inline-flex items-center gap-1">
-                                    <ArrowRight className="w-3 h-3 text-blue-600" />
+                                  <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#f8fafc] text-[#1e3a8a] border border-slate-200 inline-flex items-center gap-1">
+                                    <ArrowRight className="w-3 h-3 text-[#1d4ed8]" />
                                     <span>ফিরতি ডাউন (সমন্বয়কৃত)</span>
                                   </span>
                                 )}
                                 {sch.direction === 'DOWN' && !sch.linkedTripId && (
-                                  <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-600 border border-slate-200">
+                                  <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-[#f8fafc] text-slate-600 border border-slate-200">
                                     স্বতন্ত্র ডাউন
                                   </span>
                                 )}
@@ -1454,7 +1453,7 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
                                     onClick={() => {
                                       if (onSelectTripForBooking) onSelectTripForBooking(sch.id);
                                     }}
-                                    className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[11px] font-bold shadow-xs cursor-pointer inline-flex items-center gap-1"
+                                    className="px-2.5 py-1 bg-[#1d4ed8] hover:bg-[#1e40af] text-white rounded text-[11px] font-bold shadow-xs cursor-pointer inline-flex items-center gap-1"
                                   >
                                     <Armchair className="w-3 h-3" />
                                     <span>বুকিং</span>
@@ -1464,7 +1463,7 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
                                       <button
                                         type="button"
                                         onClick={() => handleOpenEdit(sch)}
-                                        className="p-1 text-blue-600 hover:bg-blue-100 rounded transition-colors"
+                                        className="p-1 text-[#1d4ed8] hover:bg-[#eff6ff] rounded transition-colors cursor-pointer"
                                         title="এডিট"
                                       >
                                         <Edit3 className="w-3.5 h-3.5" />
@@ -1472,7 +1471,7 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
                                       <button
                                         type="button"
                                         onClick={() => handleDeleteTrip(sch)}
-                                        className="p-1 text-rose-600 hover:bg-rose-100 rounded transition-colors"
+                                        className="p-1 text-[#1e3a8a] hover:bg-[#1e3a8a] hover:text-white rounded transition-colors cursor-pointer"
                                         title="মুছে ফেলুন"
                                       >
                                         <Trash2 className="w-3.5 h-3.5" />
@@ -1485,24 +1484,24 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
                           );
                         })}
                       </tbody>
-                      <tfoot className="bg-slate-100 border-t-2 border-slate-300 font-black text-xs text-slate-900">
+                      <tfoot className="bg-[#eff6ff] border-t-2 border-[#bfdbfe] font-black text-xs text-[#1e3a8a]">
                         <tr>
-                          <td colSpan={7} className="py-2 px-3 border-r border-slate-300 text-right">
+                          <td colSpan={7} className="py-2 px-3 border-r border-[#bfdbfe] text-right">
                             রুট মোট ({toBengaliDigits(group.trips.length)} টি ট্রিপ):
                           </td>
-                          <td className="py-2 px-2.5 border-r border-slate-300 text-center tabular-nums">
+                          <td className="py-2 px-2.5 border-r border-[#bfdbfe] text-center tabular-nums">
                             {toBengaliDigits(groupTotals.seats)} সিট
                           </td>
-                          <td className="py-2 px-2.5 border-r border-slate-300 text-right text-blue-900 bg-blue-50/70 tabular-nums whitespace-nowrap">
+                          <td className="py-2 px-2.5 border-r border-[#bfdbfe] text-right text-[#1e3a8a] tabular-nums whitespace-nowrap">
                             {formatTaka(groupTotals.seatCol)}
                           </td>
-                          <td className="py-2 px-2.5 border-r border-slate-300 text-right text-amber-900 bg-amber-50/70 tabular-nums whitespace-nowrap">
+                          <td className="py-2 px-2.5 border-r border-[#bfdbfe] text-right text-[#1e3a8a] tabular-nums whitespace-nowrap">
                             {formatTaka(groupTotals.cargoCol)}
                           </td>
-                          <td className="py-2 px-2.5 border-r border-slate-300 text-right text-emerald-950 bg-emerald-100/70 tabular-nums whitespace-nowrap">
+                          <td className="py-2 px-2.5 border-r border-[#bfdbfe] text-right text-[#1d4ed8] tabular-nums whitespace-nowrap">
                             {formatTaka(groupTotals.totalCol)}
                           </td>
-                          <td colSpan={2} className="py-2 px-2.5 text-center text-[10px] text-slate-500">
+                          <td colSpan={2} className="py-2 px-2.5 text-center text-[10px] text-slate-600">
                             সিট + মাল = মোট
                           </td>
                         </tr>
@@ -1518,13 +1517,13 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
                 {/* 1. UP Trips List */}
                 {(directionTab === 'ALL' || directionTab === 'UP') && (
                   <div>
-                    <div className="flex items-center justify-between pb-2.5 mb-4 border-b-2 border-blue-600">
+                    <div className="flex items-center justify-between pb-2.5 mb-4 border-b-2 border-[#1e3a8a]">
                       <div className="flex items-center gap-2.5">
-                        <span className="w-3.5 h-3.5 rounded-full bg-blue-600 shadow-xs" />
-                        <h3 className="text-base sm:text-lg font-black text-slate-900 tracking-tight">
+                        <span className="w-3.5 h-3.5 rounded-full bg-[#1e3a8a] shadow-xs" />
+                        <h3 className="text-base sm:text-lg font-black text-[#1e3a8a] tracking-tight">
                           ১. আপ ট্রিপ পূর্ণাঙ্গ তালিকা
                         </h3>
-                        <span className="px-3 py-0.5 rounded-full text-xs font-black bg-blue-100 text-blue-800 border border-blue-300">
+                        <span className="px-3 py-0.5 rounded-full text-xs font-black bg-[#1e3a8a] text-white">
                           {toBengaliDigits(upTrips.length)} টি ট্রিপ
                         </span>
                       </div>
@@ -1546,13 +1545,13 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
                 {/* 2. DOWN Trips List */}
                 {(directionTab === 'ALL' || directionTab === 'DOWN') && (
                   <div className="pt-2">
-                    <div className="flex items-center justify-between pb-2.5 mb-4 border-b-2 border-emerald-600">
+                    <div className="flex items-center justify-between pb-2.5 mb-4 border-b-2 border-[#1d4ed8]">
                       <div className="flex items-center gap-2.5">
-                        <span className="w-3.5 h-3.5 rounded-full bg-emerald-600 shadow-xs" />
-                        <h3 className="text-base sm:text-lg font-black text-slate-900 tracking-tight">
+                        <span className="w-3.5 h-3.5 rounded-full bg-[#1d4ed8] shadow-xs" />
+                        <h3 className="text-base sm:text-lg font-black text-[#1e3a8a] tracking-tight">
                           ২. ডাউন ট্রিপ পূর্ণাঙ্গ তালিকা
                         </h3>
-                        <span className="px-3 py-0.5 rounded-full text-xs font-black bg-emerald-100 text-emerald-800 border border-emerald-300">
+                        <span className="px-3 py-0.5 rounded-full text-xs font-black bg-[#eff6ff] text-[#1d4ed8] border border-[#bfdbfe]">
                           {toBengaliDigits(downTrips.length)} টি ট্রিপ
                         </span>
                       </div>
@@ -1590,15 +1589,15 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
               return (
                 <div
                   key={sch.id}
-                  className="bg-white rounded-3xl border border-slate-200 shadow-xs p-5 hover:shadow-md transition-all relative overflow-hidden flex flex-col justify-between"
+                  className="bg-white rounded-2xl border border-slate-200 shadow-xs p-5 hover:shadow-md transition-all relative overflow-hidden flex flex-col justify-between"
                 >
                   <div>
                     {/* Top Header of Card */}
-                    <div className="flex items-center justify-between pb-3 border-b">
+                    <div className="flex items-center justify-between pb-3 border-b border-slate-200">
                       <div className="flex items-center gap-2">
                         <span
                           className={`w-9 h-9 rounded-2xl font-black text-xs flex items-center justify-center text-white ${
-                            sch.direction === 'UP' ? 'bg-blue-600' : 'bg-emerald-600'
+                            sch.direction === 'UP' ? 'bg-[#1e3a8a]' : 'bg-[#1d4ed8]'
                           }`}
                         >
                           {sch.direction}
@@ -1607,19 +1606,19 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
                           <div className="flex items-center gap-1.5">
                             <h4 className="font-bold text-sm text-slate-900">{sch.tripNo}</h4>
                             {sch.direction === 'UP' && sch.tripSequenceLabel && (
-                              <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-amber-100 text-amber-800 border border-amber-300">
+                              <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-[#eff6ff] text-[#1e3a8a] border border-[#bfdbfe]">
                                 {sch.tripSequenceLabel}
                               </span>
                             )}
                           </div>
-                          <span className="text-[10px] text-slate-400">তারিখ: {sch.date}</span>
+                          <span className="text-[10px] text-slate-400">তারিখ: {formatBengaliDate(sch.date)}</span>
                         </div>
                       </div>
 
                       <div className="text-right">
-                        <span className="inline-flex items-center gap-1 px-3 py-1 bg-emerald-50 text-emerald-800 text-xs font-bold rounded-xl border border-emerald-200">
-                          <Clock className="w-3 h-3 text-emerald-600" />
-                          <span>{sch.departureTime}</span>
+                        <span className="inline-flex items-center gap-1 px-3 py-1 bg-[#eff6ff] text-[#1d4ed8] text-xs font-bold rounded-xl border border-[#bfdbfe]">
+                          <Clock className="w-3 h-3 text-[#1d4ed8]" />
+                          <span>{formatTime12Hour(sch.departureTime)}</span>
                         </span>
                       </div>
                     </div>
@@ -1661,17 +1660,17 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
                           const fares = getScheduleFares(sch);
                           return (
                             <>
-                              <div className="bg-blue-50 border border-blue-100 rounded-lg px-2 py-1 text-center">
-                                <span className="block text-[9.5px] text-blue-700">সিট ভাড়া</span>
-                                <strong className="text-blue-900 font-bold tabular-nums">{formatTaka(fares.seatCol)}</strong>
+                              <div className="bg-[#f8fafc] border border-slate-200 rounded-lg px-2 py-1 text-center">
+                                <span className="block text-[9.5px] text-slate-600">সিট ভাড়া</span>
+                                <strong className="text-[#1e3a8a] font-bold tabular-nums">{formatTaka(fares.seatCol)}</strong>
                               </div>
-                              <div className="bg-amber-50 border border-amber-100 rounded-lg px-2 py-1 text-center">
-                                <span className="block text-[9.5px] text-amber-700">মালের ভাড়া</span>
-                                <strong className="text-amber-900 font-bold tabular-nums">{formatTaka(fares.cargoCol)}</strong>
+                              <div className="bg-[#f8fafc] border border-slate-200 rounded-lg px-2 py-1 text-center">
+                                <span className="block text-[9.5px] text-slate-600">মালের ভাড়া</span>
+                                <strong className="text-[#1e3a8a] font-bold tabular-nums">{formatTaka(fares.cargoCol)}</strong>
                               </div>
-                              <div className="bg-emerald-50 border border-emerald-200 rounded-lg px-2 py-1 text-center">
-                                <span className="block text-[9.5px] text-emerald-700">মোট টাকা</span>
-                                <strong className="text-emerald-900 font-black tabular-nums">{formatTaka(fares.totalCol)}</strong>
+                              <div className="bg-[#eff6ff] border border-[#bfdbfe] rounded-lg px-2 py-1 text-center">
+                                <span className="block text-[9.5px] text-[#1d4ed8]">মোট টাকা</span>
+                                <strong className="text-[#1d4ed8] font-black tabular-nums">{formatTaka(fares.totalCol)}</strong>
                               </div>
                             </>
                           );
@@ -1680,15 +1679,15 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
 
                       {/* Return Trip / Round Trip Status Banner */}
                       {sch.direction === 'UP' && !sch.returnTripCreated && (
-                        <div className="flex items-center justify-between p-2.5 bg-amber-50 rounded-2xl border border-amber-200">
-                          <div className="flex items-center gap-1.5 text-[11px] font-bold text-amber-900">
-                            <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                        <div className="flex items-center justify-between p-2.5 bg-[#f8fafc] rounded-2xl border border-slate-200">
+                          <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#1e3a8a]">
+                            <span className="w-2 h-2 rounded-full bg-[#1d4ed8] animate-pulse" />
                             <span>ফিরতি বাকি (ঢাকায় আসা)</span>
                           </div>
                           <button
                             type="button"
                             onClick={() => handleOpenReturnModal(sch)}
-                            className="px-2.5 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-[11px] font-black shadow-xs cursor-pointer flex items-center gap-1 transition-all"
+                            className="px-2.5 py-1 bg-[#1d4ed8] hover:bg-[#1e40af] text-white rounded-lg text-[11px] font-black shadow-xs cursor-pointer flex items-center gap-1 transition-all"
                           >
                             <span>➔ ফিরতি ট্রিপ</span>
                           </button>
@@ -1696,39 +1695,39 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
                       )}
 
                       {sch.direction === 'UP' && sch.returnTripCreated && (
-                        <div className="flex items-center gap-1.5 p-2 bg-emerald-50 text-emerald-800 rounded-2xl text-[11px] font-bold border border-emerald-200">
-                          <CheckCircle className="w-3.5 h-3.5 text-emerald-600" />
+                        <div className="flex items-center gap-1.5 p-2 bg-[#eff6ff] text-[#1d4ed8] rounded-2xl text-[11px] font-bold border border-[#bfdbfe]">
+                          <CheckCircle className="w-3.5 h-3.5 text-[#1d4ed8]" />
                           <span>১টি পূর্ণাঙ্গ রাউন্ড ট্রিপ সম্পন্ন (আপ + ফিরতি ডাউন)</span>
                         </div>
                       )}
 
                       {sch.direction === 'DOWN' && sch.linkedTripId && (
-                        <div className="flex items-center gap-1.5 p-2 bg-blue-50 text-blue-800 rounded-2xl text-[11px] font-bold border border-blue-200">
-                          <ArrowRight className="w-3.5 h-3.5 text-blue-600" />
+                        <div className="flex items-center gap-1.5 p-2 bg-[#f8fafc] text-[#1e3a8a] rounded-2xl text-[11px] font-bold border border-slate-200">
+                          <ArrowRight className="w-3.5 h-3.5 text-[#1d4ed8]" />
                           <span>ফিরতি ডাউন ট্রিপ (পূর্ণাঙ্গ ট্রিপের অংশ)</span>
                         </div>
                       )}
 
                       {sch.isNightHold && (
-                        <div className="flex items-center gap-1.5 p-2 bg-purple-50 text-purple-700 rounded-2xl text-[11px] font-semibold border border-purple-200">
-                          <Moon className="w-3.5 h-3.5" />
+                        <div className="flex items-center gap-1.5 p-2 bg-[#1e3a8a] text-white rounded-2xl text-[11px] font-semibold">
+                          <Moon className="w-3.5 h-3.5 text-[#93c5fd]" />
                           <span>রাত্রীকালীন হোল্ড ট্রিপ</span>
                         </div>
                       )}
                     </div>
 
                     {/* Capacity Progress */}
-                    <div className="pt-2 border-t border-slate-100">
+                    <div className="pt-2 border-t border-slate-200">
                       <div className="flex items-center justify-between text-[11px] text-slate-500 mb-1">
                         <span>
                           বুকড: <strong>{toBengaliDigits(booked)}</strong>/{toBengaliDigits(sch.seatCapacity)} সিট
                         </span>
                         <span className="font-semibold">{toBengaliDigits(percent)}% পূর্ণ</span>
                       </div>
-                      <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                      <div className="w-full bg-[#eff6ff] h-2 rounded-full overflow-hidden">
                         <div
                           className={`h-full rounded-full transition-all ${
-                            percent > 80 ? 'bg-red-500' : percent > 50 ? 'bg-amber-500' : 'bg-emerald-500'
+                            percent > 80 ? 'bg-[#1e3a8a]' : 'bg-[#1d4ed8]'
                           }`}
                           style={{ width: `${percent}%` }}
                         />
@@ -1737,22 +1736,22 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
                   </div>
 
                   {/* Actions */}
-                  <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+                  <div className="mt-4 pt-3 border-t border-slate-200 flex items-center justify-between gap-2">
                     {canManageTrips && (
                       <div className="flex items-center gap-1">
                         <button
                           type="button"
                           onClick={() => handleOpenEdit(sch)}
-                          className="px-2.5 py-1.5 text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-xl transition-colors text-xs font-semibold flex items-center gap-1 cursor-pointer"
+                          className="px-2.5 py-1.5 text-[#1e3a8a] bg-[#f8fafc] hover:bg-[#eff6ff] border border-slate-200 rounded-xl transition-colors text-xs font-semibold flex items-center gap-1 cursor-pointer"
                           title="ট্রিপ তথ্য পরিবর্তন করুন"
                         >
-                          <Edit3 className="w-3.5 h-3.5" />
+                          <Edit3 className="w-3.5 h-3.5 text-[#1d4ed8]" />
                           <span>এডিট</span>
                         </button>
                         <button
                           type="button"
                           onClick={() => handleDeleteTrip(sch)}
-                          className="p-1.5 text-rose-600 hover:bg-rose-50 rounded-xl transition-colors text-xs font-semibold flex items-center gap-1 cursor-pointer"
+                          className="p-1.5 text-[#1e3a8a] hover:bg-[#1e3a8a] hover:text-white rounded-xl transition-colors text-xs font-semibold flex items-center gap-1 cursor-pointer"
                           title="ট্রিপ মুছে ফেলুন"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -1767,7 +1766,7 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
                           onSelectTripForBooking(sch.id);
                         }
                       }}
-                      className="flex-1 py-2 px-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-xs hover:shadow-md transition-all flex items-center justify-center gap-1 cursor-pointer"
+                      className="flex-1 py-2 px-3 bg-[#1d4ed8] hover:bg-[#1e40af] text-white rounded-xl text-xs font-bold shadow-xs hover:shadow-md transition-all flex items-center justify-center gap-1 cursor-pointer"
                     >
                       <Armchair className="w-3.5 h-3.5" />
                       <span>সিট বুকিং</span>
@@ -1783,20 +1782,20 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
       {/* Return Trip Quick Modal (ফিরতি ট্রিপ তৈরি) */}
       {returnModalTrip && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
-          <div className="bg-white rounded-t-2xl sm:rounded-2xl max-w-lg w-full max-h-[92dvh] sm:max-h-[88dvh] shadow-2xl border border-emerald-200 flex flex-col overflow-hidden">
-            <div className="shrink-0 px-4 py-3 bg-[#0b2820] text-white flex items-center justify-between gap-2">
+          <div className="bg-white rounded-t-2xl sm:rounded-2xl max-w-lg w-full max-h-[92dvh] sm:max-h-[88dvh] shadow-2xl border border-slate-200 flex flex-col overflow-hidden">
+            <div className="shrink-0 px-4 py-3 bg-[#1d4ed8] text-white flex items-center justify-between gap-2">
               <div className="min-w-0">
                 <h3 className="text-sm sm:text-base font-black text-white truncate">
                   ফিরতি ট্রিপ তৈরি (ডাউন ট্রিপ)
                 </h3>
-                <p className="text-[11px] text-emerald-200/80 mt-0.5 truncate">
+                <p className="text-[11px] text-[#dbeafe] mt-0.5 truncate">
                   গাড়ি: <strong className="text-white font-mono">{returnModalTrip.vehicleRegNo}</strong> · আপ ট্রিপ: {returnModalTrip.tripNo} ({returnModalTrip.routeName})
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => setReturnModalTrip(null)}
-                className="text-emerald-100 hover:text-white hover:bg-white/15 p-1.5 rounded-lg cursor-pointer shrink-0"
+                className="text-[#dbeafe] hover:text-white hover:bg-white/15 p-1.5 rounded-lg cursor-pointer shrink-0"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -1820,7 +1819,7 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
                           setReturnFare(chosen.baseFare);
                         }
                       }}
-                      className="w-full px-3 py-2.5 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs font-bold text-slate-900 outline-none focus:bg-white focus:ring-2 focus:ring-emerald-600"
+                      className="w-full px-3 py-2.5 bg-[#f8fafc] border border-slate-200 rounded-xl text-xs font-bold text-slate-900 outline-none focus:bg-white focus:ring-2 focus:ring-[#1d4ed8]"
                       required
                     >
                       <option value="">রুট নির্বাচন করুন</option>
@@ -1848,7 +1847,7 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
                       )}
                     </select>
                   ) : (
-                    <div className="p-2.5 bg-amber-50 border border-amber-200 rounded-xl text-[11px] text-amber-800">
+                    <div className="p-2.5 bg-[#f8fafc] border border-slate-200 rounded-xl text-[11px] text-[#1e3a8a]">
                       কোনো ডাউন রুট পাওয়া যায়নি; রুট ম্যানেজমেন্ট থেকে রুট যোগ করুন।
                     </div>
                   )}
@@ -1858,7 +1857,7 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
                 <div>
                   <div className="flex items-center justify-between mb-1">
                     <label className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                      <Calendar className="w-3.5 h-3.5 text-[#0d9488]" />
+                      <Calendar className="w-3.5 h-3.5 text-[#1d4ed8]" />
                       <span>২. ফিরতি ট্রিপের তারিখ *</span>
                     </label>
                     <div className="flex items-center gap-1.5">
@@ -1867,8 +1866,8 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
                         onClick={() => setReturnDate(getTodayDhakaDate())}
                         className={`px-2 py-0.5 rounded-lg text-[10px] font-bold border transition-colors cursor-pointer ${
                           returnDate === getTodayDhakaDate()
-                            ? 'bg-[#0d9488] text-white border-[#0d9488]'
-                            : 'bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200'
+                            ? 'bg-[#1d4ed8] text-white border-[#1d4ed8]'
+                            : 'bg-[#f8fafc] text-slate-700 border-slate-200 hover:bg-[#eff6ff]'
                         }`}
                       >
                         আজকে
@@ -1878,26 +1877,22 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
                         onClick={() => setReturnDate(addDaysToDateStr(getTodayDhakaDate(), 1))}
                         className={`px-2 py-0.5 rounded-lg text-[10px] font-bold border transition-colors cursor-pointer ${
                           returnDate === addDaysToDateStr(getTodayDhakaDate(), 1)
-                            ? 'bg-[#0d9488] text-white border-[#0d9488]'
-                            : 'bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200'
+                            ? 'bg-[#1d4ed8] text-white border-[#1d4ed8]'
+                            : 'bg-[#f8fafc] text-slate-700 border-slate-200 hover:bg-[#eff6ff]'
                         }`}
                       >
                         আগামীকাল
                       </button>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2 bg-[#f4fbf8] px-3 py-2 rounded-xl border border-emerald-200">
-                    <Calendar className="w-4 h-4 text-[#0d9488] shrink-0" />
-                    <input
-                      type="date"
+                  <div className="flex items-center gap-2 bg-[#f8fafc] px-3 py-2 rounded-xl border border-slate-200">
+                    <Calendar className="w-4 h-4 text-[#1d4ed8] shrink-0" />
+                    <DateInput
                       value={returnDate}
                       onChange={(e) => setReturnDate(e.target.value)}
                       className="w-full bg-transparent text-xs font-bold text-slate-900 outline-none cursor-pointer"
                       required
                     />
-                    <span className="text-[11px] font-semibold text-slate-600 whitespace-nowrap shrink-0">
-                      {formatBengaliDate(returnDate)}
-                    </span>
                   </div>
                 </div>
 
@@ -1918,7 +1913,7 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
                       <select
                         value={returnSupervisor}
                         onChange={(e) => setReturnSupervisor(e.target.value)}
-                        className="w-full px-3 py-2 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs font-bold text-slate-900 outline-none focus:bg-white focus:ring-1 focus:ring-emerald-600"
+                        className="w-full px-3 py-2 bg-[#f8fafc] border border-slate-200 rounded-xl text-xs font-bold text-slate-900 outline-none focus:bg-white focus:ring-1 focus:ring-[#1d4ed8]"
                       >
                         <option value="">সুপারভাইজার নির্বাচন করুন</option>
                         {supervisorsList.map((sup) => (
@@ -1932,7 +1927,7 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
                         type="text"
                         value={returnSupervisor}
                         onChange={(e) => setReturnSupervisor(e.target.value)}
-                        className="w-full px-3 py-2 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs font-bold text-slate-900 outline-none focus:bg-white"
+                        className="w-full px-3 py-2 bg-[#f8fafc] border border-slate-200 rounded-xl text-xs font-bold text-slate-900 outline-none focus:bg-white"
                         placeholder="সুপারভাইজারের নাম"
                         required
                       />
@@ -1947,7 +1942,7 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
                       <select
                         value={returnDriver}
                         onChange={(e) => setReturnDriver(e.target.value)}
-                        className="w-full px-3 py-2 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs font-bold text-slate-900 outline-none focus:bg-white focus:ring-1 focus:ring-emerald-600"
+                        className="w-full px-3 py-2 bg-[#f8fafc] border border-slate-200 rounded-xl text-xs font-bold text-slate-900 outline-none focus:bg-white focus:ring-1 focus:ring-[#1d4ed8]"
                       >
                         <option value="">ড্রাইভার নির্বাচন করুন</option>
                         {driversList.map((drv) => (
@@ -1961,33 +1956,33 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
                         type="text"
                         value={returnDriver}
                         onChange={(e) => setReturnDriver(e.target.value)}
-                        className="w-full px-3 py-2 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs font-bold text-slate-900 outline-none focus:bg-white"
+                        className="w-full px-3 py-2 bg-[#f8fafc] border border-slate-200 rounded-xl text-xs font-bold text-slate-900 outline-none focus:bg-white"
                         placeholder="ড্রাইভারের নাম"
                       />
                     )}
                   </div>
                 </div>
 
-                <div className="bg-emerald-50 p-3 rounded-xl border border-emerald-200 text-xs text-emerald-950 space-y-1">
+                <div className="bg-[#eff6ff] p-3 rounded-xl border border-[#bfdbfe] text-xs text-[#1e3a8a] space-y-1">
                   <div className="font-bold">১টি পূর্ণাঙ্গ ট্রিপ হিসাব</div>
-                  <p className="text-[11px] text-emerald-900">
+                  <p className="text-[11px] text-[#1d4ed8]">
                     এই ডাউন ট্রিপটি তৈরি হলে পূর্ববর্তী আপ ট্রিপের সাথে সংযুক্ত হয়ে যাবে এবং ওই গাড়ির ১টি পূর্ণাঙ্গ ট্রিপ হিসেবে কাউন্ট হবে।
                   </p>
                 </div>
               </div>
 
-              <div className="shrink-0 px-4 py-3 bg-[#f0f9f6] border-t border-emerald-200 flex items-center justify-end gap-2 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+              <div className="shrink-0 px-4 py-3 bg-[#f8fafc] border-t border-slate-200 flex items-center justify-end gap-2 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
                 <button
                   type="button"
                   onClick={() => setReturnModalTrip(null)}
-                  className="px-4 py-2.5 min-h-[44px] bg-white hover:bg-slate-100 border border-slate-300 rounded-xl text-xs text-slate-700 font-bold cursor-pointer"
+                  className="px-4 py-2.5 min-h-[44px] bg-white hover:bg-[#eff6ff] border border-slate-200 rounded-xl text-xs text-[#1e3a8a] font-bold cursor-pointer"
                 >
                   বাতিল
                 </button>
                 <button
                   type="submit"
                   disabled={creatingReturn}
-                  className="flex-1 sm:flex-none px-5 py-2.5 min-h-[44px] bg-[#0d9488] hover:bg-[#0f766e] text-white rounded-xl text-xs font-black shadow-md transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                  className="flex-1 sm:flex-none px-5 py-2.5 min-h-[44px] bg-[#1d4ed8] hover:bg-[#1e40af] text-white rounded-xl text-xs font-black shadow-md transition-all cursor-pointer flex items-center justify-center gap-1.5"
                 >
                   {creatingReturn ? (
                     <>
@@ -2010,20 +2005,20 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
       {/* Edit Schedule Modal (Using DigitalClockPicker!) */}
       {editingSchedule && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
-          <div className="bg-white rounded-t-2xl sm:rounded-2xl max-w-lg w-full max-h-[92dvh] sm:max-h-[88dvh] shadow-2xl border border-emerald-200 flex flex-col overflow-hidden">
-            <div className="shrink-0 px-4 py-3 bg-[#0b2820] text-white flex items-center justify-between gap-2">
+          <div className="bg-white rounded-t-2xl sm:rounded-2xl max-w-lg w-full max-h-[92dvh] sm:max-h-[88dvh] shadow-2xl border border-slate-200 flex flex-col overflow-hidden">
+            <div className="shrink-0 px-4 py-3 bg-[#1d4ed8] text-white flex items-center justify-between gap-2">
               <div className="min-w-0">
                 <h3 className="text-sm sm:text-base font-bold text-white truncate">
                   ট্রিপ তথ্য পরিবর্তন ({editingSchedule.tripNo})
                 </h3>
-                <p className="text-[11px] text-emerald-200/80 truncate">
+                <p className="text-[11px] text-[#dbeafe] truncate">
                   পরিবর্তনটি পরিবর্তনের ইতিহাসে (Audit Log) সংরক্ষিত হবে
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => setEditingSchedule(null)}
-                className="p-1.5 text-emerald-100 hover:text-white hover:bg-white/15 rounded-lg cursor-pointer shrink-0"
+                className="p-1.5 text-[#dbeafe] hover:text-white hover:bg-white/15 rounded-lg cursor-pointer shrink-0"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -2044,7 +2039,7 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
                     <select
                       value={editRouteId}
                       onChange={(e) => setEditRouteId(e.target.value)}
-                      className="w-full px-3 py-2 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs font-bold text-slate-900 outline-none focus:bg-white"
+                      className="w-full px-3 py-2 bg-[#f8fafc] border border-slate-200 rounded-xl text-xs font-bold text-slate-900 outline-none focus:bg-white focus:ring-1 focus:ring-[#1d4ed8]"
                     >
                       <option value="">বর্তমান রুট ({editingSchedule.routeName})</option>
                       {routesList
@@ -2064,7 +2059,7 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
                     <select
                       value={editSupervisor ?? ''}
                       onChange={(e) => setEditSupervisor(e.target.value)}
-                      className="w-full px-3 py-2 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs font-bold text-slate-900 outline-none focus:bg-white"
+                      className="w-full px-3 py-2 bg-[#f8fafc] border border-slate-200 rounded-xl text-xs font-bold text-slate-900 outline-none focus:bg-white focus:ring-1 focus:ring-[#1d4ed8]"
                       required
                     >
                       <option value="">সুপারভাইজার নির্বাচন করুন</option>
@@ -2079,7 +2074,7 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
                       type="text"
                       value={editSupervisor ?? ''}
                       onChange={(e) => setEditSupervisor(e.target.value)}
-                      className="w-full px-3 py-2 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs text-slate-900 outline-none focus:bg-white"
+                      className="w-full px-3 py-2 bg-[#f8fafc] border border-slate-200 rounded-xl text-xs text-slate-900 outline-none focus:bg-white"
                       required
                     />
                   )}
@@ -2091,7 +2086,7 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
                     type="number"
                     value={editFare ?? ''}
                     onChange={(e) => setEditFare(Number(e.target.value))}
-                    className="w-full px-3 py-2 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs text-slate-900 font-bold outline-none focus:bg-white"
+                    className="w-full px-3 py-2 bg-[#f8fafc] border border-slate-200 rounded-xl text-xs text-slate-900 font-bold outline-none focus:bg-white focus:ring-1 focus:ring-[#1d4ed8]"
                     required
                   />
                 </div>
@@ -2104,23 +2099,23 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
                     value={editReason ?? ''}
                     onChange={(e) => setEditReason(e.target.value)}
                     placeholder="যেমন: ট্রাফিক জ্যাম বা যান্ত্রিক কারণে সময় পরিবর্তন করা হয়েছে।"
-                    className="w-full px-3 py-2 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs text-slate-900 outline-none focus:bg-white"
+                    className="w-full px-3 py-2 bg-[#f8fafc] border border-slate-200 rounded-xl text-xs text-slate-900 outline-none focus:bg-white focus:ring-1 focus:ring-[#1d4ed8]"
                     rows={2}
                   />
                 </div>
               </div>
 
-              <div className="shrink-0 px-4 py-3 bg-[#f0f9f6] border-t border-emerald-200 flex items-center justify-end gap-2 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+              <div className="shrink-0 px-4 py-3 bg-[#f8fafc] border-t border-slate-200 flex items-center justify-end gap-2 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
                 <button
                   type="button"
                   onClick={() => setEditingSchedule(null)}
-                  className="px-4 py-2.5 min-h-[44px] bg-white hover:bg-slate-100 border border-slate-300 rounded-xl text-xs text-slate-700 font-bold cursor-pointer"
+                  className="px-4 py-2.5 min-h-[44px] bg-white hover:bg-[#eff6ff] border border-slate-200 rounded-xl text-xs text-[#1e3a8a] font-bold cursor-pointer"
                 >
                   বাতিল
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 sm:flex-none px-5 py-2.5 min-h-[44px] bg-[#0d9488] hover:bg-[#0f766e] text-white rounded-xl text-xs font-bold shadow-md cursor-pointer"
+                  className="flex-1 sm:flex-none px-5 py-2.5 min-h-[44px] bg-[#1d4ed8] hover:bg-[#1e40af] text-white rounded-xl text-xs font-bold shadow-md cursor-pointer"
                 >
                   সংরক্ষণ করুন
                 </button>
@@ -2134,16 +2129,16 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
       {/* PDF & Printable Table-Only Report Modal */}
       {showReportModal ? (
         <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
-          <div className="bg-white rounded-t-2xl sm:rounded-2xl max-w-6xl w-full max-h-[92dvh] sm:max-h-[90dvh] shadow-2xl border border-emerald-200 flex flex-col overflow-hidden">
-            <div className="shrink-0 px-4 py-3 bg-[#0b2820] text-white flex flex-wrap items-center justify-between gap-2 print:hidden">
+          <div className="bg-white rounded-t-2xl sm:rounded-2xl max-w-6xl w-full max-h-[92dvh] sm:max-h-[90dvh] shadow-2xl border border-slate-200 flex flex-col overflow-hidden">
+            <div className="shrink-0 px-4 py-3 bg-[#1d4ed8] text-white flex flex-wrap items-center justify-between gap-2 print:hidden">
               <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-2">
-                <Printer className="w-4 h-4 text-emerald-300" />
+                <Printer className="w-4 h-4 text-[#93c5fd]" />
                 <span>দৈনিক ট্রিপ ও ফিরতি লগ — শুধু টেবিল প্রিভিউ</span>
               </h3>
               <button
                 type="button"
                 onClick={() => setShowReportModal(false)}
-                className="p-1.5 text-emerald-100 hover:text-white hover:bg-white/15 rounded-lg cursor-pointer"
+                className="p-1.5 text-[#dbeafe] hover:text-white hover:bg-white/15 rounded-lg cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -2153,26 +2148,26 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
               {renderPrintableTripReport()}
             </div>
 
-            <div className="shrink-0 px-4 py-3 bg-[#f0f9f6] border-t border-emerald-200 flex flex-wrap items-center justify-end gap-2 print:hidden pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+            <div className="shrink-0 px-4 py-3 bg-[#f8fafc] border-t border-slate-200 flex flex-wrap items-center justify-end gap-2 print:hidden pb-[max(0.75rem,env(safe-area-inset-bottom))]">
               <button
                 type="button"
                 onClick={() => setShowReportModal(false)}
-                className="px-4 py-2 min-h-[44px] bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 rounded-xl text-xs font-bold cursor-pointer"
+                className="px-4 py-2 min-h-[44px] bg-white hover:bg-[#eff6ff] border border-slate-200 text-[#1e3a8a] rounded-xl text-xs font-bold cursor-pointer"
               >
                 বন্ধ
               </button>
               <button
                 type="button"
                 onClick={() => downloadDailyTripsPDF(schedules, dateMode === 'single' ? date : `${startDate}_to_${endDate}`)}
-                className="px-4 py-2 min-h-[44px] bg-[#0b2820] hover:bg-[#134235] text-white rounded-xl text-xs font-bold shadow-xs cursor-pointer flex items-center gap-1.5"
+                className="px-4 py-2 min-h-[44px] bg-[#1e3a8a] hover:bg-[#1e40af] text-white rounded-xl text-xs font-bold shadow-xs cursor-pointer flex items-center gap-1.5"
               >
-                <Download className="w-4 h-4 text-emerald-300" />
+                <Download className="w-4 h-4 text-[#93c5fd]" />
                 <span>টেবিল PDF</span>
               </button>
               <button
                 type="button"
                 onClick={handlePrint}
-                className="px-4 py-2 min-h-[44px] bg-[#0d9488] hover:bg-[#0f766e] text-white rounded-xl text-xs font-bold shadow-md cursor-pointer flex items-center gap-1.5"
+                className="px-4 py-2 min-h-[44px] bg-[#1d4ed8] hover:bg-[#1e40af] text-white rounded-xl text-xs font-bold shadow-md cursor-pointer flex items-center gap-1.5"
               >
                 <Printer className="w-4 h-4" />
                 <span>শুধু টেবিল প্রিন্ট</span>
@@ -2210,8 +2205,8 @@ export const DailySchedulesPage: React.FC<{ onSelectTripForBooking?: (tripId: st
         reportTitle="দৈনিক ট্রিপ ও ফিরতি লগ"
         dateLabel={
           dateMode === 'single'
-            ? `${date} (${formatBengaliDate(date)})`
-            : `${startDate} হতে ${endDate}`
+            ? formatBengaliDate(date)
+            : `${formatBengaliDate(startDate)} হতে ${formatBengaliDate(endDate)}`
         }
         items={whatsappOwnerItems}
       />

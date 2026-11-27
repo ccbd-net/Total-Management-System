@@ -6,6 +6,9 @@ import {
   toBengaliDigits,
   getTodayDhakaDate,
   formatTaka,
+  formatBengaliDate,
+  formatTime12Hour,
+  getNowDhakaTime12h,
 } from '../utils/formatters.ts';
 import {
   combineRouteNames,
@@ -20,6 +23,7 @@ import {
   type OwnerReportSummaryItem,
 } from '../utils/whatsapp.ts';
 import { OwnerWhatsAppModal } from '../components/OwnerWhatsAppModal.tsx';
+import { DateInput } from '../components/DateInput.tsx';
 import {
   Fuel,
   Calendar,
@@ -65,21 +69,9 @@ function getBengaliDayOfWeek(dateStr: string): string {
   }
 }
 
-// Helper to format 12h time with Bengali AM/PM
+// Helper to format 12h time consistently
 function formatBengaliTime(timeStr?: string): string {
-  if (!timeStr) return 'সকাল ১০:১৩';
-  const upper = timeStr.toUpperCase();
-  if (upper.includes('AM')) {
-    const clean = timeStr.replace(/AM/i, '').trim();
-    return `সকাল ${toBengaliDigits(clean)}`;
-  }
-  if (upper.includes('PM')) {
-    const clean = timeStr.replace(/PM/i, '').trim();
-    const hour = parseInt(clean.split(':')[0] || '1', 10);
-    const prefix = hour >= 6 ? 'রাত' : hour >= 3 ? 'বিকাল' : 'দুপুর';
-    return `${prefix} ${toBengaliDigits(clean)}`;
-  }
-  return toBengaliDigits(timeStr);
+  return formatTime12Hour(timeStr || '10:13 AM', true);
 }
 
 export const FuelManagementPage: React.FC = () => {
@@ -131,16 +123,11 @@ export const FuelManagementPage: React.FC = () => {
 
   const printSheetRef = useRef<HTMLDivElement>(null);
 
-  // Clock in header
-  const [currentTimeBST, setCurrentTimeBST] = useState<string>('19:14:15 BST');
+  // Clock in header (12-hour Asia/Dhaka)
+  const [currentTimeBST, setCurrentTimeBST] = useState<string>(() => getNowDhakaTime12h(true, true));
   useEffect(() => {
     const updateTime = () => {
-      const now = new Date();
-      const bst = new Date(now.getTime() + 6 * 3600 * 1000);
-      const hours = String(bst.getUTCHours()).padStart(2, '0');
-      const minutes = String(bst.getUTCMinutes()).padStart(2, '0');
-      const seconds = String(bst.getUTCSeconds()).padStart(2, '0');
-      setCurrentTimeBST(`${hours}:${minutes}:${seconds} BST`);
+      setCurrentTimeBST(getNowDhakaTime12h(true, true));
     };
     updateTime();
     const interval = setInterval(updateTime, 1000);
@@ -321,7 +308,7 @@ export const FuelManagementPage: React.FC = () => {
   const handleOpenFuelModalForPendingTrip = (trip: PendingTrip) => {
     setEditingEntryId(null);
     setFormDate(trip.operationalDate);
-    setFormTime('7:14 PM');
+    setFormTime(getNowDhakaTime12h(false, false));
     setFormVehicleRegNo(trip.vehicleRegNo);
     setFormSupervisor(trip.supervisor);
     setFormDriver(trip.driver);
@@ -337,7 +324,7 @@ export const FuelManagementPage: React.FC = () => {
   const handleOpenNewEntryModal = () => {
     setEditingEntryId(null);
     setFormDate(endDate || getTodayDhakaDate());
-    setFormTime('7:14 PM');
+    setFormTime(getNowDhakaTime12h(false, false));
     setFormVehicleRegNo(vehiclesList[0]?.regNo || '০১৬৩');
     setFormSupervisor(supervisorsList[0] || 'রিয়াজ');
     setFormDriver(driversList[0] || 'মামুন শরীফ');
@@ -353,7 +340,7 @@ export const FuelManagementPage: React.FC = () => {
   const handleEditEntry = (entry: FuelEntry) => {
     setEditingEntryId(entry.id);
     setFormDate(entry.date);
-    setFormTime(entry.time || '10:13 AM');
+    setFormTime(formatTime12Hour(entry.time || '10:13 AM', false));
     setFormVehicleRegNo(entry.vehicleRegNo);
     setFormSupervisor(entry.supervisor);
     setFormDriver(entry.driver);
@@ -574,7 +561,7 @@ export const FuelManagementPage: React.FC = () => {
       g.actualCost += costs.actualCost;
       g.costDiff += costs.costDiff;
       g.lines.push(
-        `${entry.vehicleRegNo} (${toBengaliDigits(entry.date)}): নির্ধারিত ${formatTaka(costs.expectedCost)}, প্রদান ${formatTaka(costs.actualCost)}, +/- ${formatSignedFuelCostDiff(costs.costDiff)}`
+        `${entry.vehicleRegNo} (${formatBengaliDate(entry.date)}): নির্ধারিত ${formatTaka(costs.expectedCost)}, প্রদান ${formatTaka(costs.actualCost)}, +/- ${formatSignedFuelCostDiff(costs.costDiff)}`
       );
     });
 
@@ -593,7 +580,7 @@ export const FuelManagementPage: React.FC = () => {
 
   // Handle Export / Print
   const handlePrint = () => {
-    printElementById('printable-fuel-log-sheet', `ফুয়েল লগ — ${startDate}`, 'A4-landscape');
+    printElementById('printable-fuel-log-sheet', `ফুয়েল লগ — ${formatBengaliDate(startDate)}`, 'A4-landscape');
   };
 
   const handleDownloadPDF = async () => {
@@ -605,7 +592,7 @@ export const FuelManagementPage: React.FC = () => {
       );
     } catch (err) {
       console.error('PDF error:', err);
-      printElementById('printable-fuel-log-sheet', `ফুয়েল লগ — ${startDate}`, 'A4-landscape');
+      printElementById('printable-fuel-log-sheet', `ফুয়েল লগ — ${formatBengaliDate(startDate)}`, 'A4-landscape');
     }
   };
 
@@ -621,23 +608,23 @@ export const FuelManagementPage: React.FC = () => {
       <div className="space-y-3 print:hidden">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed top-5 right-5 z-50 bg-[#0b2820] border border-emerald-400/30 text-white px-4 py-2 rounded-xl shadow-lg flex items-center gap-2">
-          <CheckCircle2 className="w-4 h-4 text-emerald-300" />
+        <div className="fixed top-5 right-5 z-50 bg-[#1e3a8a] border border-[#1e40af] text-white px-4 py-2 rounded-xl shadow-lg flex items-center gap-2">
+          <CheckCircle2 className="w-4 h-4 text-[#93c5fd]" />
           <span className="font-bold text-xs">{toastMessage}</span>
         </div>
       )}
 
       {/* Compact Excel Top Header Card */}
-      <div className="bg-white rounded-xl border border-emerald-200 shadow-2xs overflow-hidden">
-        <div className="bg-[#0b2820] px-3 py-2 text-white flex flex-wrap items-center justify-between gap-2">
+      <div className="bg-white rounded-xl border border-slate-200 shadow-2xs overflow-hidden">
+        <div className="bg-[#1d4ed8] px-3 py-2 text-white flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2 min-w-0">
-            <Fuel className="w-4 h-4 shrink-0 text-emerald-300" />
+            <Fuel className="w-4 h-4 shrink-0 text-[#bfdbfe]" />
             <div className="min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
                 <h1 className="text-xs sm:text-sm font-bold leading-tight text-white">ফুয়েল লগ ও ডিজেল হিসাব শীট</h1>
-                <span className="text-[10px] font-mono bg-white/15 px-1.5 py-0.5 rounded">{currentTimeBST}</span>
+                <span className="text-[10px] font-mono bg-white/15 border border-white/25 text-[#dbeafe] px-1.5 py-0.5 rounded">{currentTimeBST}</span>
               </div>
-              <p className="hidden sm:block text-[10px] text-emerald-200/80 leading-tight">
+              <p className="hidden sm:block text-[10px] text-[#dbeafe] leading-tight">
                 তেলের ব্যবহার, মাইলেজ ও খরচের সঠিক হিসাব
               </p>
             </div>
@@ -650,28 +637,27 @@ export const FuelManagementPage: React.FC = () => {
                 fetchFuelData();
               }}
               disabled={refreshing}
-              className="p-1.5 rounded-lg bg-white/15 hover:bg-white/25 text-white transition-colors cursor-pointer"
+              className="p-1.5 rounded-lg bg-white/15 hover:bg-white/25 border border-white/25 text-white transition-colors cursor-pointer"
               title="রিফ্রেশ করুন"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin' : ''}`} />
             </button>
             <button
               onClick={handleOpenNewEntryModal}
-              className="px-2.5 py-1 bg-[#0d9488] hover:bg-[#0f766e] text-white font-extrabold text-[11px] rounded-lg flex items-center gap-1 shadow-2xs transition-colors cursor-pointer border border-emerald-400/30"
+              className="px-2.5 py-1 bg-white hover:bg-[#eff6ff] text-[#1e3a8a] font-extrabold text-[11px] rounded-lg flex items-center gap-1 shadow-2xs transition-colors cursor-pointer"
             >
-              <Plus className="w-3.5 h-3.5" />
+              <Plus className="w-3.5 h-3.5 text-[#1d4ed8]" />
               <span>ফুয়েল এন্ট্রি</span>
             </button>
           </div>
         </div>
 
         {/* Compact Date Filter & Export Bar */}
-        <div className="p-2.5 bg-slate-50 flex flex-wrap items-center justify-between gap-2">
+        <div className="p-2.5 bg-[#f8fafc] flex flex-wrap items-center justify-between gap-2">
           <div className="flex flex-wrap items-center gap-1.5">
-            <div className="flex items-center gap-1 bg-white border border-slate-300 rounded-lg px-2 py-1 text-[11px] text-slate-700">
-              <Calendar className="w-3.5 h-3.5 text-rose-500" />
-              <input
-                type="date"
+            <div className="flex items-center gap-1 bg-white border border-slate-200 rounded-lg px-2 py-1 text-[11px] text-slate-900">
+              <Calendar className="w-3.5 h-3.5 text-[#1d4ed8]" />
+              <DateInput
                 value={startDate}
                 onChange={(e) => {
                   setStartDate(e.target.value);
@@ -680,8 +666,7 @@ export const FuelManagementPage: React.FC = () => {
                 className="bg-transparent border-none text-[11px] focus:outline-hidden font-bold"
               />
               <span className="text-slate-400 font-bold">–</span>
-              <input
-                type="date"
+              <DateInput
                 value={endDate}
                 onChange={(e) => {
                   setEndDate(e.target.value);
@@ -694,7 +679,7 @@ export const FuelManagementPage: React.FC = () => {
             <select
               value={quickFilter}
               onChange={(e) => handleQuickFilterChange(e.target.value)}
-              className="text-[11px] bg-white border border-slate-300 rounded-lg px-2 py-1 text-slate-700 font-bold focus:outline-hidden"
+              className="text-[11px] bg-white border border-slate-200 rounded-lg px-2 py-1 text-slate-900 font-bold focus:outline-hidden focus:ring-2 focus:ring-[#1d4ed8]"
             >
               <option value="today">আজ</option>
               <option value="yesterday">গতকাল</option>
@@ -708,7 +693,7 @@ export const FuelManagementPage: React.FC = () => {
             <button
               type="button"
               onClick={() => setShowWhatsAppModal(true)}
-              className="px-2.5 py-1 bg-[#0d9488] hover:bg-[#0f766e] text-white text-[11px] font-bold rounded-lg flex items-center gap-1 transition-colors cursor-pointer"
+              className="px-2.5 py-1 bg-[#1d4ed8] hover:bg-[#1e40af] text-white text-[11px] font-bold rounded-lg flex items-center gap-1 transition-colors cursor-pointer"
               title="মালিকদের হোয়াটসঅ্যাপে পাঠান"
             >
               <MessageCircle className="w-3 h-3" />
@@ -717,25 +702,25 @@ export const FuelManagementPage: React.FC = () => {
             <button
               type="button"
               onClick={handlePrint}
-              className="px-2.5 py-1 bg-white hover:bg-slate-100 text-slate-800 text-[11px] font-bold rounded-lg flex items-center gap-1 border border-slate-300 transition-colors cursor-pointer"
+              className="px-2.5 py-1 bg-white hover:bg-[#eff6ff] text-[#1e3a8a] text-[11px] font-bold rounded-lg flex items-center gap-1 border border-slate-200 transition-colors cursor-pointer"
               title="শুধু টেবিল প্রিন্ট করুন"
             >
-              <Printer className="w-3 h-3 text-blue-600" />
+              <Printer className="w-3 h-3 text-[#1d4ed8]" />
               <span>প্রিন্ট</span>
             </button>
             <button
               type="button"
               onClick={handleDownloadPDF}
-              className="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 text-white text-[11px] font-bold rounded-lg flex items-center gap-1 transition-colors cursor-pointer"
+              className="px-2.5 py-1 bg-[#1e3a8a] hover:bg-[#1e40af] text-white text-[11px] font-bold rounded-lg flex items-center gap-1 transition-colors cursor-pointer"
               title="শুধু টেবিল পিডিএফ ডাউনলোড"
             >
-              <Download className="w-3 h-3 text-cyan-400" />
+              <Download className="w-3 h-3 text-[#93c5fd]" />
               <span>PDF</span>
             </button>
             <button
               type="button"
               onClick={handleShare}
-              className="p-1.5 bg-white hover:bg-slate-100 text-slate-600 rounded-lg border border-slate-300 transition-colors cursor-pointer"
+              className="p-1.5 bg-white hover:bg-[#eff6ff] text-[#1e3a8a] rounded-lg border border-slate-200 transition-colors cursor-pointer"
               title="শেয়ার"
             >
               <Share2 className="w-3 h-3" />
@@ -745,10 +730,10 @@ export const FuelManagementPage: React.FC = () => {
       </div>
 
       {/* "তেলের নির্ধারিত হিসাব" Compact Config Strip */}
-      <div className="bg-white border border-emerald-200 rounded-xl overflow-hidden shadow-2xs">
-        <div className="p-2.5 sm:px-3 flex flex-col md:flex-row md:items-center justify-between gap-2.5 bg-[#f4fbf8]">
+      <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-2xs">
+        <div className="p-2.5 sm:px-3 flex flex-col md:flex-row md:items-center justify-between gap-2.5 bg-[#f8fafc]">
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-[#0b2820] text-emerald-300 flex items-center justify-center shrink-0">
+            <div className="w-7 h-7 rounded-lg bg-[#1d4ed8] text-white flex items-center justify-center shrink-0">
               <Fuel className="w-4 h-4" />
             </div>
             <div>
@@ -770,7 +755,7 @@ export const FuelManagementPage: React.FC = () => {
                 min="1"
                 value={tempMileage}
                 onChange={(e) => setTempMileage(parseFloat(e.target.value) || 0)}
-                className="w-24 bg-white border border-emerald-200 rounded-lg px-2 py-1 text-xs font-bold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-emerald-600"
+                className="w-24 bg-white border border-slate-200 rounded-lg px-2 py-1 text-xs font-bold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-[#1d4ed8]"
               />
             </div>
 
@@ -784,14 +769,14 @@ export const FuelManagementPage: React.FC = () => {
                 min="1"
                 value={tempFuelPrice}
                 onChange={(e) => setTempFuelPrice(parseFloat(e.target.value) || 0)}
-                className="w-24 bg-white border border-emerald-200 rounded-lg px-2 py-1 text-xs font-bold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-emerald-600"
+                className="w-24 bg-white border border-slate-200 rounded-lg px-2 py-1 text-xs font-bold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-[#1d4ed8]"
               />
             </div>
 
             <button
               onClick={handleSaveSettings}
               disabled={settingsSaving}
-              className="px-3 py-1.5 bg-[#0d9488] hover:bg-[#0f766e] text-white font-bold text-[11px] rounded-lg shadow-2xs transition-colors flex items-center gap-1 cursor-pointer"
+              className="px-3 py-1.5 bg-[#1d4ed8] hover:bg-[#1e40af] text-white font-bold text-[11px] rounded-lg shadow-2xs transition-colors flex items-center gap-1 cursor-pointer"
             >
               {settingsSaving ? (
                 <RefreshCw className="w-3 h-3 animate-spin" />
@@ -805,15 +790,15 @@ export const FuelManagementPage: React.FC = () => {
       </div>
 
       {/* Section 1: "সমন্বিত ট্রিপ — তেল দেওয়া বাকি" */}
-      <div className="bg-white rounded-xl border border-emerald-200 shadow-2xs overflow-hidden">
-        <div className="bg-[#0b2820] px-3 py-2 text-white flex items-center justify-between gap-2">
+      <div className="bg-white rounded-xl border border-slate-200 shadow-2xs overflow-hidden">
+        <div className="bg-[#1e3a8a] px-3 py-2 text-white flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <h2 className="text-xs font-bold">সমন্বিত ট্রিপ — তেল দেওয়া বাকি</h2>
-            <span className="px-1.5 py-0.2 rounded bg-white/20 text-white text-[10px] font-bold font-mono">
+            <span className="px-1.5 py-0.5 rounded bg-white/15 border border-white/25 text-white text-[10px] font-bold font-mono">
               {toBengaliDigits(pendingTrips.length)}
             </span>
           </div>
-          <span className="hidden sm:inline text-[10px] text-emerald-200/90">
+          <span className="hidden sm:inline text-[10px] text-[#dbeafe]">
             লিটার বসালে টাকা অটো হিসাব হবে
           </span>
         </div>
@@ -821,52 +806,52 @@ export const FuelManagementPage: React.FC = () => {
         <div className="overflow-x-auto">
           <table className="w-full text-xs text-left border-collapse min-w-[750px]">
             <thead>
-              <tr className="bg-slate-100 text-slate-700 font-bold border-b border-slate-200">
-                <th className="p-2.5 text-center">তারিখ</th>
-                <th className="p-2.5 text-center">গাড়ি নাম্বার</th>
-                <th className="p-2.5">পূর্ণ রুট</th>
-                <th className="p-2.5 text-center">মোট কিমি</th>
-                <th className="p-2.5 text-center">মাইলেজ</th>
-                <th className="p-2.5 text-center">নির্ধারিত ফুয়েল</th>
-                <th className="p-2.5">সুপারভাইজার</th>
-                <th className="p-2.5">ড্রাইভার</th>
-                <th className="p-2.5 text-center">স্ট্যাটাস</th>
+              <tr className="bg-[#1d4ed8] text-white font-bold border-b border-[#1e40af]">
+                <th className="p-2.5 text-center border-r border-blue-600/60">তারিখ</th>
+                <th className="p-2.5 text-center border-r border-blue-600/60">গাড়ি নাম্বার</th>
+                <th className="p-2.5 border-r border-blue-600/60">পূর্ণ রুট</th>
+                <th className="p-2.5 text-center border-r border-blue-600/60">মোট কিমি</th>
+                <th className="p-2.5 text-center border-r border-blue-600/60">মাইলেজ</th>
+                <th className="p-2.5 text-center border-r border-blue-600/60">নির্ধারিত ফুয়েল</th>
+                <th className="p-2.5 border-r border-blue-600/60">সুপারভাইজার</th>
+                <th className="p-2.5 border-r border-blue-600/60">ড্রাইভার</th>
+                <th className="p-2.5 text-center border-r border-blue-600/60">স্ট্যাটাস</th>
                 <th className="p-2.5 text-center">একশন</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-slate-200">
               {pendingTrips.length > 0 ? (
                 pendingTrips.map((trip) => (
-                  <tr key={trip.vehicleId || trip.vehicleRegNo} className="hover:bg-slate-50 transition-colors">
-                    <td className="p-2.5 text-center font-medium text-slate-700">
-                      {toBengaliDigits(trip.operationalDate)}
+                  <tr key={trip.vehicleId || trip.vehicleRegNo} className="odd:bg-white even:bg-[#f1f5f9] hover:bg-[#eff6ff] transition-colors">
+                    <td className="p-2.5 text-center font-medium text-slate-800 border-r border-slate-200 whitespace-nowrap">
+                      {formatBengaliDate(trip.operationalDate)}
                     </td>
-                    <td className="p-2.5 text-center font-bold text-slate-900">
+                    <td className="p-2.5 text-center font-bold text-slate-900 border-r border-slate-200">
                       {trip.vehicleRegNo}
                     </td>
-                    <td className="p-2.5 font-semibold text-slate-800">
+                    <td className="p-2.5 font-semibold text-slate-800 border-r border-slate-200">
                       {trip.fullRoute}
                     </td>
-                    <td className="p-2.5 text-center font-mono font-bold text-slate-800">
+                    <td className="p-2.5 text-center font-mono font-bold text-slate-900 border-r border-slate-200">
                       {toBengaliDigits(trip.totalKm)}
                     </td>
-                    <td className="p-2.5 text-center font-mono font-bold text-slate-700">
+                    <td className="p-2.5 text-center font-mono font-bold text-slate-800 border-r border-slate-200">
                       {toBengaliDigits(trip.mileage)}
                     </td>
-                    <td className="p-2.5 text-center font-mono font-bold text-blue-700">
+                    <td className="p-2.5 text-center font-mono font-bold text-[#1d4ed8] border-r border-slate-200">
                       {toBengaliDigits(trip.expectedFuelLiters)} লিটার
                     </td>
-                    <td className="p-2.5 text-slate-700 font-medium">{trip.supervisor}</td>
-                    <td className="p-2.5 text-slate-700 font-medium">{trip.driver}</td>
-                    <td className="p-2.5 text-center">
-                      <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[11px] font-bold">
+                    <td className="p-2.5 text-slate-800 font-medium border-r border-slate-200">{trip.supervisor}</td>
+                    <td className="p-2.5 text-slate-800 font-medium border-r border-slate-200">{trip.driver}</td>
+                    <td className="p-2.5 text-center border-r border-slate-200">
+                      <span className="px-2 py-0.5 rounded-full bg-[#eff6ff] text-[#1d4ed8] border border-[#bfdbfe] text-[11px] font-bold">
                         সমন্বিত
                       </span>
                     </td>
                     <td className="p-2.5 text-center">
                       <button
                         onClick={() => handleOpenFuelModalForPendingTrip(trip)}
-                        className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-lg shadow-xs flex items-center gap-1 mx-auto transition-colors"
+                        className="px-3 py-1.5 bg-[#1d4ed8] hover:bg-[#1e40af] text-white font-bold text-xs rounded-lg shadow-xs flex items-center gap-1 mx-auto transition-colors cursor-pointer"
                       >
                         <Fuel className="w-3.5 h-3.5" />
                         <span>লিটার দিন</span>
@@ -876,7 +861,7 @@ export const FuelManagementPage: React.FC = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={10} className="p-6 text-center text-slate-400 text-xs">
+                  <td colSpan={10} className="p-6 text-center text-slate-500 text-xs">
                     কোনো সমন্বিত ট্রিপে তেল দেওয়া বাকি নেই। সকল গাড়িতে তেল এন্ট্রি সম্পন্ন হয়েছে।
                   </td>
                 </tr>
@@ -887,23 +872,23 @@ export const FuelManagementPage: React.FC = () => {
       </div>
 
       {/* Section 2: "ফুয়েল এন্ট্রি" Table (Saved Entries) */}
-      <div className="bg-white rounded-xl border border-emerald-200 shadow-2xs overflow-hidden">
-        <div className="bg-[#0f766e] px-3 py-2 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+      <div className="bg-white rounded-xl border border-slate-200 shadow-2xs overflow-hidden">
+        <div className="bg-[#1d4ed8] px-3 py-2 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <h2 className="text-xs font-bold">ফুয়েল এন্ট্রি লগ শীট</h2>
-            <span className="px-1.5 py-0.2 rounded bg-white/25 text-white text-[10px] font-bold font-mono">
+            <span className="px-1.5 py-0.5 rounded bg-white/15 border border-white/25 text-white text-[10px] font-bold font-mono">
               {toBengaliDigits(filteredFuelEntries.length)}
             </span>
           </div>
 
           <div className="relative w-full sm:w-64">
-            <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
+            <Search className="w-3.5 h-3.5 text-[#1d4ed8] absolute left-2.5 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               placeholder="গাড়ি বা নাম দিয়ে খুঁজুন..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-8 pr-2.5 py-1 text-[11px] bg-white/95 text-slate-800 border border-white/60 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-white/70"
+              className="w-full pl-8 pr-2.5 py-1 text-[11px] bg-white/95 text-slate-900 border border-slate-200 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-white/70"
             />
           </div>
         </div>
@@ -911,44 +896,44 @@ export const FuelManagementPage: React.FC = () => {
         <div className="overflow-x-auto">
           <table className="w-full text-xs text-left border-collapse min-w-[1120px]">
             <thead>
-              <tr className="bg-slate-100 text-slate-700 font-bold border-b border-slate-200">
-                <th className="p-2.5 text-center">ক্রমিক নং</th>
-                <th className="p-2.5 text-center">তারিখ</th>
-                <th className="p-2.5 text-center">বার</th>
-                <th className="p-2.5 text-center">সময়</th>
-                <th className="p-2.5 text-center">গাড়ি নাম্বার</th>
-                <th className="p-2.5">রুট</th>
-                <th className="p-2.5">সুপারভাইজার</th>
-                <th className="p-2.5">ড্রাইভার</th>
-                <th className="p-2.5 text-center">মোট কিমি</th>
-                <th className="p-2.5 text-center">নির্ধারিত (লি.)</th>
-                <th className="p-2.5 text-center">প্রদানকৃত (লি.)</th>
-                <th className="p-2.5 text-right bg-slate-200/60">নির্ধারিত মূল্য</th>
-                <th className="p-2.5 text-right bg-blue-50/70">প্রদানকৃত মূল্য</th>
-                <th className="p-2.5 text-right bg-amber-50/80">+/- মূল্য</th>
-                <th className="p-2.5 text-center">ফুয়েল +/- (লি.)</th>
+              <tr className="bg-[#1d4ed8] text-white font-bold border-b border-[#1e40af]">
+                <th className="p-2.5 text-center border-r border-blue-600/60">ক্রমিক নং</th>
+                <th className="p-2.5 text-center border-r border-blue-600/60">তারিখ</th>
+                <th className="p-2.5 text-center border-r border-blue-600/60">বার</th>
+                <th className="p-2.5 text-center border-r border-blue-600/60">সময়</th>
+                <th className="p-2.5 text-center border-r border-blue-600/60">গাড়ি নাম্বার</th>
+                <th className="p-2.5 border-r border-blue-600/60">রুট</th>
+                <th className="p-2.5 border-r border-blue-600/60">সুপারভাইজার</th>
+                <th className="p-2.5 border-r border-blue-600/60">ড্রাইভার</th>
+                <th className="p-2.5 text-center border-r border-blue-600/60">মোট কিমি</th>
+                <th className="p-2.5 text-center border-r border-blue-600/60">নির্ধারিত (লি.)</th>
+                <th className="p-2.5 text-center border-r border-blue-600/60">প্রদানকৃত (লি.)</th>
+                <th className="p-2.5 text-right border-r border-blue-600/60 bg-[#1e40af]">নির্ধারিত মূল্য</th>
+                <th className="p-2.5 text-right border-r border-blue-600/60 bg-[#1e40af]">প্রদানকৃত মূল্য</th>
+                <th className="p-2.5 text-right border-r border-blue-600/60 bg-[#1e3a8a]">+/- মূল্য</th>
+                <th className="p-2.5 text-center border-r border-blue-600/60">ফুয়েল +/- (লি.)</th>
                 <th className="p-2.5 text-center">একশন</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
+            <tbody className="divide-y divide-slate-200 font-medium text-slate-800">
               {filteredFuelEntries.length > 0 ? (
                 filteredFuelEntries.map((entry, idx) => {
                   const serialBn = entry.serialNo || toBengaliDigits(String(idx + 1).padStart(2, '0'));
                   const diff = entry.fuelDifference;
                   const diffColor =
                     diff > 0
-                      ? 'bg-rose-50 text-rose-600 border-rose-200'
+                      ? 'bg-[#1e3a8a] text-white border-[#1e3a8a]'
                       : diff < 0
-                      ? 'bg-emerald-50 text-emerald-600 border-emerald-200'
-                      : 'bg-blue-50 text-blue-600 border-blue-200';
+                      ? 'bg-[#eff6ff] text-[#1d4ed8] border-[#bfdbfe]'
+                      : 'bg-[#f8fafc] text-slate-800 border-slate-200';
                   const diffText = diff > 0 ? `+${diff}` : `${diff}`;
                   const costs = getFuelEntryCosts(entry);
                   const costDiffColor =
                     costs.costDiff > 0
-                      ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                      ? 'bg-[#eff6ff] text-[#1d4ed8] border-[#bfdbfe]'
                       : costs.costDiff < 0
-                      ? 'bg-rose-50 text-rose-700 border-rose-200'
-                      : 'bg-blue-50 text-blue-700 border-blue-200';
+                      ? 'bg-[#1e3a8a] text-white border-[#1e3a8a]'
+                      : 'bg-[#f8fafc] text-slate-800 border-slate-200';
                   const vehOwner = ownerMapByReg.get(normalizeRegNo(entry.vehicleRegNo));
                   const ownerWaUrl = vehOwner?.ownerPhone
                     ? buildWhatsAppUrl(
@@ -956,7 +941,7 @@ export const FuelManagementPage: React.FC = () => {
                         buildOwnerWhatsAppMessage(
                           user?.company?.name || 'পরিবহন সার্ভিস',
                           'ফুয়েল লগ হিসাব',
-                          toBengaliDigits(entry.date),
+                          formatBengaliDate(entry.date),
                           {
                             ownerName: vehOwner.ownerName || 'মালিক',
                             ownerPhone: vehOwner.ownerPhone,
@@ -978,53 +963,53 @@ export const FuelManagementPage: React.FC = () => {
                     : '';
 
                   return (
-                    <tr key={entry.id} className="hover:bg-slate-50 transition-colors">
-                      <td className="p-2.5 text-center font-mono font-bold text-slate-500">
+                    <tr key={entry.id} className="odd:bg-white even:bg-[#f1f5f9] hover:bg-[#eff6ff] transition-colors">
+                      <td className="p-2.5 text-center font-mono font-bold text-slate-600 border-r border-slate-200">
                         {serialBn}
                       </td>
-                      <td className="p-2.5 text-center font-medium whitespace-nowrap">
-                        {toBengaliDigits(entry.date)}
+                      <td className="p-2.5 text-center font-medium whitespace-nowrap border-r border-slate-200">
+                        {formatBengaliDate(entry.date)}
                       </td>
-                      <td className="p-2.5 text-center text-slate-600 whitespace-nowrap">
+                      <td className="p-2.5 text-center text-slate-700 whitespace-nowrap border-r border-slate-200">
                         {entry.dayOfWeek || getBengaliDayOfWeek(entry.date)}
                       </td>
-                      <td className="p-2.5 text-center text-slate-600 whitespace-nowrap">
+                      <td className="p-2.5 text-center text-slate-700 whitespace-nowrap border-r border-slate-200">
                         {formatBengaliTime(entry.time)}
                       </td>
-                      <td className="p-2.5 text-center font-bold text-slate-900 whitespace-nowrap">
+                      <td className="p-2.5 text-center font-bold text-slate-900 whitespace-nowrap border-r border-slate-200">
                         <span className="inline-flex items-center gap-1">
-                          <Bus className="w-3.5 h-3.5 text-blue-600" />
+                          <Bus className="w-3.5 h-3.5 text-[#1d4ed8]" />
                           <span>{entry.vehicleRegNo}</span>
                         </span>
                       </td>
-                      <td className="p-2.5 font-semibold text-slate-800">
+                      <td className="p-2.5 font-semibold text-slate-800 border-r border-slate-200">
                         {entry.route}
                       </td>
-                      <td className="p-2.5 text-slate-700">{entry.supervisor}</td>
-                      <td className="p-2.5 text-slate-700">{entry.driver}</td>
-                      <td className="p-2.5 text-center font-mono font-bold text-slate-800">
+                      <td className="p-2.5 text-slate-700 border-r border-slate-200">{entry.supervisor}</td>
+                      <td className="p-2.5 text-slate-700 border-r border-slate-200">{entry.driver}</td>
+                      <td className="p-2.5 text-center font-mono font-bold text-slate-900 border-r border-slate-200">
                         {toBengaliDigits(entry.totalKm)}
                       </td>
-                      <td className="p-2.5 text-center font-mono font-bold text-slate-700">
+                      <td className="p-2.5 text-center font-mono font-bold text-slate-700 border-r border-slate-200">
                         {toBengaliDigits(entry.expectedFuelLiters)}
                       </td>
-                      <td className="p-2.5 text-center font-mono font-extrabold text-blue-700">
+                      <td className="p-2.5 text-center font-mono font-extrabold text-[#1d4ed8] border-r border-slate-200">
                         {toBengaliDigits(entry.actualFuelLiters)}
                       </td>
-                      <td className="p-2.5 text-right font-mono font-semibold text-slate-700 bg-slate-50/70 tabular-nums whitespace-nowrap">
+                      <td className="p-2.5 text-right font-mono font-semibold text-slate-800 tabular-nums whitespace-nowrap border-r border-slate-200">
                         {formatTaka(costs.expectedCost)}
                       </td>
-                      <td className="p-2.5 text-right font-mono font-bold text-slate-900 bg-blue-50/30 tabular-nums whitespace-nowrap">
+                      <td className="p-2.5 text-right font-mono font-bold text-slate-950 tabular-nums whitespace-nowrap border-r border-slate-200">
                         {formatTaka(costs.actualCost)}
                       </td>
-                      <td className="p-2.5 text-right font-mono bg-amber-50/30 tabular-nums whitespace-nowrap">
+                      <td className="p-2.5 text-right font-mono tabular-nums whitespace-nowrap border-r border-slate-200">
                         <span
                           className={`px-2 py-0.5 rounded-md font-bold text-[11px] border ${costDiffColor}`}
                         >
                           {formatSignedFuelCostDiff(costs.costDiff)}
                         </span>
                       </td>
-                      <td className="p-2.5 text-center font-mono">
+                      <td className="p-2.5 text-center font-mono border-r border-slate-200">
                         <span
                           className={`px-2 py-0.5 rounded-md font-bold text-[11px] border ${diffColor}`}
                         >
@@ -1038,7 +1023,7 @@ export const FuelManagementPage: React.FC = () => {
                               href={ownerWaUrl}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="p-1 text-emerald-600 hover:bg-emerald-50 rounded transition-colors"
+                              className="p-1 text-[#1d4ed8] hover:bg-[#eff6ff] rounded transition-colors"
                               title={`মালিককে (${vehOwner?.ownerName || ''}) হোয়াটসঅ্যাপে পাঠান`}
                             >
                               <MessageCircle className="w-3.5 h-3.5" />
@@ -1046,14 +1031,14 @@ export const FuelManagementPage: React.FC = () => {
                           )}
                           <button
                             onClick={() => handleEditEntry(entry)}
-                            className="p-1 text-slate-500 hover:text-blue-600 rounded transition-colors cursor-pointer"
+                            className="p-1 text-slate-600 hover:text-[#1d4ed8] hover:bg-[#eff6ff] rounded transition-colors cursor-pointer"
                             title="সম্পাদনা করুন"
                           >
                             <Edit2 className="w-3.5 h-3.5" />
                           </button>
                           <button
                             onClick={() => handleDeleteEntry(entry.id, entry.vehicleRegNo)}
-                            className="p-1 text-slate-500 hover:text-rose-600 rounded transition-colors cursor-pointer"
+                            className="p-1 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded transition-colors cursor-pointer"
                             title="মুছে ফেলুন"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -1065,7 +1050,7 @@ export const FuelManagementPage: React.FC = () => {
                 })
               ) : (
                 <tr>
-                  <td colSpan={16} className="p-8 text-center text-slate-400 text-xs">
+                  <td colSpan={16} className="p-8 text-center text-slate-500 text-xs">
                     কোনো ফুয়েল এন্ট্রি পাওয়া যায়নি।
                   </td>
                 </tr>
@@ -1073,19 +1058,19 @@ export const FuelManagementPage: React.FC = () => {
             </tbody>
             {filteredFuelEntries.length > 0 && (
               <tfoot>
-                <tr className="bg-slate-100 border-t-2 border-slate-300 font-extrabold text-slate-900">
-                  <td colSpan={8} className="p-2.5 text-right">
+                <tr className="bg-[#eff6ff] border-t-2 border-[#bfdbfe] font-extrabold text-[#1e3a8a]">
+                  <td colSpan={8} className="p-2.5 text-right border-r border-[#bfdbfe]">
                     সর্বমোট ({toBengaliDigits(filteredFuelEntries.length)} টি এন্ট্রি):
                   </td>
-                  <td className="p-2.5 text-center font-mono">{toBengaliDigits(fuelTotals.km)}</td>
-                  <td className="p-2.5 text-center font-mono">{toBengaliDigits(fuelTotals.expectedLiters.toFixed(1))}</td>
-                  <td className="p-2.5 text-center font-mono text-blue-800">{toBengaliDigits(fuelTotals.actualLiters.toFixed(1))}</td>
-                  <td className="p-2.5 text-right font-mono tabular-nums whitespace-nowrap">{formatTaka(fuelTotals.expectedCost)}</td>
-                  <td className="p-2.5 text-right font-mono text-blue-900 tabular-nums whitespace-nowrap">{formatTaka(fuelTotals.actualCost)}</td>
-                  <td className={`p-2.5 text-right font-mono tabular-nums whitespace-nowrap ${fuelTotals.costDiff > 0 ? 'text-emerald-700' : fuelTotals.costDiff < 0 ? 'text-rose-700' : 'text-slate-800'}`}>
+                  <td className="p-2.5 text-center font-mono border-r border-[#bfdbfe]">{toBengaliDigits(fuelTotals.km)}</td>
+                  <td className="p-2.5 text-center font-mono border-r border-[#bfdbfe]">{toBengaliDigits(fuelTotals.expectedLiters.toFixed(1))}</td>
+                  <td className="p-2.5 text-center font-mono text-[#1d4ed8] border-r border-[#bfdbfe]">{toBengaliDigits(fuelTotals.actualLiters.toFixed(1))}</td>
+                  <td className="p-2.5 text-right font-mono tabular-nums whitespace-nowrap border-r border-[#bfdbfe]">{formatTaka(fuelTotals.expectedCost)}</td>
+                  <td className="p-2.5 text-right font-mono text-[#1e3a8a] tabular-nums whitespace-nowrap border-r border-[#bfdbfe]">{formatTaka(fuelTotals.actualCost)}</td>
+                  <td className={`p-2.5 text-right font-mono tabular-nums whitespace-nowrap border-r border-[#bfdbfe] ${fuelTotals.costDiff >= 0 ? 'text-[#1d4ed8]' : 'text-red-700'}`}>
                     {formatSignedFuelCostDiff(fuelTotals.costDiff)}
                   </td>
-                  <td colSpan={2} className="p-2.5 text-center text-[11px] text-slate-600">
+                  <td colSpan={2} className="p-2.5 text-center text-[11px] text-[#1e3a8a]">
                     নির্ধারিত - প্রদানকৃত = +/- মূল্য
                   </td>
                 </tr>
@@ -1095,18 +1080,18 @@ export const FuelManagementPage: React.FC = () => {
         </div>
 
         {/* Footer */}
-        <div className="p-3 border-t border-slate-200 bg-slate-50/50 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500">
+        <div className="p-3 border-t border-slate-200 bg-[#f8fafc] flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-600">
           <div>
-            মোট <span className="font-bold text-slate-800">{toBengaliDigits(filteredFuelEntries.length)}</span> টি এন্ট্রি
+            মোট <span className="font-bold text-slate-900">{toBengaliDigits(filteredFuelEntries.length)}</span> টি এন্ট্রি
           </div>
-          <div className="text-slate-600 font-medium">
+          <div className="text-slate-700 font-medium">
             হিসাব সূত্র: নির্ধারিত তেলের মূল্য − প্রদানকৃত তেলের মূল্য = +/- মূল্য
           </div>
         </div>
       </div>
 
       {/* Footer Branding */}
-      <div className="text-center text-xs text-slate-400 pt-2 pb-6">
+      <div className="text-center text-xs text-slate-500 pt-2 pb-6">
         © 2026 Trip & Fuel Logbook &nbsp;•&nbsp; Powered by Data&Code
       </div>
 
@@ -1115,17 +1100,17 @@ export const FuelManagementPage: React.FC = () => {
       {/* ======================================================== */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 p-0 sm:p-4 backdrop-blur-xs">
-          <div className="bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden border border-emerald-200 flex flex-col max-h-[92dvh] sm:max-h-[88dvh]">
+          <div className="bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-200 flex flex-col max-h-[92dvh] sm:max-h-[88dvh]">
             {/* Sticky Modal Header */}
-            <div className="shrink-0 px-4 py-3 bg-[#0b2820] text-white flex items-center justify-between gap-2">
+            <div className="shrink-0 px-4 py-3 bg-[#1d4ed8] text-white flex items-center justify-between gap-2">
               <h3 className="text-sm sm:text-base font-extrabold text-white flex items-center gap-2">
-                <Fuel className="w-4 h-4 text-emerald-300" />
+                <Fuel className="w-4 h-4 text-[#bfdbfe]" />
                 <span>{editingEntryId ? 'ফুয়েল এন্ট্রি পরিবর্তন করুন' : 'নতুন ফুয়েল এন্ট্রি'}</span>
               </h3>
               <button
                 type="button"
                 onClick={() => setIsModalOpen(false)}
-                className="p-1.5 rounded-lg text-emerald-100 hover:text-white hover:bg-white/15 transition-colors cursor-pointer"
+                className="p-1.5 rounded-lg text-[#dbeafe] hover:text-white hover:bg-white/15 transition-colors cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -1138,11 +1123,10 @@ export const FuelManagementPage: React.FC = () => {
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="block font-bold text-slate-800 mb-1">তারিখ</label>
-                    <input
-                      type="date"
+                    <DateInput
                       value={formDate}
                       onChange={(e) => setFormDate(e.target.value)}
-                      className="w-full bg-[#f4fbf8] border border-emerald-200 rounded-lg px-3 py-2 text-xs font-bold text-slate-900 focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-emerald-600"
+                      className="w-full bg-[#f8fafc] border border-slate-200 rounded-lg px-3 py-2 text-xs font-bold text-slate-900 focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-[#1d4ed8]"
                       required
                     />
                   </div>
@@ -1153,14 +1137,14 @@ export const FuelManagementPage: React.FC = () => {
                       value={formTime}
                       onChange={(e) => setFormTime(e.target.value)}
                       placeholder="e.g. 7:14 PM"
-                      className="w-full bg-[#f4fbf8] border border-emerald-200 rounded-lg px-3 py-2 text-xs font-bold text-slate-900 focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-emerald-600"
+                      className="w-full bg-[#f8fafc] border border-slate-200 rounded-lg px-3 py-2 text-xs font-bold text-slate-900 focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-[#1d4ed8]"
                       required
                     />
                   </div>
                 </div>
 
                 {/* Row 2: Bengali Day Name */}
-                <div className="bg-[#f4fbf8] border border-emerald-200 rounded-lg px-3 py-1.5 font-bold text-slate-800 text-xs">
+                <div className="bg-[#f8fafc] border border-slate-200 rounded-lg px-3 py-1.5 font-bold text-slate-800 text-xs">
                   বার: {getBengaliDayOfWeek(formDate)}
                 </div>
 
@@ -1170,7 +1154,7 @@ export const FuelManagementPage: React.FC = () => {
                   <select
                     value={formVehicleRegNo}
                     onChange={(e) => setFormVehicleRegNo(e.target.value)}
-                    className="w-full bg-[#f4fbf8] border border-emerald-200 rounded-lg px-3 py-2 text-xs font-bold text-slate-900 focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-emerald-600"
+                    className="w-full bg-[#f8fafc] border border-slate-200 rounded-lg px-3 py-2 text-xs font-bold text-slate-900 focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-[#1d4ed8]"
                     required
                   >
                     {vehiclesList.length > 0 ? (
@@ -1192,7 +1176,7 @@ export const FuelManagementPage: React.FC = () => {
                     <select
                       value={formSupervisor}
                       onChange={(e) => setFormSupervisor(e.target.value)}
-                      className="w-full bg-[#f4fbf8] border border-emerald-200 rounded-lg px-3 py-2 text-xs font-bold text-slate-900 focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-emerald-600"
+                      className="w-full bg-[#f8fafc] border border-slate-200 rounded-lg px-3 py-2 text-xs font-bold text-slate-900 focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-[#1d4ed8]"
                       required
                     >
                       {supervisorsList.length > 0 ? (
@@ -1212,7 +1196,7 @@ export const FuelManagementPage: React.FC = () => {
                     <select
                       value={formDriver}
                       onChange={(e) => setFormDriver(e.target.value)}
-                      className="w-full bg-[#f4fbf8] border border-emerald-200 rounded-lg px-3 py-2 text-xs font-bold text-slate-900 focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-emerald-600"
+                      className="w-full bg-[#f8fafc] border border-slate-200 rounded-lg px-3 py-2 text-xs font-bold text-slate-900 focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-[#1d4ed8]"
                       required
                     >
                       {driversList.length > 0 ? (
@@ -1230,9 +1214,8 @@ export const FuelManagementPage: React.FC = () => {
 
                 {/* Row 6: 4 Boxes in 2x2 grid */}
                 <div className="grid grid-cols-2 gap-2.5">
-                  {/* Box 1: Full Route */}
-                  <div className="bg-[#f4fbf8] rounded-lg p-2.5 border border-emerald-200">
-                    <span className="text-[10px] text-slate-500 block font-semibold mb-0.5">
+                  <div className="bg-[#f8fafc] rounded-lg p-2.5 border border-slate-200">
+                    <span className="text-[10px] text-slate-600 block font-semibold mb-0.5">
                       পূর্ণ রুট
                     </span>
                     <span className="font-extrabold text-slate-900 text-xs truncate block">
@@ -1240,9 +1223,8 @@ export const FuelManagementPage: React.FC = () => {
                     </span>
                   </div>
 
-                  {/* Box 2: Total Km */}
-                  <div className="bg-[#f4fbf8] rounded-lg p-2.5 border border-emerald-200">
-                    <span className="text-[10px] text-slate-500 block font-semibold mb-0.5">
+                  <div className="bg-[#f8fafc] rounded-lg p-2.5 border border-slate-200">
+                    <span className="text-[10px] text-slate-600 block font-semibold mb-0.5">
                       মোট কিমি
                     </span>
                     <span className="font-extrabold text-slate-900 text-xs block font-mono">
@@ -1250,9 +1232,8 @@ export const FuelManagementPage: React.FC = () => {
                     </span>
                   </div>
 
-                  {/* Box 3: Mileage */}
-                  <div className="bg-[#f4fbf8] rounded-lg p-2.5 border border-emerald-200">
-                    <span className="text-[10px] text-slate-500 block font-semibold mb-0.5">
+                  <div className="bg-[#f8fafc] rounded-lg p-2.5 border border-slate-200">
+                    <span className="text-[10px] text-slate-600 block font-semibold mb-0.5">
                       মাইলেজ
                     </span>
                     <input
@@ -1261,13 +1242,12 @@ export const FuelManagementPage: React.FC = () => {
                       min="1"
                       value={formMileage}
                       onChange={(e) => setFormMileage(parseFloat(e.target.value) || 1)}
-                      className="w-full bg-white border border-emerald-200 rounded px-2 py-0.5 font-mono font-bold text-xs text-slate-900"
+                      className="w-full bg-white border border-slate-200 rounded px-2 py-0.5 font-mono font-bold text-xs text-slate-900 focus:ring-2 focus:ring-[#1d4ed8] outline-none"
                     />
                   </div>
 
-                  {/* Box 4: Expected Fuel */}
-                  <div className="bg-[#f4fbf8] rounded-lg p-2.5 border border-emerald-200">
-                    <span className="text-[10px] text-slate-500 block font-semibold mb-0.5">
+                  <div className="bg-[#f8fafc] rounded-lg p-2.5 border border-slate-200">
+                    <span className="text-[10px] text-slate-600 block font-semibold mb-0.5">
                       নির্ধারিত ফুয়েল
                     </span>
                     <span className="font-extrabold text-slate-900 text-xs block font-mono">
@@ -1288,16 +1268,16 @@ export const FuelManagementPage: React.FC = () => {
                     placeholder="তেলের পরিমাণ লিখুন..."
                     value={formActualLiters}
                     onChange={(e) => setFormActualLiters(e.target.value)}
-                    className="w-full bg-white border-2 border-[#0d9488] rounded-xl px-3.5 py-2.5 text-sm font-extrabold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-emerald-600"
+                    className="w-full bg-white border-2 border-[#1d4ed8] rounded-xl px-3.5 py-2.5 text-sm font-extrabold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-[#1d4ed8]"
                     autoFocus
                     required
                   />
                 </div>
 
                 {/* Row 8: Auto Calculation Card */}
-                <div className="bg-[#f4fbf8] border border-emerald-200 rounded-xl p-3 grid grid-cols-3 gap-2 text-center">
+                <div className="bg-[#f8fafc] border border-slate-200 rounded-xl p-3 grid grid-cols-3 gap-2 text-center">
                   <div>
-                    <span className="text-[10.5px] text-slate-500 block font-semibold">
+                    <span className="text-[10.5px] text-slate-600 block font-semibold">
                       নির্ধারিত মূল্য
                     </span>
                     <span className="text-sm font-extrabold text-slate-900 font-mono">
@@ -1306,25 +1286,25 @@ export const FuelManagementPage: React.FC = () => {
                   </div>
 
                   <div>
-                    <span className="text-[10.5px] text-slate-500 block font-semibold">
+                    <span className="text-[10.5px] text-slate-600 block font-semibold">
                       প্রদানকৃত মূল্য
                     </span>
-                    <span className="text-sm font-extrabold text-[#0f766e] font-mono">
+                    <span className="text-sm font-extrabold text-[#1d4ed8] font-mono">
                       {formatTaka(computedTotalMoney)}
                     </span>
                   </div>
 
                   <div>
-                    <span className="text-[10.5px] text-slate-500 block font-semibold">
+                    <span className="text-[10.5px] text-slate-600 block font-semibold">
                       +/- মূল্য
                     </span>
                     <span
                       className={`inline-block px-2 py-0.5 rounded-md text-xs font-mono font-bold border ${
                         computedCostDifference > 0
-                          ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                          ? 'bg-[#eff6ff] text-[#1d4ed8] border-[#bfdbfe]'
                           : computedCostDifference < 0
-                          ? 'bg-rose-50 text-rose-700 border-rose-200'
-                          : 'bg-slate-100 text-slate-700 border-slate-200'
+                          ? 'bg-[#1e3a8a] text-white border-[#1e3a8a]'
+                          : 'bg-white text-slate-800 border-slate-200'
                       }`}
                     >
                       {formatSignedFuelCostDiff(computedCostDifference)}
@@ -1333,24 +1313,24 @@ export const FuelManagementPage: React.FC = () => {
                 </div>
 
                 {modalError && (
-                  <div className="p-2.5 bg-rose-50 border border-rose-200 rounded-lg text-xs font-semibold text-rose-700">
+                  <div className="p-2.5 bg-red-50 border border-red-200 rounded-lg text-xs font-bold text-red-700">
                     {modalError}
                   </div>
                 )}
               </div>
 
               {/* Sticky Footer Buttons */}
-              <div className="shrink-0 px-4 py-3 bg-[#f0f9f6] border-t border-emerald-200 flex items-center justify-end gap-2 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+              <div className="shrink-0 px-4 py-3 bg-[#f8fafc] border-t border-slate-200 flex items-center justify-end gap-2 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2.5 min-h-[44px] bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 rounded-xl text-xs font-bold cursor-pointer"
+                  className="px-4 py-2.5 min-h-[44px] bg-white hover:bg-[#eff6ff] border border-slate-200 text-[#1e3a8a] rounded-xl text-xs font-bold cursor-pointer"
                 >
                   বাতিল
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 sm:flex-none px-5 py-2.5 min-h-[44px] bg-[#0d9488] hover:bg-[#0f766e] text-white font-extrabold text-xs rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
+                  className="flex-1 sm:flex-none px-5 py-2.5 min-h-[44px] bg-[#1d4ed8] hover:bg-[#1e40af] text-white font-extrabold text-xs rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <Check className="w-4 h-4" />
                   <span>এন্ট্রি সংরক্ষণ করুন</span>
@@ -1394,7 +1374,7 @@ export const FuelManagementPage: React.FC = () => {
               className="recon-subtitle"
               style={{ fontSize: '11px', fontWeight: 600, marginTop: '3px', color: '#334155', lineHeight: 1.4 }}
             >
-              দৈনিক ট্রিপ ফুয়েল লগ ডাটাবেইজ • তারিখ: {toBengaliDigits(startDate)} থেকে {toBengaliDigits(endDate)}
+              দৈনিক ট্রিপ ফুয়েল লগ ডাটাবেইজ • তারিখ: {formatBengaliDate(startDate)} থেকে {formatBengaliDate(endDate)}
             </div>
           </div>
 
@@ -1464,7 +1444,7 @@ export const FuelManagementPage: React.FC = () => {
                       {toBengaliDigits(idx + 1)}
                     </td>
                     <td style={{ borderRight: '1px solid #475569', borderBottom: '1px solid #475569', padding: '7px 5px', lineHeight: 1.6 }}>
-                      <div>{toBengaliDigits(entry.date)}</div>
+                      <div>{formatBengaliDate(entry.date)}</div>
                       <div style={{ fontSize: '9px', color: '#475569' }}>{entry.dayOfWeek || getBengaliDayOfWeek(entry.date)}</div>
                     </td>
                     <td style={{ borderRight: '1px solid #475569', borderBottom: '1px solid #475569', padding: '7px 5px', lineHeight: 1.6 }}>
@@ -1565,7 +1545,7 @@ export const FuelManagementPage: React.FC = () => {
         onClose={() => setShowWhatsAppModal(false)}
         companyName={user?.company?.name || 'কাউন্টার টিকেটিং'}
         reportTitle="ফুয়েল লগ ও +/- মূল্য হিসাব"
-        dateLabel={`${toBengaliDigits(startDate)} থেকে ${toBengaliDigits(endDate)}`}
+        dateLabel={`${formatBengaliDate(startDate)} থেকে ${formatBengaliDate(endDate)}`}
         items={whatsappOwnerItems}
       />
     </div>

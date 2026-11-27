@@ -265,6 +265,8 @@ export interface SystemSettings {
   noticeText: string;
   currency: string;
   timezone: string;
+  brandAssetVersion?: number;
+  brandLogoUpdatedAt?: string;
 }
 
 export interface AnalyticsSummary {

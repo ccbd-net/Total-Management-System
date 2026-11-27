@@ -5,9 +5,11 @@ import {
   formatBengaliDate,
   getTodayDhakaDate,
   toBengaliDigits,
+  formatTime12Hour,
 } from '../utils/formatters.ts';
 import { groupSchedulesByRouteNumber } from '../utils/routeSort.ts';
 import { addDaysToDateStr } from './WeeklyScheduleTimeline.tsx';
+import { DateInput } from './DateInput.tsx';
 import {
   Calendar,
   Forward,
@@ -151,18 +153,18 @@ export const ForwardUpTripsModal: React.FC<ForwardUpTripsModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
-      <div className="bg-white rounded-t-2xl sm:rounded-2xl max-w-3xl w-full max-h-[92dvh] sm:max-h-[88dvh] flex flex-col overflow-hidden shadow-2xl border border-emerald-200">
+      <div className="bg-white rounded-t-2xl sm:rounded-2xl max-w-3xl w-full max-h-[92dvh] sm:max-h-[88dvh] flex flex-col overflow-hidden shadow-2xl border border-slate-200">
         {/* Sticky Header */}
-        <div className="shrink-0 px-4 py-3 bg-[#0b2820] text-white flex items-center justify-between gap-2">
+        <div className="shrink-0 px-4 py-3 bg-[#1d4ed8] text-white flex items-center justify-between gap-2 border-b border-[#1e40af]">
           <div className="flex items-center gap-2.5 min-w-0">
-            <div className="w-9 h-9 rounded-xl bg-[#0d9488]/30 text-emerald-300 flex items-center justify-center shrink-0">
+            <div className="w-9 h-9 rounded-xl bg-[#1e40af] text-white flex items-center justify-center shrink-0">
               <Forward className="w-5 h-5" />
             </div>
             <div className="min-w-0">
               <h3 className="text-sm sm:text-base font-black truncate">
                 গতকালের আপ ট্রিপ ফরোয়ার্ড করুন
               </h3>
-              <p className="text-[11px] text-emerald-200 truncate">
+              <p className="text-[11px] text-[#dbeafe] truncate">
                 পূর্ববর্তী দিনের সকল আপ ট্রিপ আজকের বা নির্দিষ্ট তারিখে নিয়ে এসে সহজেই এডিট/ডিলিট করুন
               </p>
             </div>
@@ -170,7 +172,7 @@ export const ForwardUpTripsModal: React.FC<ForwardUpTripsModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 text-emerald-200 hover:text-white rounded-lg hover:bg-white/10 cursor-pointer shrink-0"
+            className="p-1.5 text-[#dbeafe] hover:text-white rounded-lg hover:bg-white/15 cursor-pointer shrink-0"
           >
             <X className="w-5 h-5" />
           </button>
@@ -179,12 +181,12 @@ export const ForwardUpTripsModal: React.FC<ForwardUpTripsModalProps> = ({
         <form onSubmit={handleSubmit} className="flex-1 flex flex-col min-h-0 overflow-hidden">
           <div className="p-4 sm:p-5 overflow-y-auto overscroll-contain space-y-4 flex-1 text-slate-900">
             {/* Date Selection Controls */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-200">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-[#f8fafc] p-4 rounded-2xl border border-slate-200">
               {/* Source Date */}
               <div>
                 <div className="flex items-center justify-between mb-1.5">
-                  <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
-                    <Calendar className="w-3.5 h-3.5 text-slate-600" />
+                  <label className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                    <Calendar className="w-3.5 h-3.5 text-[#1d4ed8]" />
                     <span>কোন তারিখ থেকে নিবেন (উৎস):</span>
                   </label>
                   <button
@@ -192,30 +194,26 @@ export const ForwardUpTripsModal: React.FC<ForwardUpTripsModalProps> = ({
                     onClick={() => setSourceDate(yesterdayStr)}
                     className={`px-2 py-0.5 rounded-lg text-[10px] font-bold border cursor-pointer ${
                       sourceDate === yesterdayStr
-                        ? 'bg-slate-900 text-white border-slate-900'
-                        : 'bg-white text-slate-700 border-slate-300'
+                        ? 'bg-[#1d4ed8] text-white border-[#1d4ed8]'
+                        : 'bg-white text-slate-700 border-slate-200'
                     }`}
                   >
                     গতকাল
                   </button>
                 </div>
-                <input
-                  type="date"
+                <DateInput
                   value={sourceDate}
                   onChange={(e) => setSourceDate(e.target.value)}
-                  className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-800 outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-900 outline-none focus:ring-2 focus:ring-[#1d4ed8]"
                   required
                 />
-                <div className="text-[11px] text-slate-500 mt-1">
-                  {formatBengaliDate(sourceDate)}
-                </div>
               </div>
 
               {/* Target Date */}
               <div>
                 <div className="flex items-center justify-between mb-1.5">
-                  <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
-                    <Calendar className="w-3.5 h-3.5 text-blue-600" />
+                  <label className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                    <Calendar className="w-3.5 h-3.5 text-[#1d4ed8]" />
                     <span>কোন তারিখে যুক্ত করবেন (লক্ষ্য):</span>
                   </label>
                   <div className="flex items-center gap-1">
@@ -224,8 +222,8 @@ export const ForwardUpTripsModal: React.FC<ForwardUpTripsModalProps> = ({
                       onClick={() => setTargetDate(todayStr)}
                       className={`px-2 py-0.5 rounded-lg text-[10px] font-bold border cursor-pointer ${
                         targetDate === todayStr
-                          ? 'bg-blue-600 text-white border-blue-600'
-                          : 'bg-white text-slate-700 border-slate-300'
+                          ? 'bg-[#1d4ed8] text-white border-[#1d4ed8]'
+                          : 'bg-white text-slate-700 border-slate-200'
                       }`}
                     >
                       আজকে
@@ -235,30 +233,26 @@ export const ForwardUpTripsModal: React.FC<ForwardUpTripsModalProps> = ({
                       onClick={() => setTargetDate(addDaysToDateStr(todayStr, 1))}
                       className={`px-2 py-0.5 rounded-lg text-[10px] font-bold border cursor-pointer ${
                         targetDate === addDaysToDateStr(todayStr, 1)
-                          ? 'bg-blue-600 text-white border-blue-600'
-                          : 'bg-white text-slate-700 border-slate-300'
+                          ? 'bg-[#1d4ed8] text-white border-[#1d4ed8]'
+                          : 'bg-white text-slate-700 border-slate-200'
                       }`}
                     >
                       আগামীকাল
                     </button>
                   </div>
                 </div>
-                <input
-                  type="date"
+                <DateInput
                   value={targetDate}
                   onChange={(e) => setTargetDate(e.target.value)}
-                  className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-800 outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-900 outline-none focus:ring-2 focus:ring-[#1d4ed8]"
                   required
                 />
-                <div className="text-[11px] text-blue-700 font-semibold mt-1">
-                  {formatBengaliDate(targetDate)}
-                </div>
               </div>
             </div>
 
             {errorMsg && (
-              <div className="p-3 bg-red-50 border border-red-200 text-red-700 rounded-xl text-xs font-bold flex items-center gap-2">
-                <AlertTriangle className="w-4 h-4 shrink-0" />
+              <div className="p-3 bg-[#eff6ff] border border-[#1d4ed8] text-[#1e3a8a] rounded-xl text-xs font-bold flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4 shrink-0 text-[#1d4ed8]" />
                 <span>{errorMsg}</span>
               </div>
             )}
@@ -266,8 +260,8 @@ export const ForwardUpTripsModal: React.FC<ForwardUpTripsModalProps> = ({
             {/* Preview Toolbar */}
             <div className="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-slate-200">
               <div className="text-xs font-bold text-slate-800">
-                পাওয়া গেছে: <span className="text-blue-700">{toBengaliDigits(sourceTrips.length)} টি আপ ট্রিপ</span>{' '}
-                (নির্বাচিত: <span className="text-emerald-700">{toBengaliDigits(selectedIds.length)} টি</span>)
+                পাওয়া গেছে: <span className="text-[#1e3a8a]">{toBengaliDigits(sourceTrips.length)} টি আপ ট্রিপ</span>{' '}
+                (নির্বাচিত: <span className="text-[#1d4ed8]">{toBengaliDigits(selectedIds.length)} টি</span>)
               </div>
 
               <div className="flex items-center gap-2">
@@ -275,10 +269,10 @@ export const ForwardUpTripsModal: React.FC<ForwardUpTripsModalProps> = ({
                   <button
                     type="button"
                     onClick={toggleSelectAll}
-                    className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer"
+                    className="px-3 py-1.5 bg-[#eff6ff] hover:bg-[#dbeafe] text-[#1e3a8a] border border-[#bfdbfe] rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer"
                   >
                     {allNonDuplicateSelected ? (
-                      <CheckSquare className="w-3.5 h-3.5 text-emerald-600" />
+                      <CheckSquare className="w-3.5 h-3.5 text-[#1d4ed8]" />
                     ) : (
                       <Square className="w-3.5 h-3.5 text-slate-500" />
                     )}
@@ -288,7 +282,7 @@ export const ForwardUpTripsModal: React.FC<ForwardUpTripsModalProps> = ({
                 <button
                   type="button"
                   onClick={loadTrips}
-                  className="p-1.5 bg-slate-100 hover:bg-slate-200 rounded-xl text-slate-700 cursor-pointer"
+                  className="p-1.5 bg-[#f8fafc] hover:bg-[#eff6ff] border border-slate-200 rounded-xl text-[#1e3a8a] cursor-pointer"
                   title="রিফ্রেশ"
                 >
                   <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
@@ -298,25 +292,25 @@ export const ForwardUpTripsModal: React.FC<ForwardUpTripsModalProps> = ({
 
             {/* Source UP Trips Table */}
             {loading ? (
-              <div className="py-10 text-center text-xs text-slate-500">
+              <div className="py-10 text-center text-xs text-slate-600">
                 আপ ট্রিপের তালিকা লোড হচ্ছে...
               </div>
             ) : sourceTrips.length === 0 ? (
-              <div className="py-10 text-center bg-slate-50 rounded-2xl border border-slate-200 text-xs text-slate-500">
+              <div className="py-10 text-center bg-[#f8fafc] rounded-2xl border border-slate-200 text-xs text-slate-600">
                 {formatBengaliDate(sourceDate)} তারিখে কোনো আপ ট্রিপ পাওয়া যায়নি।
               </div>
             ) : (
               <div className="space-y-3">
                 {groupedPreview.map((grp) => (
-                  <div key={grp.routeName} className="border border-slate-300 rounded-xl overflow-hidden">
-                    <div className="px-3 py-2 bg-blue-50 border-b border-slate-300 flex items-center justify-between text-xs font-bold text-blue-950">
+                  <div key={grp.routeName} className="border border-slate-200 rounded-xl overflow-hidden">
+                    <div className="px-3 py-2 bg-[#eff6ff] border-b border-slate-200 flex items-center justify-between text-xs font-bold text-[#1e3a8a]">
                       <div className="flex items-center gap-2">
-                        <span className="px-2 py-0.5 rounded bg-blue-700 text-white text-[10px] font-black tabular-nums">
+                        <span className="px-2 py-0.5 rounded bg-[#1d4ed8] text-white text-[10px] font-black tabular-nums">
                           {toBengaliDigits(grp.routeNumber)} নং রুট
                         </span>
                         <span>{grp.routeName}</span>
                       </div>
-                      <span className="text-[11px] text-slate-600">
+                      <span className="text-[11px] text-slate-700">
                         {toBengaliDigits(grp.trips.length)} টি ট্রিপ
                       </span>
                     </div>
@@ -324,7 +318,7 @@ export const ForwardUpTripsModal: React.FC<ForwardUpTripsModalProps> = ({
                     <div className="overflow-x-auto">
                       <table className="w-full text-left text-xs border-collapse">
                         <thead>
-                          <tr className="bg-slate-100 text-slate-700 font-bold text-[11px] border-b border-slate-200">
+                          <tr className="bg-[#1d4ed8] text-white font-bold text-[11px] border-b border-[#1e40af]">
                             <th className="py-2 px-2.5 text-center w-10">সিলেক্ট</th>
                             <th className="py-2 px-2.5">সময়</th>
                             <th className="py-2 px-2.5">গাড়ি নম্বর</th>
@@ -344,10 +338,10 @@ export const ForwardUpTripsModal: React.FC<ForwardUpTripsModalProps> = ({
                                 onClick={() => !duplicate && toggleId(trip.id)}
                                 className={`${
                                   duplicate
-                                    ? 'bg-slate-50 text-slate-400 cursor-not-allowed'
+                                    ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
                                     : checked
-                                    ? 'bg-emerald-50/60 hover:bg-emerald-50 cursor-pointer'
-                                    : 'bg-white hover:bg-slate-50 cursor-pointer'
+                                    ? 'bg-[#eff6ff] hover:bg-[#dbeafe] cursor-pointer'
+                                    : 'odd:bg-white even:bg-[#f1f5f9] hover:bg-[#eff6ff] cursor-pointer'
                                 }`}
                               >
                                 <td className="py-2 px-2.5 text-center">
@@ -356,11 +350,11 @@ export const ForwardUpTripsModal: React.FC<ForwardUpTripsModalProps> = ({
                                     checked={checked}
                                     disabled={duplicate}
                                     onChange={() => {}}
-                                    className="w-4 h-4 accent-emerald-600 cursor-pointer"
+                                    className="w-4 h-4 accent-[#1d4ed8] cursor-pointer"
                                   />
                                 </td>
                                 <td className="py-2 px-2.5 font-mono font-bold tabular-nums">
-                                  {trip.departureTime}
+                                  {formatTime12Hour(trip.departureTime)}
                                 </td>
                                 <td className="py-2 px-2.5 font-bold">
                                   {trip.vehicleRegNo}
@@ -369,11 +363,11 @@ export const ForwardUpTripsModal: React.FC<ForwardUpTripsModalProps> = ({
                                 <td className="py-2 px-2.5">{trip.driver || '-'}</td>
                                 <td className="py-2 px-2.5 text-center">
                                   {duplicate ? (
-                                    <span className="px-2 py-0.5 rounded bg-amber-100 text-amber-800 text-[10px] font-bold">
+                                    <span className="px-2 py-0.5 rounded bg-[#f8fafc] text-slate-700 border border-slate-200 text-[10px] font-bold">
                                       লক্ষ্য তারিখে আছে
                                     </span>
                                   ) : (
-                                    <span className="px-2 py-0.5 rounded bg-blue-100 text-blue-800 text-[10px] font-bold">
+                                    <span className="px-2 py-0.5 rounded bg-[#eff6ff] text-[#1d4ed8] border border-[#bfdbfe] text-[10px] font-bold">
                                       ফরোয়ার্ডযোগ্য
                                     </span>
                                   )}
@@ -391,22 +385,22 @@ export const ForwardUpTripsModal: React.FC<ForwardUpTripsModalProps> = ({
           </div>
 
           {/* Sticky Modal Footer */}
-          <div className="shrink-0 px-4 py-3 bg-[#f0f9f6] border-t border-emerald-200 flex flex-wrap items-center justify-between gap-2 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
-            <div className="text-[11px] text-slate-600 hidden sm:block">
+          <div className="shrink-0 px-4 py-3 bg-[#f8fafc] border-t border-slate-200 flex flex-wrap items-center justify-between gap-2 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+            <div className="text-[11px] text-slate-700 hidden sm:block">
               শুধুমাত্র <strong>আপ ট্রিপ (UP)</strong> ফরোয়ার্ড হবে; সিট বুকিং ও টাকা ০ থেকে শুরু হবে।
             </div>
             <div className="flex items-center gap-2 ml-auto">
               <button
                 type="button"
                 onClick={onClose}
-                className="min-h-[44px] px-4 py-2 bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 rounded-xl text-xs font-bold cursor-pointer"
+                className="min-h-[44px] px-4 py-2 bg-white border border-slate-200 hover:bg-[#eff6ff] text-slate-900 rounded-xl text-xs font-bold cursor-pointer"
               >
                 বাতিল
               </button>
               <button
                 type="submit"
                 disabled={submitting || selectedIds.length === 0}
-                className="min-h-[44px] px-5 py-2 bg-[#0d9488] hover:bg-[#0f766e] text-white rounded-xl text-xs font-black shadow-xs transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                className="min-h-[44px] px-5 py-2 bg-[#1d4ed8] hover:bg-[#1e40af] text-white rounded-xl text-xs font-black shadow-xs transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
               >
                 <CheckCircle className="w-4 h-4" />
                 <span>

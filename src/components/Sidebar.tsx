@@ -23,6 +23,7 @@ import {
   CheckCircle,
   AlertTriangle,
 } from 'lucide-react';
+import { useBrandLogoUrl } from '../utils/brandAssets.ts';
 
 export type NavTab =
   | 'dashboard'
@@ -53,6 +54,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   isOpen,
   onCloseMobile,
 }) => {
+  const brandLogoUrl = useBrandLogoUrl();
   const {
     user,
     isSuperAdmin,
@@ -214,25 +216,25 @@ export const Sidebar: React.FC<SidebarProps> = ({
         />
       )}
 
-      {/* Deep Forest-Green Sidebar Container (#0B2820 with crisp white text) */}
+      {/* Royal Cobalt Blue Sidebar Container (#1d4ed8) with 15% transparent white selected tab */}
       <aside
-        className={`fixed lg:static top-0 bottom-0 left-0 z-50 w-64 shrink-0 bg-[#0b2820] text-white flex flex-col transition-transform duration-200 ease-in-out ${
+        className={`fixed lg:static top-0 bottom-0 left-0 z-50 w-64 shrink-0 bg-[#1d4ed8] text-white flex flex-col transition-transform duration-200 ease-in-out ${
           isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
-        } border-r border-[#164236] shadow-2xl lg:shadow-none`}
+        } border-r border-[#1e40af] shadow-2xl lg:shadow-none`}
       >
-        {/* Brand Header */}
-        <div className="px-3.5 py-3 border-b border-[#164236] bg-[#071d17] flex items-center justify-between gap-2 shrink-0">
-          <div className="flex items-center gap-2.5 min-w-0">
+        {/* Brand Header Box */}
+        <div className="px-3 pt-3 pb-2.5 border-b border-white/15 flex items-center justify-between gap-2 shrink-0">
+          <div className="flex-1 min-w-0 bg-[#1e40af] border border-white/15 rounded-xl p-2 flex items-center gap-2.5">
             <img
-              src={companyLogo || '/assets/aistudio/1795651588938_2_f0f59799.jpg'}
+              src={companyLogo || brandLogoUrl}
               alt={displayName}
-              className="w-9 h-9 rounded-xl object-cover shadow-xs border border-emerald-500/40 shrink-0 bg-[#0b2820]"
+              className="w-9 h-9 rounded-lg object-cover border border-white/20 shrink-0 bg-[#1e3a8a]"
             />
             <div className="min-w-0">
               <div className="font-extrabold text-white text-xs leading-tight tracking-wide truncate">
                 {displayName}
               </div>
-              <div className="text-[10px] font-semibold text-emerald-300 leading-tight mt-0.5 truncate">
+              <div className="text-[10px] font-semibold text-[#bfdbfe] leading-tight mt-0.5 truncate">
                 Data&Code Management
               </div>
             </div>
@@ -240,21 +242,21 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <button
             type="button"
             onClick={onCloseMobile}
-            className="lg:hidden min-h-[36px] min-w-[36px] flex items-center justify-center rounded-lg text-white/80 hover:text-white hover:bg-[#133b30] cursor-pointer shrink-0"
+            className="lg:hidden min-h-[36px] min-w-[36px] flex items-center justify-center rounded-lg bg-white/15 hover:bg-white/25 text-white border border-white/20 cursor-pointer shrink-0"
             aria-label="মেনু বন্ধ করুন"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
-        {/* Grouped Navigation List inside Deep Forest Green */}
+        {/* Grouped Navigation List */}
         <nav className="flex-1 overflow-y-auto px-2.5 py-3 space-y-4">
           {groups.map((grp) => {
             const groupItems = filteredNavItems.filter((item) => item.group === grp.key);
             if (groupItems.length === 0) return null;
             return (
               <div key={grp.key} className="space-y-1">
-                <div className="px-2.5 text-[10px] font-bold uppercase tracking-wider text-emerald-300/75">
+                <div className="px-2.5 text-[10px] font-semibold uppercase tracking-wider text-[#bfdbfe]">
                   {grp.title}
                 </div>
                 <div className="space-y-0.5">
@@ -269,16 +271,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
                           onSelectTab(item.id);
                           onCloseMobile();
                         }}
-                        className={`w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-[11.5px] font-semibold transition-colors cursor-pointer ${
+                        className={`w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-[11.5px] transition-colors cursor-pointer ${
                           isActive
-                            ? 'bg-[#0d9488] text-white shadow-sm font-bold'
-                            : 'text-white/90 hover:bg-[#133b30] hover:text-white'
+                            ? 'bg-white/15 text-white font-bold border border-white/25 shadow-2xs'
+                            : 'text-[#dbeafe] font-medium hover:bg-white/10 hover:text-white border border-transparent'
                         }`}
                       >
                         <div className="flex items-center gap-2.5 min-w-0">
                           <Icon
                             className={`w-4 h-4 shrink-0 ${
-                              isActive ? 'text-white' : 'text-emerald-300'
+                              isActive ? 'text-white' : 'text-[#bfdbfe]'
                             }`}
                           />
                           <span className="truncate">{item.label}</span>
@@ -289,7 +291,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                             className={`text-[9px] px-1.5 py-0.5 rounded font-bold shrink-0 ${
                               isActive
                                 ? 'bg-white/20 text-white'
-                                : 'bg-[#133b30] text-emerald-200 border border-emerald-700/60'
+                                : 'bg-[#1e40af] text-[#dbeafe] border border-white/15'
                             }`}
                           >
                             {item.badge}
@@ -305,10 +307,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </nav>
 
         {/* Bottom Login Status, Credentials & Logout Panel */}
-        <div className="mt-auto border-t border-[#164236] bg-[#071d17] p-2.5 space-y-2 shrink-0">
+        <div className="mt-auto border-t border-white/15 bg-[#1e40af] p-2.5 space-y-2 shrink-0">
           {/* Active Logged-in User Info */}
-          <div className="flex items-center gap-2 bg-[#0f3329] border border-[#1d5243] rounded-lg p-2">
-            <div className="w-7 h-7 rounded-lg bg-[#0d9488] text-white font-black flex items-center justify-center text-xs shrink-0">
+          <div className="flex items-center gap-2 bg-[#1d4ed8] border border-white/15 rounded-lg p-2">
+            <div className="w-7 h-7 rounded-lg bg-white/15 text-white font-black flex items-center justify-center text-xs shrink-0 border border-white/20">
               {user?.name?.slice(0, 1) || 'U'}
             </div>
             <div className="min-w-0 flex-1">
@@ -316,8 +318,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 {user?.counterName || user?.name}
               </div>
               <div className="flex items-center gap-1 mt-0.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
-                <span className="text-[10px] text-emerald-200 font-medium truncate">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#93c5fd] shrink-0" />
+                <span className="text-[10px] text-[#dbeafe] font-medium truncate">
                   {roleLabel} • লগইন সচল
                 </span>
               </div>
@@ -329,27 +331,27 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <button
               type="button"
               onClick={openCredentialsModal}
-              className="flex items-center justify-center gap-1 px-2 py-2 rounded-lg bg-[#133b30] hover:bg-[#194d3f] text-white border border-[#1f5949] text-[11px] font-bold transition-colors cursor-pointer"
+              className="flex items-center justify-center gap-1 px-2 py-2 rounded-lg bg-white/15 hover:bg-white/25 text-white border border-white/20 text-[11px] font-bold transition-colors cursor-pointer"
               title="নিজস্ব লগইন আইডি ও পিন পরিবর্তন করুন"
             >
-              <KeyRound className="w-3.5 h-3.5 text-emerald-300 shrink-0" />
+              <KeyRound className="w-3.5 h-3.5 text-[#bfdbfe] shrink-0" />
               <span>আইডি ও পিন</span>
             </button>
 
             <button
               type="button"
               onClick={logout}
-              className="flex items-center justify-center gap-1 px-2 py-2 rounded-lg bg-rose-900/60 hover:bg-rose-700 text-rose-100 hover:text-white border border-rose-700/60 text-[11px] font-bold transition-colors cursor-pointer"
+              className="flex items-center justify-center gap-1 px-2 py-2 rounded-lg bg-white/15 hover:bg-white/25 text-white border border-white/20 text-[11px] font-bold transition-colors cursor-pointer"
               title="লগআউট করুন"
             >
-              <LogOut className="w-3.5 h-3.5 shrink-0" />
+              <LogOut className="w-3.5 h-3.5 text-[#bfdbfe] shrink-0" />
               <span>লগআউট</span>
             </button>
           </div>
 
-          <div className="pt-0.5 text-[10px] text-emerald-300/80 flex items-center justify-between">
+          <div className="pt-0.5 text-[10px] text-[#bfdbfe] flex items-center justify-between">
             <div className="flex items-center gap-1">
-              <ShieldCheck className="w-3 h-3 text-emerald-400" />
+              <ShieldCheck className="w-3 h-3 text-white" />
               <span>সিস্টেম সচল</span>
             </div>
             <span className="font-mono">Asia/Dhaka</span>
@@ -365,24 +367,24 @@ export const Sidebar: React.FC<SidebarProps> = ({
           aria-modal="true"
           aria-labelledby="self-credentials-title"
         >
-          <div className="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl shadow-2xl border border-emerald-200 flex flex-col max-h-[92dvh] sm:max-h-[88dvh] overflow-hidden">
-            <div className="shrink-0 px-4 py-3 bg-[#0b2820] text-white flex items-center justify-between">
+          <div className="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl shadow-2xl border border-slate-200 flex flex-col max-h-[92dvh] sm:max-h-[88dvh] overflow-hidden">
+            <div className="shrink-0 px-4 py-3 bg-[#1d4ed8] text-white flex items-center justify-between border-b border-[#1e40af]">
               <div className="flex items-center gap-2.5 min-w-0">
-                <div className="w-8 h-8 rounded-lg bg-[#0d9488] text-white flex items-center justify-center shrink-0">
+                <div className="w-8 h-8 rounded-lg bg-white/15 text-white flex items-center justify-center shrink-0">
                   <Lock className="w-4 h-4" />
                 </div>
                 <div className="min-w-0">
                   <h3 id="self-credentials-title" className="font-bold text-sm truncate">
                     নিজস্ব লগইন আইডি ও পিন পরিবর্তন
                   </h3>
-                  <div className="text-[11px] text-emerald-200 truncate">{user?.name}</div>
+                  <div className="text-[11px] text-[#bfdbfe] truncate">{user?.name}</div>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => !credSubmitting && setIsCredModalOpen(false)}
                 disabled={credSubmitting}
-                className="min-h-[36px] min-w-[36px] flex items-center justify-center text-emerald-200 hover:text-white rounded-lg hover:bg-[#133b30] transition-colors cursor-pointer shrink-0"
+                className="min-h-[36px] min-w-[36px] flex items-center justify-center text-[#dbeafe] hover:text-white rounded-lg hover:bg-white/15 transition-colors cursor-pointer shrink-0"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -391,15 +393,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <form onSubmit={handleCredentialsSubmit} className="flex-1 flex flex-col min-h-0 overflow-hidden">
               <div className="flex-1 overflow-y-auto overscroll-contain p-4 space-y-3.5 text-slate-900">
                 {credSuccess && (
-                  <div className="p-2.5 bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs font-semibold rounded-xl flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4 shrink-0 text-emerald-600" />
+                  <div className="p-2.5 bg-[#eff6ff] border border-[#bfdbfe] text-[#1e3a8a] text-xs font-semibold rounded-xl flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 shrink-0 text-[#1d4ed8]" />
                     <span>{credSuccess}</span>
                   </div>
                 )}
 
                 {credError && (
-                  <div className="p-2.5 bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold rounded-xl flex items-center gap-2">
-                    <AlertTriangle className="w-4 h-4 shrink-0" />
+                  <div className="p-2.5 bg-[#f8fafc] border border-[#1e40af] text-[#1e3a8a] text-xs font-semibold rounded-xl flex items-center gap-2">
+                    <AlertTriangle className="w-4 h-4 shrink-0 text-[#1d4ed8]" />
                     <span>{credError}</span>
                   </div>
                 )}
@@ -415,7 +417,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     value={currentPin}
                     onChange={(e) => setCurrentPin(e.target.value)}
                     placeholder="আপনার বর্তমান পিন দিন"
-                    className="w-full px-3 py-2.5 bg-[#f0f9f6] border border-emerald-300 rounded-xl text-xs font-mono font-bold tracking-widest text-slate-900 outline-none focus:bg-white focus:ring-2 focus:ring-[#0d9488]"
+                    className="w-full px-3 py-2.5 bg-[#f8fafc] border border-slate-200 rounded-xl text-xs font-mono font-bold tracking-widest text-slate-900 outline-none focus:bg-white focus:ring-2 focus:ring-[#1d4ed8]"
                     required
                   />
                 </div>
@@ -429,7 +431,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     value={newLoginId}
                     onChange={(e) => setNewLoginId(e.target.value.replace(/\s+/g, ''))}
                     placeholder="আপনার নতুন ইউনিক লগইন আইডি"
-                    className="w-full px-3 py-2.5 bg-[#f0f9f6] border border-emerald-300 rounded-xl text-xs font-mono font-bold text-slate-900 outline-none focus:bg-white focus:ring-2 focus:ring-[#0d9488]"
+                    className="w-full px-3 py-2.5 bg-[#f8fafc] border border-slate-200 rounded-xl text-xs font-mono font-bold text-slate-900 outline-none focus:bg-white focus:ring-2 focus:ring-[#1d4ed8]"
                   />
                 </div>
 
@@ -445,7 +447,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       value={newPin}
                       onChange={(e) => setNewPin(e.target.value)}
                       placeholder="পরিবর্তন করতে চাইলে"
-                      className="w-full px-3 py-2.5 bg-[#f0f9f6] border border-emerald-300 rounded-xl text-xs font-mono font-bold tracking-widest text-slate-900 outline-none focus:bg-white focus:ring-2 focus:ring-[#0d9488]"
+                      className="w-full px-3 py-2.5 bg-[#f8fafc] border border-slate-200 rounded-xl text-xs font-mono font-bold tracking-widest text-slate-900 outline-none focus:bg-white focus:ring-2 focus:ring-[#1d4ed8]"
                     />
                   </div>
 
@@ -460,29 +462,29 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       value={confirmNewPin}
                       onChange={(e) => setConfirmNewPin(e.target.value)}
                       placeholder="পুনরায় পিন লিখুন"
-                      className="w-full px-3 py-2.5 bg-[#f0f9f6] border border-emerald-300 rounded-xl text-xs font-mono font-bold tracking-widest text-slate-900 outline-none focus:bg-white focus:ring-2 focus:ring-[#0d9488]"
+                      className="w-full px-3 py-2.5 bg-[#f8fafc] border border-slate-200 rounded-xl text-xs font-mono font-bold tracking-widest text-slate-900 outline-none focus:bg-white focus:ring-2 focus:ring-[#1d4ed8]"
                     />
                   </div>
                 </div>
 
-                <div className="p-2.5 bg-emerald-50 border border-emerald-200 rounded-xl text-[11px] text-slate-700 leading-relaxed">
+                <div className="p-2.5 bg-[#eff6ff] border border-[#bfdbfe] rounded-xl text-[11px] text-slate-800 leading-relaxed">
                   গোপনীয়তা নিশ্চিত: আপনার পরিবর্তিত লগইন আইডি ও পিন সম্পূর্ণ এনক্রিপ্টেড অবস্থায় সংরক্ষিত থাকে এবং অন্য কেউ এটি দেখতে পায় না।
                 </div>
               </div>
 
-              <div className="shrink-0 px-4 py-3 bg-[#f0f9f6] border-t border-emerald-200 flex items-center justify-end gap-2 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+              <div className="shrink-0 px-4 py-3 bg-[#f8fafc] border-t border-slate-200 flex items-center justify-end gap-2 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
                 <button
                   type="button"
                   onClick={() => setIsCredModalOpen(false)}
                   disabled={credSubmitting}
-                  className="min-h-[44px] px-4 py-2 bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 rounded-xl text-xs font-bold cursor-pointer"
+                  className="min-h-[44px] px-4 py-2 bg-white hover:bg-[#eff6ff] text-slate-900 border border-slate-200 rounded-xl text-xs font-bold cursor-pointer"
                 >
                   বন্ধ করুন
                 </button>
                 <button
                   type="submit"
                   disabled={credSubmitting}
-                  className="min-h-[44px] px-4 py-2 bg-[#0d9488] hover:bg-[#0f766e] text-white rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer disabled:opacity-50 shadow-sm"
+                  className="min-h-[44px] px-4 py-2 bg-[#1d4ed8] hover:bg-[#1e40af] text-white rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer disabled:opacity-50 shadow-sm"
                 >
                   <KeyRound className="w-3.5 h-3.5" />
                   <span>{credSubmitting ? 'সংরক্ষণ হচ্ছে...' : 'আইডি ও পিন সংরক্ষণ করুন'}</span>

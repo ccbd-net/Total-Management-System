@@ -4,6 +4,7 @@ import type { AnalyticsSummary, WeeklyTrendsSummary } from '../types/index.ts';
 import { useDataSync } from '../hooks/useDataSync.ts';
 import { formatTaka, toBengaliDigits, getTodayDhakaDate } from '../utils/formatters.ts';
 import { WeeklyTrendsChart } from '../components/WeeklyTrendsChart.tsx';
+import { DateInput } from '../components/DateInput.tsx';
 import { getWeekStartSaturday, addDaysToDateStr } from '../components/WeeklyScheduleTimeline.tsx';
 import {
   Ticket,
@@ -88,9 +89,9 @@ export const DashboardPage: React.FC<{ onNavigateTo: (tab: any) => void }> = ({ 
   return (
     <div className="space-y-3">
       {/* Compact Excel Top Control Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-2 bg-white px-3 py-2 rounded-xl border border-emerald-200 shadow-2xs">
+      <div className="flex flex-wrap items-center justify-between gap-2 bg-white px-3 py-2 rounded-xl border border-slate-200 shadow-2xs">
         <div className="flex items-center gap-2 min-w-0">
-          <div className="w-7 h-7 rounded-lg bg-[#0b2820] text-emerald-300 flex items-center justify-center shrink-0">
+          <div className="w-7 h-7 rounded-lg bg-[#1d4ed8] text-white flex items-center justify-center shrink-0">
             <TableProperties className="w-4 h-4" />
           </div>
           <div className="min-w-0">
@@ -104,10 +105,9 @@ export const DashboardPage: React.FC<{ onNavigateTo: (tab: any) => void }> = ({ 
         </div>
 
         <div className="flex items-center gap-1.5 shrink-0">
-          <div className="flex items-center gap-1.5 bg-[#f0f9f6] px-2.5 py-1 rounded-lg border border-emerald-300 text-[11px]">
-            <Calendar className="w-3.5 h-3.5 text-[#0f766e] shrink-0" />
-            <input
-              type="date"
+          <div className="flex items-center gap-1.5 bg-[#f8fafc] px-2.5 py-1 rounded-lg border border-slate-200 text-[11px]">
+            <Calendar className="w-3.5 h-3.5 text-[#1d4ed8] shrink-0" />
+            <DateInput
               value={selectedDate}
               onChange={(e) => handleDateChange(e.target.value)}
               className="bg-transparent font-bold text-slate-950 outline-none cursor-pointer text-[11px]"
@@ -120,7 +120,7 @@ export const DashboardPage: React.FC<{ onNavigateTo: (tab: any) => void }> = ({ 
               fetchAnalytics(selectedDate);
               fetchWeeklyTrends(weekStartDate);
             }}
-            className="p-1.5 bg-[#ecfdf5] hover:bg-[#d1fae5] border border-emerald-300 text-[#0b2820] rounded-lg transition-colors cursor-pointer"
+            className="p-1.5 bg-[#eff6ff] hover:bg-[#dbeafe] border border-[#bfdbfe] text-[#1d4ed8] rounded-lg transition-colors cursor-pointer"
             title="রিফ্রেশ করুন"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading || weeklyLoading ? 'animate-spin' : ''}`} />
@@ -128,14 +128,14 @@ export const DashboardPage: React.FC<{ onNavigateTo: (tab: any) => void }> = ({ 
         </div>
       </div>
 
-      {/* Excel-Sheet KPI Matrix with Clean Deep Forest & Emerald Headers */}
-      <div className="bg-emerald-200 border border-emerald-300 rounded-xl overflow-hidden shadow-2xs">
+      {/* Excel-Sheet KPI Matrix with Royal Cobalt Blue Headers */}
+      <div className="bg-slate-200 border border-slate-200 rounded-xl overflow-hidden shadow-2xs">
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-px">
           {/* 1. Total Bookings */}
           <div className="bg-white flex flex-col">
-            <div className="bg-[#0b2820] px-2.5 py-1 flex items-center justify-between gap-1 text-white">
+            <div className="bg-[#1d4ed8] px-2.5 py-1 flex items-center justify-between gap-1 text-white">
               <span className="text-[10px] font-bold truncate">মোট বুকিং</span>
-              <Ticket className="w-3 h-3 shrink-0 text-emerald-300" />
+              <Ticket className="w-3 h-3 shrink-0 text-[#dbeafe]" />
             </div>
             <div className="px-2.5 py-1.5 flex items-baseline justify-between gap-1">
               <span className="text-sm sm:text-base font-black text-slate-950 tabular-nums">
@@ -147,9 +147,9 @@ export const DashboardPage: React.FC<{ onNavigateTo: (tab: any) => void }> = ({ 
 
           {/* 2. Seats Sold */}
           <div className="bg-white flex flex-col">
-            <div className="bg-[#0f766e] px-2.5 py-1 flex items-center justify-between gap-1 text-white">
+            <div className="bg-[#1e40af] px-2.5 py-1 flex items-center justify-between gap-1 text-white">
               <span className="text-[10px] font-bold truncate">বিক্রিত আসন</span>
-              <Armchair className="w-3 h-3 shrink-0 text-emerald-100" />
+              <Armchair className="w-3 h-3 shrink-0 text-[#dbeafe]" />
             </div>
             <div className="px-2.5 py-1.5 flex items-baseline justify-between gap-1">
               <span className="text-sm sm:text-base font-black text-slate-950 tabular-nums">
@@ -161,12 +161,12 @@ export const DashboardPage: React.FC<{ onNavigateTo: (tab: any) => void }> = ({ 
 
           {/* 3. Total Collections */}
           <div className="bg-white flex flex-col">
-            <div className="bg-[#0b2820] px-2.5 py-1 flex items-center justify-between gap-1 text-white">
+            <div className="bg-[#1d4ed8] px-2.5 py-1 flex items-center justify-between gap-1 text-white">
               <span className="text-[10px] font-bold truncate">মোট রাজস্ব</span>
-              <BadgeDollarSign className="w-3 h-3 shrink-0 text-emerald-300" />
+              <BadgeDollarSign className="w-3 h-3 shrink-0 text-[#dbeafe]" />
             </div>
             <div className="px-2.5 py-1.5">
-              <div className="text-sm sm:text-base font-black text-[#0f766e] tabular-nums leading-tight">
+              <div className="text-sm sm:text-base font-black text-[#1d4ed8] tabular-nums leading-tight">
                 {formatTaka(summary?.totalCollections || 0)}
               </div>
               <div className="text-[9.5px] text-slate-600 tabular-nums truncate">
@@ -177,9 +177,9 @@ export const DashboardPage: React.FC<{ onNavigateTo: (tab: any) => void }> = ({ 
 
           {/* 4. Active Trips */}
           <div className="bg-white flex flex-col">
-            <div className="bg-[#0f766e] px-2.5 py-1 flex items-center justify-between gap-1 text-white">
+            <div className="bg-[#1e40af] px-2.5 py-1 flex items-center justify-between gap-1 text-white">
               <span className="text-[10px] font-bold truncate">সক্রিয় ট্রিপ</span>
-              <Bus className="w-3 h-3 shrink-0 text-emerald-100" />
+              <Bus className="w-3 h-3 shrink-0 text-[#dbeafe]" />
             </div>
             <div className="px-2.5 py-1.5 flex items-baseline justify-between gap-1">
               <span className="text-sm sm:text-base font-black text-slate-950 tabular-nums">
@@ -191,9 +191,9 @@ export const DashboardPage: React.FC<{ onNavigateTo: (tab: any) => void }> = ({ 
 
           {/* 5. Ticket Sales */}
           <div className="bg-white flex flex-col">
-            <div className="bg-[#0b2820] px-2.5 py-1 flex items-center justify-between gap-1 text-white">
+            <div className="bg-[#1d4ed8] px-2.5 py-1 flex items-center justify-between gap-1 text-white">
               <span className="text-[10px] font-bold truncate">টিকিট সেলস</span>
-              <TrendingUp className="w-3 h-3 shrink-0 text-emerald-300" />
+              <TrendingUp className="w-3 h-3 shrink-0 text-[#dbeafe]" />
             </div>
             <div className="px-2.5 py-1.5 flex items-baseline justify-between gap-1">
               <span className="text-sm sm:text-base font-black text-slate-950 tabular-nums">
@@ -205,12 +205,12 @@ export const DashboardPage: React.FC<{ onNavigateTo: (tab: any) => void }> = ({ 
 
           {/* 6. Unreconciled Trips */}
           <div className="bg-white flex flex-col">
-            <div className={`${(summary?.unreconciledTrips || 0) > 0 ? 'bg-amber-700' : 'bg-[#0f766e]'} px-2.5 py-1 flex items-center justify-between gap-1 text-white`}>
+            <div className={`${(summary?.unreconciledTrips || 0) > 0 ? 'bg-[#1e3a8a]' : 'bg-[#1e40af]'} px-2.5 py-1 flex items-center justify-between gap-1 text-white`}>
               <span className="text-[10px] font-bold truncate">অসমন্বিত ট্রিপ</span>
-              <AlertCircle className="w-3 h-3 shrink-0 opacity-90" />
+              <AlertCircle className={`w-3 h-3 shrink-0 ${(summary?.unreconciledTrips || 0) > 0 ? 'text-[#93c5fd]' : 'opacity-90'}`} />
             </div>
             <div className="px-2.5 py-1.5 flex items-baseline justify-between gap-1">
-              <span className={`text-sm sm:text-base font-black tabular-nums ${(summary?.unreconciledTrips || 0) > 0 ? 'text-amber-700' : 'text-slate-950'}`}>
+              <span className={`text-sm sm:text-base font-black tabular-nums ${(summary?.unreconciledTrips || 0) > 0 ? 'text-[#1e3a8a]' : 'text-slate-950'}`}>
                 {toBengaliDigits(summary?.unreconciledTrips || 0)}
               </span>
               <span className="text-[10px] text-slate-600 truncate">সমন্বয় বাকি</span>
@@ -224,10 +224,10 @@ export const DashboardPage: React.FC<{ onNavigateTo: (tab: any) => void }> = ({ 
         <button
           type="button"
           onClick={() => onNavigateTo('seat_booking')}
-          className="px-2.5 py-2 bg-[#0d9488] hover:bg-[#0f766e] text-white rounded-xl shadow-2xs transition-colors flex items-center justify-between gap-1.5 cursor-pointer"
+          className="px-2.5 py-2 bg-[#1d4ed8] hover:bg-[#1e40af] text-white rounded-xl shadow-2xs transition-colors flex items-center justify-between gap-1.5 cursor-pointer"
         >
           <div className="min-w-0 text-left">
-            <div className="text-[9px] sm:text-[10px] text-emerald-100 leading-none truncate">সরাসরি বুকিং</div>
+            <div className="text-[9px] sm:text-[10px] text-[#dbeafe] leading-none truncate">সরাসরি বুকিং</div>
             <div className="text-[11px] sm:text-xs font-bold mt-0.5 truncate">সিট বুকিং</div>
           </div>
           <Armchair className="w-4 h-4 shrink-0 text-white" />
@@ -236,75 +236,75 @@ export const DashboardPage: React.FC<{ onNavigateTo: (tab: any) => void }> = ({ 
         <button
           type="button"
           onClick={() => onNavigateTo('daily_schedules')}
-          className="px-2.5 py-2 bg-[#0b2820] hover:bg-[#133b30] text-white rounded-xl shadow-2xs transition-colors flex items-center justify-between gap-1.5 cursor-pointer"
+          className="px-2.5 py-2 bg-[#1e3a8a] hover:bg-[#1e40af] text-white rounded-xl shadow-2xs transition-colors flex items-center justify-between gap-1.5 cursor-pointer"
         >
           <div className="min-w-0 text-left">
-            <div className="text-[9px] sm:text-[10px] text-emerald-300 leading-none truncate">শিডিউল তালিকা</div>
+            <div className="text-[9px] sm:text-[10px] text-[#bfdbfe] leading-none truncate">শিডিউল তালিকা</div>
             <div className="text-[11px] sm:text-xs font-bold mt-0.5 truncate">ট্রিপ শিডিউল</div>
           </div>
-          <Bus className="w-4 h-4 shrink-0 text-emerald-300" />
+          <Bus className="w-4 h-4 shrink-0 text-[#93c5fd]" />
         </button>
 
         <button
           type="button"
           onClick={() => onNavigateTo('ticket_print')}
-          className="px-2.5 py-2 bg-white hover:bg-[#ecfdf5] text-[#0b2820] border border-emerald-300 rounded-xl shadow-2xs transition-colors flex items-center justify-between gap-1.5 cursor-pointer"
+          className="px-2.5 py-2 bg-white hover:bg-[#eff6ff] text-[#1e3a8a] border border-[#bfdbfe] rounded-xl shadow-2xs transition-colors flex items-center justify-between gap-1.5 cursor-pointer"
         >
           <div className="min-w-0 text-left">
-            <div className="text-[9px] sm:text-[10px] text-[#0f766e] leading-none truncate">রিসিট ও প্রিন্ট</div>
+            <div className="text-[9px] sm:text-[10px] text-[#1d4ed8] leading-none truncate">রিসিট ও প্রিন্ট</div>
             <div className="text-[11px] sm:text-xs font-bold mt-0.5 truncate">টিকিট প্রিন্ট</div>
           </div>
-          <Ticket className="w-4 h-4 shrink-0 text-[#0d9488]" />
+          <Ticket className="w-4 h-4 shrink-0 text-[#1d4ed8]" />
         </button>
       </div>
 
       {/* Excel-Sheet Analytics Tables Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
         {/* Table 1: Vehicle-Wise Up/Down Collections */}
-        <div className="bg-white border border-emerald-300 rounded-xl overflow-hidden shadow-2xs flex flex-col">
-          <div className="bg-[#0b2820] px-3 py-2 flex items-center justify-between gap-2 text-white">
+        <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-2xs flex flex-col">
+          <div className="bg-[#1e3a8a] px-3 py-2 flex items-center justify-between gap-2 text-white">
             <div>
               <h3 className="font-bold text-xs">গাড়ি-ভিত্তিক আপ ও ডাউন রাজস্ব</h3>
-              <p className="text-[10px] text-emerald-200 leading-tight">প্রতিটি গাড়ির আপ এবং ডাউন কালেকশন শীট</p>
+              <p className="text-[10px] text-[#dbeafe] leading-tight">প্রতিটি গাড়ির আপ এবং ডাউন কালেকশন শীট</p>
             </div>
             <button
               type="button"
               onClick={() => onNavigateTo('reconciliation')}
-              className="text-[11px] font-bold text-[#0b2820] hover:bg-emerald-50 flex items-center gap-0.5 px-2.5 py-1 bg-white rounded-lg shrink-0 cursor-pointer shadow-2xs"
+              className="text-[11px] font-bold text-[#1e3a8a] hover:bg-[#eff6ff] flex items-center gap-0.5 px-2.5 py-1 bg-white rounded-lg shrink-0 cursor-pointer shadow-2xs"
             >
               <span>সমন্বয়</span>
-              <ArrowUpRight className="w-3 h-3 text-[#0d9488]" />
+              <ArrowUpRight className="w-3 h-3 text-[#1d4ed8]" />
             </button>
           </div>
 
           <div className="overflow-x-auto flex-1">
             <table className="w-full border-collapse text-[11px] tabular-nums">
               <thead>
-                <tr className="bg-[#e6f4ef] text-slate-950 border-b border-emerald-300">
-                  <th className="py-1.5 px-2 text-center font-bold border-r border-emerald-200 w-8">#</th>
-                  <th className="py-1.5 px-2 text-left font-bold border-r border-emerald-200">গাড়ির নম্বর</th>
-                  <th className="py-1.5 px-2 text-right font-bold border-r border-emerald-200 text-slate-950">আপ (৳)</th>
-                  <th className="py-1.5 px-2 text-right font-bold border-r border-emerald-200 text-[#0f766e]">ডাউন (৳)</th>
-                  <th className="py-1.5 px-2 text-right font-bold text-slate-950">মোট (৳)</th>
+                <tr className="bg-[#1d4ed8] text-white border-b border-[#1e40af]">
+                  <th className="py-1.5 px-2 text-center font-bold border-r border-blue-600/60 w-8">#</th>
+                  <th className="py-1.5 px-2 text-left font-bold border-r border-blue-600/60">গাড়ির নম্বর</th>
+                  <th className="py-1.5 px-2 text-right font-bold border-r border-blue-600/60">আপ (৳)</th>
+                  <th className="py-1.5 px-2 text-right font-bold border-r border-blue-600/60">ডাউন (৳)</th>
+                  <th className="py-1.5 px-2 text-right font-bold">মোট (৳)</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-emerald-100">
+              <tbody className="divide-y divide-slate-200">
                 {vehicleRows.length > 0 ? (
                   vehicleRows.map((veh, idx) => (
                     <tr
                       key={`${veh.regNo}-${idx}`}
-                      className="even:bg-[#f4fbf8] hover:bg-[#dcf5ec] transition-colors"
+                      className="odd:bg-white even:bg-[#f1f5f9] hover:bg-[#eff6ff] transition-colors"
                     >
-                      <td className="py-1.5 px-2 text-center text-slate-600 border-r border-emerald-100">
+                      <td className="py-1.5 px-2 text-center text-slate-600 border-r border-slate-200">
                         {toBengaliDigits(idx + 1)}
                       </td>
-                      <td className="py-1.5 px-2 font-bold text-slate-950 border-r border-emerald-100 whitespace-nowrap">
+                      <td className="py-1.5 px-2 font-bold text-slate-950 border-r border-slate-200 whitespace-nowrap">
                         {veh.regNo}
                       </td>
-                      <td className="py-1.5 px-2 text-right font-semibold text-slate-900 border-r border-emerald-100 whitespace-nowrap">
+                      <td className="py-1.5 px-2 text-right font-semibold text-slate-900 border-r border-slate-200 whitespace-nowrap">
                         {formatTaka(veh.upCollection)}
                       </td>
-                      <td className="py-1.5 px-2 text-right font-semibold text-[#0f766e] border-r border-emerald-100 whitespace-nowrap">
+                      <td className="py-1.5 px-2 text-right font-semibold text-[#1d4ed8] border-r border-slate-200 whitespace-nowrap">
                         {formatTaka(veh.downCollection)}
                       </td>
                       <td className="py-1.5 px-2 text-right font-black text-slate-950 whitespace-nowrap">
@@ -322,17 +322,17 @@ export const DashboardPage: React.FC<{ onNavigateTo: (tab: any) => void }> = ({ 
               </tbody>
               {vehicleRows.length > 0 && (
                 <tfoot>
-                  <tr className="bg-[#e6f4ef] border-t border-emerald-300 font-bold text-slate-950">
-                    <td colSpan={2} className="py-1.5 px-2 text-right border-r border-emerald-200">
+                  <tr className="bg-[#eff6ff] border-t-2 border-[#bfdbfe] font-bold text-[#1e3a8a]">
+                    <td colSpan={2} className="py-1.5 px-2 text-right border-r border-[#bfdbfe]">
                       সর্বমোট ({toBengaliDigits(vehicleRows.length)} গাড়ি)
                     </td>
-                    <td className="py-1.5 px-2 text-right text-slate-950 border-r border-emerald-200 whitespace-nowrap">
+                    <td className="py-1.5 px-2 text-right text-[#1e3a8a] border-r border-[#bfdbfe] whitespace-nowrap">
                       {formatTaka(totalVehicleUp)}
                     </td>
-                    <td className="py-1.5 px-2 text-right text-[#0f766e] border-r border-emerald-200 whitespace-nowrap">
+                    <td className="py-1.5 px-2 text-right text-[#1d4ed8] border-r border-[#bfdbfe] whitespace-nowrap">
                       {formatTaka(totalVehicleDown)}
                     </td>
-                    <td className="py-1.5 px-2 text-right font-black text-slate-950 whitespace-nowrap">
+                    <td className="py-1.5 px-2 text-right font-black text-[#1e3a8a] whitespace-nowrap">
                       {formatTaka(totalVehicleAll)}
                     </td>
                   </tr>
@@ -343,35 +343,35 @@ export const DashboardPage: React.FC<{ onNavigateTo: (tab: any) => void }> = ({ 
         </div>
 
         {/* Table 2: Counter-Wise Seat Sales & Revenue */}
-        <div className="bg-white border border-emerald-300 rounded-xl overflow-hidden shadow-2xs flex flex-col">
-          <div className="bg-[#0f766e] px-3 py-2 flex items-center justify-between gap-2 text-white">
+        <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-2xs flex flex-col">
+          <div className="bg-[#1e3a8a] px-3 py-2 flex items-center justify-between gap-2 text-white">
             <div>
               <h3 className="font-bold text-xs">কাউন্টার-ভিত্তিক বিক্রয় ও রাজস্ব</h3>
-              <p className="text-[10px] text-emerald-100 leading-tight">প্রতিটি কাউন্টারের আসন সংখ্যা ও মোট আদায়</p>
+              <p className="text-[10px] text-[#dbeafe] leading-tight">প্রতিটি কাউন্টারের আসন সংখ্যা ও মোট আদায়</p>
             </div>
             <button
               type="button"
               onClick={() => onNavigateTo('counters')}
-              className="text-[11px] font-bold text-[#0b2820] hover:bg-emerald-50 flex items-center gap-0.5 px-2.5 py-1 bg-white rounded-lg shrink-0 cursor-pointer shadow-2xs"
+              className="text-[11px] font-bold text-[#1e3a8a] hover:bg-[#eff6ff] flex items-center gap-0.5 px-2.5 py-1 bg-white rounded-lg shrink-0 cursor-pointer shadow-2xs"
             >
               <span>কাউন্টার</span>
-              <ArrowUpRight className="w-3 h-3 text-[#0d9488]" />
+              <ArrowUpRight className="w-3 h-3 text-[#1d4ed8]" />
             </button>
           </div>
 
           <div className="overflow-x-auto flex-1">
             <table className="w-full border-collapse text-[11px] tabular-nums">
               <thead>
-                <tr className="bg-[#e6f4ef] text-slate-950 border-b border-emerald-300">
-                  <th className="py-1.5 px-2 text-center font-bold border-r border-emerald-200 w-8">#</th>
-                  <th className="py-1.5 px-2 text-left font-bold border-r border-emerald-200">কাউন্টার</th>
-                  <th className="py-1.5 px-2 text-center font-bold border-r border-emerald-200">কোড</th>
-                  <th className="py-1.5 px-2 text-right font-bold border-r border-emerald-200">সিট</th>
-                  <th className="py-1.5 px-2 text-right font-bold border-r border-emerald-200">মোট টাকা</th>
+                <tr className="bg-[#1d4ed8] text-white border-b border-[#1e40af]">
+                  <th className="py-1.5 px-2 text-center font-bold border-r border-blue-600/60 w-8">#</th>
+                  <th className="py-1.5 px-2 text-left font-bold border-r border-blue-600/60">কাউন্টার</th>
+                  <th className="py-1.5 px-2 text-center font-bold border-r border-blue-600/60">কোড</th>
+                  <th className="py-1.5 px-2 text-right font-bold border-r border-blue-600/60">সিট</th>
+                  <th className="py-1.5 px-2 text-right font-bold border-r border-blue-600/60">মোট টাকা</th>
                   <th className="py-1.5 px-2 text-right font-bold w-11">%</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-emerald-100">
+              <tbody className="divide-y divide-slate-200">
                 {counterRows.length > 0 ? (
                   counterRows.map((cnt, idx) => {
                     const totalRev = summary?.totalCollections || 1;
@@ -379,12 +379,12 @@ export const DashboardPage: React.FC<{ onNavigateTo: (tab: any) => void }> = ({ 
                     return (
                       <tr
                         key={cnt.counterId ? cnt.counterId : `${cnt.counterCode}-${cnt.counterName}-${idx}`}
-                        className="even:bg-[#f4fbf8] hover:bg-[#dcf5ec] transition-colors"
+                        className="odd:bg-white even:bg-[#f1f5f9] hover:bg-[#eff6ff] transition-colors"
                       >
-                        <td className="py-1.5 px-2 text-center text-slate-600 border-r border-emerald-100">
+                        <td className="py-1.5 px-2 text-center text-slate-600 border-r border-slate-200">
                           {toBengaliDigits(idx + 1)}
                         </td>
-                        <td className="py-1.5 px-2 font-bold text-slate-950 border-r border-emerald-100">
+                        <td className="py-1.5 px-2 font-bold text-slate-950 border-r border-slate-200">
                           <div className="flex items-center gap-1.5 min-w-0">
                             <span
                               className="w-2.5 h-2.5 rounded-full shrink-0 border border-black/15"
@@ -393,13 +393,13 @@ export const DashboardPage: React.FC<{ onNavigateTo: (tab: any) => void }> = ({ 
                             <span className="truncate">{cnt.counterName}</span>
                           </div>
                         </td>
-                        <td className="py-1.5 px-2 text-center text-slate-700 border-r border-emerald-100 whitespace-nowrap">
+                        <td className="py-1.5 px-2 text-center text-slate-700 border-r border-slate-200 whitespace-nowrap">
                           {cnt.counterCode}
                         </td>
-                        <td className="py-1.5 px-2 text-right font-semibold text-slate-950 border-r border-emerald-100 whitespace-nowrap">
+                        <td className="py-1.5 px-2 text-right font-semibold text-slate-950 border-r border-slate-200 whitespace-nowrap">
                           {toBengaliDigits(cnt.seatsSold)}
                         </td>
-                        <td className="py-1.5 px-2 text-right font-bold text-slate-950 border-r border-emerald-100 whitespace-nowrap">
+                        <td className="py-1.5 px-2 text-right font-bold text-slate-950 border-r border-slate-200 whitespace-nowrap">
                           {formatTaka(cnt.totalRevenue)}
                         </td>
                         <td className="py-1.5 px-2 text-right text-slate-700 whitespace-nowrap">
@@ -418,17 +418,17 @@ export const DashboardPage: React.FC<{ onNavigateTo: (tab: any) => void }> = ({ 
               </tbody>
               {counterRows.length > 0 && (
                 <tfoot>
-                  <tr className="bg-[#e6f4ef] border-t border-emerald-300 font-bold text-slate-950">
-                    <td colSpan={3} className="py-1.5 px-2 text-right border-r border-emerald-200">
+                  <tr className="bg-[#eff6ff] border-t-2 border-[#bfdbfe] font-bold text-[#1e3a8a]">
+                    <td colSpan={3} className="py-1.5 px-2 text-right border-r border-[#bfdbfe]">
                       সর্বমোট ({toBengaliDigits(counterRows.length)} কাউন্টার)
                     </td>
-                    <td className="py-1.5 px-2 text-right border-r border-emerald-200 whitespace-nowrap">
+                    <td className="py-1.5 px-2 text-right border-r border-[#bfdbfe] whitespace-nowrap">
                       {toBengaliDigits(totalCounterSeats)}
                     </td>
-                    <td className="py-1.5 px-2 text-right font-black border-r border-emerald-200 whitespace-nowrap">
+                    <td className="py-1.5 px-2 text-right font-black border-r border-[#bfdbfe] whitespace-nowrap">
                       {formatTaka(totalCounterRev)}
                     </td>
-                    <td className="py-1.5 px-2 text-right text-slate-800">১০০%</td>
+                    <td className="py-1.5 px-2 text-right text-[#1e3a8a]">১০০%</td>
                   </tr>
                 </tfoot>
               )}

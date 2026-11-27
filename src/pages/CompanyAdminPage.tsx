@@ -3,6 +3,8 @@ import { useAuth } from '../context/AuthContext.tsx';
 import { api } from '../services/api.ts';
 import type { Company } from '../types/index.ts';
 import { toBengaliDigits, formatBengaliDate, getTodayDhakaDate } from '../utils/formatters.ts';
+import { useBrandLogoUrl } from '../utils/brandAssets.ts';
+import { DateInput } from '../components/DateInput.tsx';
 import {
   Building2,
   Plus,
@@ -28,6 +30,7 @@ import {
 } from 'lucide-react';
 
 export const CompanyAdminPage: React.FC = () => {
+  const brandLogoUrl = useBrandLogoUrl();
   const { isMasterAdmin, user, activeCompanyId, setActiveCompanyId } = useAuth();
   const [companies, setCompanies] = useState<Company[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -398,16 +401,16 @@ export const CompanyAdminPage: React.FC = () => {
   return (
     <div className="space-y-3">
       {/* Compact Header Card */}
-      <div className="bg-white rounded-xl border border-emerald-200 shadow-2xs overflow-hidden">
-        <div className="bg-[#0b2820] px-3 py-2 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+      <div className="bg-white rounded-xl border border-slate-200 shadow-2xs overflow-hidden">
+        <div className="bg-[#1d4ed8] px-3 py-2 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div className="min-w-0">
-            <div className="flex items-center gap-1.5 text-[10px] text-emerald-200 font-bold">
-              <span className="px-1.5 py-0.2 rounded bg-white/15">সুপার এডমিন</span>
+            <div className="flex items-center gap-1.5 text-[10px] text-[#dbeafe] font-bold">
+              <span className="px-1.5 py-0.2 rounded bg-white/15 border border-white/25 text-white">সুপার এডমিন</span>
               <span>·</span>
               <span className="truncate">{user?.name || 'Zayem Bhuiya'}</span>
             </div>
             <h2 className="text-xs sm:text-sm font-bold flex items-center gap-1.5 mt-0.5 truncate text-white">
-              <Building2 className="w-4 h-4 shrink-0 text-emerald-300" />
+              <Building2 className="w-4 h-4 shrink-0 text-[#bfdbfe]" />
               <span className="truncate">কোম্পানি ও সাবস্ক্রিপশন ব্যবস্থাপনা</span>
             </h2>
           </div>
@@ -416,7 +419,7 @@ export const CompanyAdminPage: React.FC = () => {
             <button
               type="button"
               onClick={fetchCompanies}
-              className="p-1.5 bg-white/15 hover:bg-white/25 text-white rounded-lg transition-colors cursor-pointer"
+              className="p-1.5 bg-white/15 hover:bg-white/25 border border-white/25 text-white rounded-lg transition-colors cursor-pointer"
               title="রিফ্রেশ"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
@@ -428,7 +431,7 @@ export const CompanyAdminPage: React.FC = () => {
                   type="button"
                   onClick={handleCleanupOrphans}
                   disabled={cleaningOrphans}
-                  className="px-2.5 py-1 bg-white/15 hover:bg-white/25 text-white rounded-lg text-[11px] font-bold flex items-center gap-1 transition-colors whitespace-nowrap cursor-pointer disabled:opacity-60"
+                  className="px-2.5 py-1 bg-white/15 hover:bg-white/25 border border-white/25 text-white rounded-lg text-[11px] font-bold flex items-center gap-1 transition-colors whitespace-nowrap cursor-pointer disabled:opacity-60"
                   title="পুরানো অরফান ডাটা পরিষ্কার করুন"
                 >
                   <Database className={`w-3.5 h-3.5 ${cleaningOrphans ? 'animate-pulse' : ''}`} />
@@ -439,7 +442,7 @@ export const CompanyAdminPage: React.FC = () => {
                   type="button"
                   onClick={handleSaveToLocal}
                   disabled={savingLocal}
-                  className="px-2.5 py-1 bg-[#0f766e] hover:bg-[#0d9488] text-white rounded-lg text-[11px] font-bold flex items-center gap-1 transition-colors whitespace-nowrap cursor-pointer disabled:opacity-60"
+                  className="px-2.5 py-1 bg-[#1e3a8a] hover:bg-[#1e40af] text-white border border-white/25 rounded-lg text-[11px] font-bold flex items-center gap-1 transition-colors whitespace-nowrap cursor-pointer disabled:opacity-60"
                   title="ব্রাউজার লোকাল স্টোরেজে জমা করুন"
                 >
                   <HardDrive className="w-3.5 h-3.5" />
@@ -449,7 +452,7 @@ export const CompanyAdminPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={openAddModal}
-                  className="px-2.5 py-1 bg-[#0d9488] hover:bg-[#0f766e] text-white rounded-lg text-[11px] font-extrabold flex items-center gap-1 shadow-2xs transition-all whitespace-nowrap cursor-pointer border border-emerald-400/30"
+                  className="px-2.5 py-1 bg-white hover:bg-[#eff6ff] text-[#1d4ed8] rounded-lg text-[11px] font-extrabold flex items-center gap-1 shadow-2xs transition-all whitespace-nowrap cursor-pointer border border-white/80"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>নতুন কোম্পানি</span>
@@ -462,36 +465,36 @@ export const CompanyAdminPage: React.FC = () => {
 
       {/* Messages */}
       {successMsg && (
-        <div className="p-2.5 bg-emerald-50 text-emerald-800 rounded-xl text-xs font-semibold border border-emerald-200 flex items-center justify-between">
+        <div className="p-2.5 bg-[#eff6ff] text-[#1e3a8a] rounded-xl text-xs font-semibold border border-[#bfdbfe] flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <CheckCircle className="w-4 h-4 shrink-0 text-emerald-600" />
+            <CheckCircle className="w-4 h-4 shrink-0 text-[#1d4ed8]" />
             <span>{successMsg}</span>
           </div>
-          <button type="button" onClick={() => setSuccessMsg('')} className="text-slate-400 hover:text-slate-600">
+          <button type="button" onClick={() => setSuccessMsg('')} className="text-slate-500 hover:text-[#1e3a8a]">
             <X className="w-4 h-4" />
           </button>
         </div>
       )}
 
       {errorMsg && (
-        <div className="p-2.5 bg-rose-50 text-rose-700 rounded-xl text-xs font-semibold border border-rose-200 flex items-center justify-between">
+        <div className="p-2.5 bg-red-50 text-red-700 rounded-xl text-xs font-semibold border border-red-200 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <AlertTriangle className="w-4 h-4 shrink-0 text-rose-600" />
+            <AlertTriangle className="w-4 h-4 shrink-0 text-red-600" />
             <span>{errorMsg}</span>
           </div>
-          <button type="button" onClick={() => setErrorMsg('')} className="text-slate-400 hover:text-slate-600">
+          <button type="button" onClick={() => setErrorMsg('')} className="text-red-500 hover:text-red-800">
             <X className="w-4 h-4" />
           </button>
         </div>
       )}
 
       {/* Excel-Sheet 3-Column KPI Matrix */}
-      <div className="bg-emerald-200 border border-emerald-200 rounded-xl overflow-hidden shadow-2xs">
+      <div className="bg-slate-200 border border-slate-200 rounded-xl overflow-hidden shadow-2xs">
         <div className="grid grid-cols-3 gap-px">
           <div className="bg-white flex flex-col">
-            <div className="bg-[#0b2820] px-2.5 py-1 flex items-center justify-between gap-1 text-white">
+            <div className="bg-[#1d4ed8] px-2.5 py-1 flex items-center justify-between gap-1 text-white">
               <span className="text-[10px] font-bold truncate">মোট কোম্পানি</span>
-              <Building2 className="w-3 h-3 shrink-0 opacity-90 text-emerald-300" />
+              <Building2 className="w-3 h-3 shrink-0 opacity-90 text-[#bfdbfe]" />
             </div>
             <div className="px-2.5 py-1.5 flex items-baseline justify-between gap-1">
               <span className="text-sm sm:text-base font-black text-slate-900 tabular-nums">
@@ -502,12 +505,12 @@ export const CompanyAdminPage: React.FC = () => {
           </div>
 
           <div className="bg-white flex flex-col">
-            <div className="bg-[#0d9488] px-2.5 py-1 flex items-center justify-between gap-1 text-white">
+            <div className="bg-[#1e40af] px-2.5 py-1 flex items-center justify-between gap-1 text-white">
               <span className="text-[10px] font-bold truncate">সক্রিয় সাবস্ক্রিপশন</span>
-              <ShieldCheck className="w-3 h-3 shrink-0 opacity-90" />
+              <ShieldCheck className="w-3 h-3 shrink-0 opacity-90 text-[#bfdbfe]" />
             </div>
             <div className="px-2.5 py-1.5 flex items-baseline justify-between gap-1">
-              <span className="text-sm sm:text-base font-black text-emerald-800 tabular-nums">
+              <span className="text-sm sm:text-base font-black text-[#1d4ed8] tabular-nums">
                 {toBengaliDigits(activeCount)}
               </span>
               <span className="text-[10px] text-slate-500 hidden sm:inline">সচল</span>
@@ -515,12 +518,12 @@ export const CompanyAdminPage: React.FC = () => {
           </div>
 
           <div className="bg-white flex flex-col">
-            <div className={`${expiredCount > 0 ? 'bg-amber-700' : 'bg-[#0f766e]'} px-2.5 py-1 flex items-center justify-between gap-1 text-white`}>
+            <div className="bg-[#1e3a8a] px-2.5 py-1 flex items-center justify-between gap-1 text-white">
               <span className="text-[10px] font-bold truncate">মেয়াদোত্তীর্ণ</span>
-              <AlertTriangle className="w-3 h-3 shrink-0 opacity-90" />
+              <AlertTriangle className="w-3 h-3 shrink-0 opacity-90 text-[#bfdbfe]" />
             </div>
             <div className="px-2.5 py-1.5 flex items-baseline justify-between gap-1">
-              <span className={`text-sm sm:text-base font-black tabular-nums ${expiredCount > 0 ? 'text-rose-700' : 'text-slate-900'}`}>
+              <span className="text-sm sm:text-base font-black tabular-nums text-[#1e3a8a]">
                 {toBengaliDigits(expiredCount)}
               </span>
               <span className="text-[10px] text-slate-500 hidden sm:inline">নবায়ন প্রয়োজন</span>
@@ -530,7 +533,7 @@ export const CompanyAdminPage: React.FC = () => {
       </div>
 
       {/* Compact Filter and Search Bar */}
-      <div className="bg-white p-2.5 rounded-xl border border-emerald-200 shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-2">
+      <div className="bg-white p-2.5 rounded-xl border border-slate-200 shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-2">
         <div className="relative w-full sm:w-80">
           <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
           <input
@@ -538,16 +541,18 @@ export const CompanyAdminPage: React.FC = () => {
             value={searchTerm ?? ''}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="কোম্পানির নাম বা মোবাইল নম্বর দিয়ে খুঁজুন..."
-            className="w-full pl-8 pr-2.5 py-1.5 bg-[#f4fbf8] border border-emerald-200 rounded-lg text-xs text-slate-900 outline-none focus:bg-white focus:ring-2 focus:ring-emerald-600"
+            className="w-full pl-8 pr-2.5 py-1.5 bg-[#f8fafc] border border-slate-200 rounded-lg text-xs text-slate-900 outline-none focus:bg-white focus:ring-2 focus:ring-[#1d4ed8]"
           />
         </div>
 
-        <div className="flex items-center gap-1 bg-[#e6f4ef] p-0.5 rounded-lg border border-emerald-200 w-full sm:w-auto">
+        <div className="flex items-center gap-1 bg-[#1e3a8a] p-0.5 rounded-lg border border-[#1e40af] w-full sm:w-auto">
           <button
             type="button"
             onClick={() => setStatusFilter('all')}
             className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition-all cursor-pointer flex-1 sm:flex-none ${
-              statusFilter === 'all' ? 'bg-[#0b2820] text-white shadow-2xs' : 'text-slate-700 hover:text-slate-900'
+              statusFilter === 'all'
+                ? 'bg-white/15 text-white border border-white/25 shadow-2xs'
+                : 'text-[#dbeafe] hover:bg-white/10 border border-transparent'
             }`}
           >
             সব ({toBengaliDigits(companies.length)})
@@ -556,7 +561,9 @@ export const CompanyAdminPage: React.FC = () => {
             type="button"
             onClick={() => setStatusFilter('active')}
             className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition-all cursor-pointer flex-1 sm:flex-none ${
-              statusFilter === 'active' ? 'bg-[#0d9488] text-white shadow-2xs' : 'text-emerald-800 hover:bg-emerald-50'
+              statusFilter === 'active'
+                ? 'bg-white/15 text-white border border-white/25 shadow-2xs'
+                : 'text-[#dbeafe] hover:bg-white/10 border border-transparent'
             }`}
           >
             সক্রিয় ({toBengaliDigits(activeCount)})
@@ -565,7 +572,9 @@ export const CompanyAdminPage: React.FC = () => {
             type="button"
             onClick={() => setStatusFilter('expired')}
             className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition-all cursor-pointer flex-1 sm:flex-none ${
-              statusFilter === 'expired' ? 'bg-amber-700 text-white shadow-2xs' : 'text-rose-700 hover:bg-rose-50'
+              statusFilter === 'expired'
+                ? 'bg-white/15 text-white border border-white/25 shadow-2xs'
+                : 'text-[#dbeafe] hover:bg-white/10 border border-transparent'
             }`}
           >
             মেয়াদোত্তীর্ণ ({toBengaliDigits(expiredCount)})
@@ -583,57 +592,57 @@ export const CompanyAdminPage: React.FC = () => {
             <div
               key={c.id}
               className={`bg-white rounded-xl border transition-all shadow-2xs overflow-hidden flex flex-col justify-between ${
-                isExpired ? 'border-rose-300 ring-1 ring-rose-200' : 'border-emerald-200'
+                isExpired ? 'border-[#1e3a8a] ring-1 ring-[#1e3a8a]/20' : 'border-slate-200'
               }`}
             >
               <div>
                 {/* Card Top Strip */}
-                <div className={`${isExpired ? 'bg-rose-700' : 'bg-[#0b2820]'} px-3 py-1.5 text-white flex items-center justify-between gap-2`}>
+                <div className={`${isExpired ? 'bg-[#1e3a8a]' : 'bg-[#1d4ed8]'} px-3 py-1.5 text-white flex items-center justify-between gap-2`}>
                   <div className="flex items-center gap-2 min-w-0">
                     <img
-                      src={c.logoUrl || '/logo.png'}
+                      src={c.logoUrl || brandLogoUrl}
                       alt={c.name}
-                      className="w-7 h-7 rounded-lg object-cover border border-white/50 bg-slate-900 shrink-0"
+                      className="w-7 h-7 rounded-lg object-cover border border-white/50 bg-[#1e3a8a] shrink-0"
                     />
                     <div className="min-w-0">
                       <h3 className="font-bold text-xs truncate">{c.name}</h3>
-                      <div className="text-[10px] text-white/85 flex items-center gap-1">
+                      <div className="text-[10px] text-[#dbeafe] flex items-center gap-1">
                         <Lock className="w-2.5 h-2.5" />
                         <span>সুরক্ষিত এডমিন</span>
                       </div>
                     </div>
                   </div>
 
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-white/25 text-[10px] font-bold shrink-0">
-                    {isExpired ? <AlertTriangle className="w-3 h-3" /> : <CheckCircle className="w-3 h-3" />}
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-white/15 border border-white/25 text-[10px] font-bold shrink-0">
+                    {isExpired ? <AlertTriangle className="w-3 h-3 text-[#bfdbfe]" /> : <CheckCircle className="w-3 h-3 text-[#bfdbfe]" />}
                     <span>{isExpired ? 'মেয়াদোত্তীর্ণ' : 'সক্রিয়'}</span>
                   </span>
                 </div>
 
                 {/* Sheet Body */}
                 <div className="divide-y divide-slate-200 text-[11px]">
-                  <div className="px-3 py-1.5 flex items-center justify-between gap-2 text-slate-600">
+                  <div className="px-3 py-1.5 bg-white flex items-center justify-between gap-2 text-slate-700">
                     <span className="flex items-center gap-1.5 truncate">
-                      <MapPin className="w-3 h-3 text-slate-400 shrink-0" />
+                      <MapPin className="w-3 h-3 text-[#1d4ed8] shrink-0" />
                       <span className="truncate">{c.address || 'ঠিকানা নির্ধারিত হয়নি'}</span>
                     </span>
-                    <span className="flex items-center gap-1 font-mono shrink-0 text-slate-700 font-semibold">
-                      <Phone className="w-3 h-3 text-slate-400" />
+                    <span className="flex items-center gap-1 font-mono shrink-0 text-slate-800 font-semibold">
+                      <Phone className="w-3 h-3 text-[#1d4ed8]" />
                       <span>{c.phone || '-'}</span>
                     </span>
                   </div>
 
-                  <div className="px-3 py-1.5 bg-slate-50/70 flex items-center justify-between gap-2">
-                    <span className="text-slate-500 flex items-center gap-1 font-medium">
-                      <Calendar className="w-3 h-3 text-violet-600" />
-                      <span>মেয়াদ: {toBengaliDigits(c.subscriptionExpiry)}</span>
+                  <div className="px-3 py-1.5 bg-[#f1f5f9] flex items-center justify-between gap-2">
+                    <span className="text-slate-600 flex items-center gap-1 font-medium">
+                      <Calendar className="w-3 h-3 text-[#1d4ed8]" />
+                      <span>মেয়াদ: {formatBengaliDate(c.subscriptionExpiry)}</span>
                     </span>
                     {isExpired ? (
-                      <span className="font-bold text-rose-600">
+                      <span className="font-bold text-red-600">
                         শেষ ({toBengaliDigits(Math.abs(daysLeft))} দিন আগে)
                       </span>
                     ) : (
-                      <span className={`font-bold ${daysLeft <= 15 ? 'text-amber-600' : 'text-emerald-600'}`}>
+                      <span className={`font-bold ${daysLeft <= 15 ? 'text-[#1e3a8a]' : 'text-[#1d4ed8]'}`}>
                         {toBengaliDigits(daysLeft)} দিন বাকি
                       </span>
                     )}
@@ -642,13 +651,13 @@ export const CompanyAdminPage: React.FC = () => {
               </div>
 
               {/* Action Buttons */}
-              <div className="p-2.5 bg-slate-50 border-t border-slate-200 space-y-2">
+              <div className="p-2.5 bg-[#f8fafc] border-t border-slate-200 space-y-2">
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex items-center gap-1">
                     <button
                       type="button"
                       onClick={() => handleExtendSubscription(c, 30)}
-                      className="px-2 py-1 bg-violet-50 hover:bg-violet-100 text-violet-700 border border-violet-200 rounded-md text-[10.5px] font-bold transition-colors cursor-pointer"
+                      className="px-2 py-1 bg-[#eff6ff] hover:bg-[#dbeafe] text-[#1d4ed8] border border-[#bfdbfe] rounded-md text-[10.5px] font-bold transition-colors cursor-pointer"
                       title="সাবস্ক্রিপশন ৩০ দিন বাড়ান"
                     >
                       +৩০ দিন
@@ -656,7 +665,7 @@ export const CompanyAdminPage: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => handleExtendSubscription(c, 90)}
-                      className="px-2 py-1 bg-violet-50 hover:bg-violet-100 text-violet-700 border border-violet-200 rounded-md text-[10.5px] font-bold transition-colors cursor-pointer"
+                      className="px-2 py-1 bg-[#eff6ff] hover:bg-[#dbeafe] text-[#1d4ed8] border border-[#bfdbfe] rounded-md text-[10.5px] font-bold transition-colors cursor-pointer"
                       title="সাবস্ক্রিপশন ৩ মাস বাড়ান"
                     >
                       +৩ মাস
@@ -664,7 +673,7 @@ export const CompanyAdminPage: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => handleExtendSubscription(c, 365)}
-                      className="px-2 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-md text-[10.5px] font-bold transition-colors cursor-pointer"
+                      className="px-2 py-1 bg-[#1e3a8a] hover:bg-[#1e40af] text-white border border-[#1e40af] rounded-md text-[10.5px] font-bold transition-colors cursor-pointer"
                       title="সাবস্ক্রিপশন ১ বছর বাড়ান"
                     >
                       +১ বছর
@@ -680,7 +689,7 @@ export const CompanyAdminPage: React.FC = () => {
                         setNewPin('');
                         setResetErrorMsg('');
                       }}
-                      className="p-1 text-violet-600 hover:bg-violet-100 rounded transition-colors cursor-pointer"
+                      className="p-1 text-[#1d4ed8] hover:bg-[#eff6ff] rounded transition-colors cursor-pointer"
                       title="এডমিন আইডি ও পিন রিসেট করুন"
                     >
                       <KeyRound className="w-3.5 h-3.5" />
@@ -688,7 +697,7 @@ export const CompanyAdminPage: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => openEditModal(c)}
-                      className="p-1 text-blue-600 hover:bg-blue-100 rounded transition-colors cursor-pointer"
+                      className="p-1 text-[#1d4ed8] hover:bg-[#eff6ff] rounded transition-colors cursor-pointer"
                       title="সম্পাদনা করুন"
                     >
                       <Edit className="w-3.5 h-3.5" />
@@ -696,7 +705,7 @@ export const CompanyAdminPage: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => openDeleteModal(c)}
-                      className="p-1 text-rose-600 hover:bg-rose-100 rounded transition-colors cursor-pointer"
+                      className="p-1 text-red-600 hover:bg-red-50 rounded transition-colors cursor-pointer"
                       title="কোম্পানি ও এর সব ডাটা নিরাপদভাবে মুছুন"
                       aria-label={`${c.name} মুছুন`}
                     >
@@ -712,7 +721,7 @@ export const CompanyAdminPage: React.FC = () => {
                     setActiveCompanyId(c.id);
                     setSuccessMsg(`"${c.name}" এর ড্যাশবোর্ডে প্রবেশ করেছেন। এখন আপনি এই কোম্পানির ট্রিপ, বাস ও কাউন্টার ব্যবস্থাপনা করতে পারবেন।`);
                   }}
-                  className="w-full px-3 py-1.5 bg-[#0d9488] hover:bg-[#0f766e] text-white rounded-lg text-[11px] font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
+                  className="w-full px-3 py-1.5 bg-[#1d4ed8] hover:bg-[#1e40af] text-white rounded-lg text-[11px] font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
                 >
                   <ExternalLink className="w-3.5 h-3.5" />
                   <span>কোম্পানি ড্যাশবোর্ডে প্রবেশ করুন</span>
@@ -725,7 +734,7 @@ export const CompanyAdminPage: React.FC = () => {
 
       {filteredCompanies.length === 0 && !loading && (
         <div className="bg-white p-12 text-center rounded-3xl border border-dashed border-slate-300">
-          <Building2 className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+          <Building2 className="w-12 h-12 text-[#93c5fd] mx-auto mb-3" />
           <div className="text-sm font-bold text-slate-700">কোনো কোম্পানি খুঁজে পাওয়া যায়নি</div>
           <p className="text-xs text-slate-400 mt-1">
             নতুন পরিবহন কোম্পানি ও সাবস্ক্রিপশন তৈরি করতে উপরের বোতামে ক্লিক করুন।
@@ -736,20 +745,20 @@ export const CompanyAdminPage: React.FC = () => {
       {/* Add / Edit Company Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
-          <div className="bg-white rounded-t-2xl sm:rounded-2xl max-w-lg w-full shadow-2xl border border-emerald-200 max-h-[92dvh] sm:max-h-[88dvh] flex flex-col overflow-hidden">
-            <div className="shrink-0 px-4 py-3 bg-[#0b2820] text-white flex items-center justify-between gap-2">
+          <div className="bg-white rounded-t-2xl sm:rounded-2xl max-w-lg w-full shadow-2xl border border-slate-200 max-h-[92dvh] sm:max-h-[88dvh] flex flex-col overflow-hidden">
+            <div className="shrink-0 px-4 py-3 bg-[#1d4ed8] text-white flex items-center justify-between gap-2">
               <div className="min-w-0">
                 <h3 className="text-sm sm:text-base font-bold text-white truncate">
                   {editingCompany ? 'কোম্পানি তথ্য ও সাবস্ক্রিপশন সম্পাদনা' : 'নতুন কোম্পানি ও সাবস্ক্রিপশন তৈরি'}
                 </h3>
-                <p className="text-[11px] text-emerald-200/80 truncate">
+                <p className="text-[11px] text-[#dbeafe] truncate">
                   কোম্পানির নাম, নিজস্ব লোগো, এডমিন আইডি, পিন এবং মেয়াদের তারিখ দিন
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => setIsModalOpen(false)}
-                className="p-1.5 text-emerald-100 hover:text-white hover:bg-white/15 rounded-lg cursor-pointer shrink-0"
+                className="p-1.5 text-[#dbeafe] hover:text-white hover:bg-white/15 rounded-lg cursor-pointer shrink-0"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -758,8 +767,8 @@ export const CompanyAdminPage: React.FC = () => {
             <form onSubmit={handleSave} className="flex-1 flex flex-col min-h-0 overflow-hidden">
               <div className="flex-1 overflow-y-auto overscroll-contain p-4 space-y-3.5 text-slate-900">
                 {errorMsg && (
-                  <div className="p-3 bg-rose-50 text-rose-700 text-xs font-semibold rounded-xl border border-rose-200 flex items-center gap-2">
-                    <AlertTriangle className="w-4 h-4 shrink-0" />
+                  <div className="p-3 bg-red-50 text-red-700 text-xs font-semibold rounded-xl border border-red-200 flex items-center gap-2">
+                    <AlertTriangle className="w-4 h-4 shrink-0 text-red-600" />
                     <span>{errorMsg}</span>
                   </div>
                 )}
@@ -773,7 +782,7 @@ export const CompanyAdminPage: React.FC = () => {
                     value={name ?? ''}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="যেমন: ঢাকা এক্সপ্রেস, সোনার বাংলা ট্রাভেলস"
-                    className="w-full px-3 py-2 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs text-slate-900 font-semibold outline-none focus:bg-white focus:ring-2 focus:ring-emerald-600"
+                    className="w-full px-3 py-2 bg-[#f8fafc] border border-slate-200 rounded-xl text-xs text-slate-900 font-semibold outline-none focus:bg-white focus:ring-2 focus:ring-[#1d4ed8]"
                     required
                   />
                 </div>
@@ -782,25 +791,25 @@ export const CompanyAdminPage: React.FC = () => {
                   <label className="block text-xs font-bold text-slate-800 mb-1.5">
                     কোম্পানির নিজস্ব লোগো (গ্যালারি / ড্রাইভ / লোকাল স্টোরেজ থেকে আপলোড)
                   </label>
-                  <div className="flex items-center gap-3 p-3 bg-[#f4fbf8] border border-emerald-200 rounded-2xl">
+                  <div className="flex items-center gap-3 p-3 bg-[#f8fafc] border border-slate-200 rounded-2xl">
                     {logoUrl ? (
                       <div className="relative group shrink-0">
                         <img
                           src={logoUrl}
                           alt="Company Logo"
-                          className="w-14 h-14 rounded-xl object-cover border-2 border-[#0d9488] shadow-sm bg-white"
+                          className="w-14 h-14 rounded-xl object-cover border-2 border-[#1d4ed8] shadow-sm bg-white"
                         />
                         <button
                           type="button"
                           onClick={() => setLogoUrl('')}
-                          className="absolute -top-1.5 -right-1.5 bg-rose-600 text-white rounded-full p-1 shadow-md hover:bg-rose-700 cursor-pointer"
+                          className="absolute -top-1.5 -right-1.5 bg-[#1e3a8a] text-white rounded-full p-1 shadow-md hover:bg-[#1e40af] cursor-pointer"
                           title="লোগো মুছে ফেলুন"
                         >
                           <X className="w-3 h-3" />
                         </button>
                       </div>
                     ) : (
-                      <div className="w-14 h-14 rounded-xl border-2 border-dashed border-emerald-300 flex items-center justify-center text-emerald-500 bg-white shrink-0">
+                      <div className="w-14 h-14 rounded-xl border-2 border-dashed border-slate-300 flex items-center justify-center text-[#1d4ed8] bg-white shrink-0">
                         <Building2 className="w-6 h-6" />
                       </div>
                     )}
@@ -809,7 +818,7 @@ export const CompanyAdminPage: React.FC = () => {
                       <label
                         htmlFor="company-logo-file-input"
                         className={`inline-flex items-center gap-2 px-3 py-1.5 ${
-                          isProcessingLogo ? 'bg-emerald-400' : 'bg-[#0d9488] hover:bg-[#0f766e]'
+                          isProcessingLogo ? 'bg-[#1e3a8a]' : 'bg-[#1d4ed8] hover:bg-[#1e40af]'
                         } text-white rounded-xl text-xs font-bold cursor-pointer transition-colors shadow-xs`}
                       >
                         {isProcessingLogo ? (
@@ -848,7 +857,7 @@ export const CompanyAdminPage: React.FC = () => {
                       value={adminLoginId ?? ''}
                       onChange={(e) => setAdminLoginId(e.target.value)}
                       placeholder={editingCompany ? 'অপরিবর্তিত রাখতে খালি রাখুন' : 'যেমন: admin01, transport01'}
-                      className="w-full px-3 py-2 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs text-slate-900 font-mono font-bold outline-none focus:bg-white focus:ring-2 focus:ring-emerald-600"
+                      className="w-full px-3 py-2 bg-[#f8fafc] border border-slate-200 rounded-xl text-xs text-slate-900 font-mono font-bold outline-none focus:bg-white focus:ring-2 focus:ring-[#1d4ed8]"
                       required={!editingCompany}
                     />
                   </div>
@@ -863,7 +872,7 @@ export const CompanyAdminPage: React.FC = () => {
                       value={pin ?? ''}
                       onChange={(e) => setPin(e.target.value)}
                       placeholder={editingCompany ? 'পরিবর্তন না করলে খালি রাখুন' : 'যেমন: 1234'}
-                      className="w-full px-3 py-2 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs text-slate-900 font-mono outline-none focus:bg-white focus:ring-2 focus:ring-emerald-600"
+                      className="w-full px-3 py-2 bg-[#f8fafc] border border-slate-200 rounded-xl text-xs text-slate-900 font-mono outline-none focus:bg-white focus:ring-2 focus:ring-[#1d4ed8]"
                       required={!editingCompany}
                     />
                   </div>
@@ -873,11 +882,10 @@ export const CompanyAdminPage: React.FC = () => {
                   <label className="block text-xs font-bold text-slate-800 mb-1">
                     সাবস্ক্রিপশনের মেয়াদ শেষ হওয়ার তারিখ *
                   </label>
-                  <input
-                    type="date"
+                  <DateInput
                     value={subscriptionExpiry ?? ''}
                     onChange={(e) => setSubscriptionExpiry(e.target.value)}
-                    className="w-full px-3 py-2 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs text-slate-900 font-bold outline-none focus:bg-white focus:ring-2 focus:ring-emerald-600"
+                    className="w-full px-3 py-2 bg-[#f8fafc] border border-slate-200 rounded-xl text-xs text-slate-900 font-bold outline-none focus:bg-white focus:ring-2 focus:ring-[#1d4ed8]"
                     required
                   />
                   <div className="flex flex-wrap items-center gap-2 mt-2">
@@ -896,7 +904,7 @@ export const CompanyAdminPage: React.FC = () => {
                           d.setDate(d.getDate() + p.days);
                           setSubscriptionExpiry(d.toISOString().split('T')[0]);
                         }}
-                        className="text-[10px] px-2 py-0.5 rounded bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-900 font-semibold cursor-pointer"
+                        className="text-[10px] px-2 py-0.5 rounded bg-[#eff6ff] hover:bg-[#dbeafe] border border-[#bfdbfe] text-[#1e3a8a] font-semibold cursor-pointer"
                       >
                         {p.label}
                       </button>
@@ -914,7 +922,7 @@ export const CompanyAdminPage: React.FC = () => {
                       value={address ?? ''}
                       onChange={(e) => setAddress(e.target.value)}
                       placeholder="টার্মিনাল বা প্রধান অফিস"
-                      className="w-full px-3 py-2 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs text-slate-900 outline-none focus:bg-white focus:ring-2 focus:ring-emerald-600"
+                      className="w-full px-3 py-2 bg-[#f8fafc] border border-slate-200 rounded-xl text-xs text-slate-900 outline-none focus:bg-white focus:ring-2 focus:ring-[#1d4ed8]"
                     />
                   </div>
 
@@ -927,24 +935,24 @@ export const CompanyAdminPage: React.FC = () => {
                       value={phone ?? ''}
                       onChange={(e) => setPhone(e.target.value)}
                       placeholder="01711-XXXXXX"
-                      className="w-full px-3 py-2 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs text-slate-900 outline-none focus:bg-white focus:ring-2 focus:ring-emerald-600"
+                      className="w-full px-3 py-2 bg-[#f8fafc] border border-slate-200 rounded-xl text-xs text-slate-900 outline-none focus:bg-white focus:ring-2 focus:ring-[#1d4ed8]"
                     />
                   </div>
                 </div>
               </div>
 
-              <div className="shrink-0 px-4 py-3 bg-[#f0f9f6] border-t border-emerald-200 flex items-center justify-end gap-2 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+              <div className="shrink-0 px-4 py-3 bg-[#eff6ff] border-t border-[#bfdbfe] flex items-center justify-end gap-2 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2.5 min-h-[44px] bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 rounded-xl text-xs font-bold cursor-pointer"
+                  className="px-4 py-2.5 min-h-[44px] bg-white hover:bg-[#f8fafc] border border-slate-200 text-[#1e3a8a] rounded-xl text-xs font-bold cursor-pointer"
                 >
                   বাতিল
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="flex-1 sm:flex-none px-5 py-2.5 min-h-[44px] bg-[#0d9488] hover:bg-[#0f766e] text-white rounded-xl text-xs font-bold shadow-md flex items-center justify-center gap-1.5 cursor-pointer"
+                  className="flex-1 sm:flex-none px-5 py-2.5 min-h-[44px] bg-[#1d4ed8] hover:bg-[#1e40af] text-white rounded-xl text-xs font-bold shadow-md flex items-center justify-center gap-1.5 cursor-pointer"
                 >
                   <CheckCircle className="w-4 h-4" />
                   <span>{editingCompany ? 'আপডেট সংরক্ষণ' : 'কোম্পানি তৈরি করুন'}</span>
@@ -958,21 +966,21 @@ export const CompanyAdminPage: React.FC = () => {
       {/* Quick Reset Admin ID & PIN Modal */}
       {resetModalCompany && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
-          <div className="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl shadow-2xl border border-emerald-200 overflow-hidden flex flex-col max-h-[92dvh] sm:max-h-[88dvh]">
-            <div className="shrink-0 px-4 py-3 bg-[#0b2820] text-white flex items-center justify-between gap-2">
+          <div className="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[92dvh] sm:max-h-[88dvh]">
+            <div className="shrink-0 px-4 py-3 bg-[#1d4ed8] text-white flex items-center justify-between gap-2">
               <div className="flex items-center gap-2.5 min-w-0">
-                <div className="w-8 h-8 rounded-lg bg-[#0d9488]/30 text-emerald-300 flex items-center justify-center font-bold shrink-0">
+                <div className="w-8 h-8 rounded-lg bg-white/15 border border-white/25 text-[#bfdbfe] flex items-center justify-center font-bold shrink-0">
                   <KeyRound className="w-4 h-4" />
                 </div>
                 <div className="min-w-0">
                   <h3 className="font-bold text-sm text-white truncate">এডমিন লগইন আইডি ও পিন রিসেট</h3>
-                  <div className="text-[11px] text-emerald-200/80 truncate">{resetModalCompany.name}</div>
+                  <div className="text-[11px] text-[#dbeafe] truncate">{resetModalCompany.name}</div>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => setResetModalCompany(null)}
-                className="p-1.5 text-emerald-100 hover:text-white rounded-lg hover:bg-white/15 transition-colors cursor-pointer shrink-0"
+                className="p-1.5 text-[#dbeafe] hover:text-white rounded-lg hover:bg-white/15 transition-colors cursor-pointer shrink-0"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -981,8 +989,8 @@ export const CompanyAdminPage: React.FC = () => {
             <form onSubmit={handleResetSubmit} className="flex-1 flex flex-col min-h-0 overflow-hidden">
               <div className="flex-1 overflow-y-auto overscroll-contain p-4 space-y-3.5 text-slate-900">
                 {resetErrorMsg && (
-                  <div className="p-3 bg-rose-50 border border-rose-200 text-rose-800 text-xs font-semibold rounded-xl flex items-center gap-2">
-                    <AlertTriangle className="w-4 h-4 shrink-0" />
+                  <div className="p-3 bg-red-50 border border-red-200 text-red-700 text-xs font-semibold rounded-xl flex items-center gap-2">
+                    <AlertTriangle className="w-4 h-4 shrink-0 text-red-600" />
                     <span>{resetErrorMsg}</span>
                   </div>
                 )}
@@ -996,7 +1004,7 @@ export const CompanyAdminPage: React.FC = () => {
                     value={newAdminLoginId}
                     onChange={(e) => setNewAdminLoginId(e.target.value)}
                     placeholder="যেমন: chandra01"
-                    className="w-full px-3.5 py-2.5 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs text-slate-900 font-mono font-bold outline-none focus:bg-white focus:ring-2 focus:ring-emerald-600"
+                    className="w-full px-3.5 py-2.5 bg-[#f8fafc] border border-slate-200 rounded-xl text-xs text-slate-900 font-mono font-bold outline-none focus:bg-white focus:ring-2 focus:ring-[#1d4ed8]"
                     required
                   />
                 </div>
@@ -1011,7 +1019,7 @@ export const CompanyAdminPage: React.FC = () => {
                     value={newPin}
                     onChange={(e) => setNewPin(e.target.value)}
                     placeholder="যেমন: 1234"
-                    className="w-full px-3.5 py-2.5 bg-[#f4fbf8] border border-emerald-200 rounded-xl text-xs text-slate-900 font-mono font-bold outline-none focus:bg-white focus:ring-2 focus:ring-emerald-600"
+                    className="w-full px-3.5 py-2.5 bg-[#f8fafc] border border-slate-200 rounded-xl text-xs text-slate-900 font-mono font-bold outline-none focus:bg-white focus:ring-2 focus:ring-[#1d4ed8]"
                     required
                   />
                   <div className="text-[10px] text-slate-600 mt-1">
@@ -1020,18 +1028,18 @@ export const CompanyAdminPage: React.FC = () => {
                 </div>
               </div>
 
-              <div className="shrink-0 px-4 py-3 bg-[#f0f9f6] border-t border-emerald-200 flex items-center justify-end gap-2 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+              <div className="shrink-0 px-4 py-3 bg-[#eff6ff] border-t border-[#bfdbfe] flex items-center justify-end gap-2 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
                 <button
                   type="button"
                   onClick={() => setResetModalCompany(null)}
-                  className="px-4 py-2.5 min-h-[44px] bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 rounded-xl text-xs font-bold cursor-pointer"
+                  className="px-4 py-2.5 min-h-[44px] bg-white hover:bg-[#f8fafc] border border-slate-200 text-[#1e3a8a] rounded-xl text-xs font-bold cursor-pointer"
                 >
                   বাতিল
                 </button>
                 <button
                   type="submit"
                   disabled={resetSubmitting}
-                  className="flex-1 sm:flex-none px-5 py-2.5 min-h-[44px] bg-[#0d9488] hover:bg-[#0f766e] text-white rounded-xl text-xs font-bold shadow-md flex items-center justify-center gap-1.5 cursor-pointer"
+                  className="flex-1 sm:flex-none px-5 py-2.5 min-h-[44px] bg-[#1d4ed8] hover:bg-[#1e40af] text-white rounded-xl text-xs font-bold shadow-md flex items-center justify-center gap-1.5 cursor-pointer"
                 >
                   <Lock className="w-3.5 h-3.5" />
                   <span>{resetSubmitting ? 'সংরক্ষণ হচ্ছে...' : 'আইডি ও পিন আপডেট করুন'}</span>
@@ -1050,24 +1058,24 @@ export const CompanyAdminPage: React.FC = () => {
           aria-modal="true"
           aria-labelledby="delete-company-title"
         >
-          <div className="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl shadow-2xl border border-rose-200 flex flex-col max-h-[92dvh] sm:max-h-[88dvh] overflow-hidden">
-            <div className="shrink-0 px-4 py-3 bg-rose-700 text-white flex items-center justify-between gap-2">
+          <div className="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl shadow-2xl border border-slate-200 flex flex-col max-h-[92dvh] sm:max-h-[88dvh] overflow-hidden">
+            <div className="shrink-0 px-4 py-3 bg-[#1d4ed8] text-white flex items-center justify-between gap-2">
               <div className="flex items-center gap-2.5 min-w-0">
-                <div className="w-8 h-8 rounded-lg bg-white/15 flex items-center justify-center shrink-0">
-                  <AlertTriangle className="w-4 h-4" />
+                <div className="w-8 h-8 rounded-lg bg-white/15 border border-white/25 flex items-center justify-center shrink-0">
+                  <AlertTriangle className="w-4 h-4 text-[#bfdbfe]" />
                 </div>
                 <div className="min-w-0">
                   <h3 id="delete-company-title" className="font-bold text-sm truncate">
                     কোম্পানি স্থায়ীভাবে মুছে ফেলার নিশ্চিতকরণ
                   </h3>
-                  <div className="text-[11px] text-rose-100 truncate">{deleteTargetCompany.name}</div>
+                  <div className="text-[11px] text-[#dbeafe] truncate">{deleteTargetCompany.name}</div>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => !deletingCompany && setDeleteTargetCompany(null)}
                 disabled={deletingCompany}
-                className="p-1.5 text-rose-100 hover:text-white rounded-lg hover:bg-white/10 transition-colors cursor-pointer disabled:opacity-50 shrink-0"
+                className="p-1.5 text-[#dbeafe] hover:text-white rounded-lg hover:bg-white/15 transition-colors cursor-pointer disabled:opacity-50 shrink-0"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -1078,13 +1086,13 @@ export const CompanyAdminPage: React.FC = () => {
                 আপনি কি নিশ্চিতভাবে <strong className="text-slate-900">"{deleteTargetCompany.name}"</strong> কোম্পানি ও এর অধীনস্থ সকল রেকর্ড মুছে ফেলতে চান?
               </div>
 
-              <div className="bg-slate-50 rounded-xl border border-slate-200 p-3">
+              <div className="bg-[#f8fafc] rounded-xl border border-slate-200 p-3">
                 <div className="text-[11px] font-bold text-slate-600 mb-2">
                   এই কোম্পানির সাথে যেসব নিজস্ব ডাটা মুছে যাবে:
                 </div>
                 {loadingDeleteStats ? (
                   <div className="py-4 text-center text-xs text-slate-500 flex items-center justify-center gap-2">
-                    <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin text-[#1d4ed8]" />
                     <span>ডাটাবেইজ রেকর্ড হিসাব করা হচ্ছে...</span>
                   </div>
                 ) : (
@@ -1113,17 +1121,17 @@ export const CompanyAdminPage: React.FC = () => {
                 )}
               </div>
 
-              <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-[11px] text-emerald-900 font-medium leading-relaxed">
+              <div className="p-3 bg-[#eff6ff] border border-[#bfdbfe] rounded-xl text-[11px] text-[#1e3a8a] font-medium leading-relaxed">
                 সুরক্ষা নিশ্চিত: কেবল এই কোম্পানির (<span className="font-mono">{deleteTargetCompany.id}</span>) নিজস্ব ডাটা ও ব্রাউজার ক্যাশ মুছে যাবে। অন্য কোনো কোম্পানির ডাটাবেইজ, টিকিট বা সুপার এডমিন অ্যাকাউন্টে কোনো প্রভাব পড়বে না।
               </div>
             </div>
 
-            <div className="shrink-0 px-4 py-3 bg-[#f0f9f6] border-t border-slate-200 flex items-center justify-end gap-2 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+            <div className="shrink-0 px-4 py-3 bg-[#eff6ff] border-t border-[#bfdbfe] flex items-center justify-end gap-2 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
               <button
                 type="button"
                 onClick={() => setDeleteTargetCompany(null)}
                 disabled={deletingCompany}
-                className="px-4 py-2.5 min-h-[44px] bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 rounded-xl text-xs font-bold whitespace-nowrap cursor-pointer disabled:opacity-50"
+                className="px-4 py-2.5 min-h-[44px] bg-white hover:bg-[#f8fafc] border border-slate-200 text-[#1e3a8a] rounded-xl text-xs font-bold whitespace-nowrap cursor-pointer disabled:opacity-50"
               >
                 বাতিল করুন
               </button>
@@ -1131,7 +1139,7 @@ export const CompanyAdminPage: React.FC = () => {
                 type="button"
                 onClick={confirmDeleteCompany}
                 disabled={deletingCompany || loadingDeleteStats}
-                className="flex-1 sm:flex-none px-4 py-2.5 min-h-[44px] bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold shadow-sm flex items-center justify-center gap-1.5 whitespace-nowrap cursor-pointer disabled:opacity-50"
+                className="flex-1 sm:flex-none px-4 py-2.5 min-h-[44px] bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold shadow-sm flex items-center justify-center gap-1.5 whitespace-nowrap cursor-pointer disabled:opacity-50"
               >
                 <Trash2 className="w-3.5 h-3.5" />
                 <span>{deletingCompany ? 'মুছে ফেলা হচ্ছে...' : 'কোম্পানি ও সব ডাটা মুছুন'}</span>

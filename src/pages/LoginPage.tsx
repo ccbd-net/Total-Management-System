@@ -10,8 +10,10 @@ import {
   Zap,
 } from 'lucide-react';
 import { PWAInstallBanner } from '../components/PWAInstallBanner.tsx';
+import { useBrandLogoUrl } from '../utils/brandAssets.ts';
 
 export const LoginPage: React.FC = () => {
+  const brandLogoUrl = useBrandLogoUrl();
   const { login } = useAuth();
   const [loginId, setLoginId] = useState<string>('');
   const [pin, setPin] = useState<string>('');
@@ -56,26 +58,26 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-[100dvh] bg-[#f0f9f6] text-slate-900 flex flex-col justify-between">
+    <div className="min-h-[100dvh] bg-[#f8fafc] text-slate-900 flex flex-col justify-between">
       <PWAInstallBanner />
 
       {/* Container */}
       <div className="w-full max-w-md mx-auto my-auto p-3 sm:p-4">
         {/* Clean Enterprise Login Card */}
-        <div className="bg-white rounded-2xl shadow-lg border border-emerald-200 overflow-hidden">
-          <div className="h-1.5 w-full bg-[#0d9488]" />
+        <div className="bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden">
+          <div className="h-1.5 w-full bg-[#1d4ed8]" />
 
           {/* App Logo & Header */}
-          <div className="px-5 pt-5 pb-4 bg-[#f7fcfa] border-b border-emerald-100 text-center">
+          <div className="px-5 pt-5 pb-4 bg-[#eff6ff] border-b border-[#bfdbfe] text-center">
             <img
-              src="/assets/aistudio/1795651588938_2_f0f59799.jpg"
+              src={brandLogoUrl}
               alt="Vehicles Management System"
-              className="w-16 h-16 rounded-2xl object-cover shadow-sm border border-emerald-200 mx-auto mb-2.5 bg-[#0b2820]"
+              className="w-16 h-16 rounded-2xl object-cover shadow-sm border border-[#1e40af] mx-auto mb-2.5 bg-[#1d4ed8]"
             />
             <h1 className="text-lg font-black text-slate-950 tracking-tight">
               Vehicles Management System
             </h1>
-            <p className="text-xs font-bold text-[#0f766e] mt-0.5">
+            <p className="text-xs font-bold text-[#1d4ed8] mt-0.5">
               স্মার্ট বাস ও কাউন্টার টিকেটিং ম্যানেজমেন্ট · Data&Code
             </p>
           </div>
@@ -89,8 +91,8 @@ export const LoginPage: React.FC = () => {
             </div>
 
             {error && (
-              <div className="mb-4 p-2.5 bg-rose-50 text-rose-700 rounded-xl text-xs font-semibold flex items-center gap-2 border border-rose-200">
-                <ShieldAlert className="w-4 h-4 shrink-0" />
+              <div className="mb-4 p-2.5 bg-[#eff6ff] text-[#1e3a8a] rounded-xl text-xs font-semibold flex items-center gap-2 border border-[#1d4ed8]">
+                <ShieldAlert className="w-4 h-4 shrink-0 text-[#1d4ed8]" />
                 <span>{error}</span>
               </div>
             )}
@@ -101,7 +103,7 @@ export const LoginPage: React.FC = () => {
                   লগইন আইডি (Login ID)
                 </label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-emerald-700">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#1d4ed8]">
                     <UserIcon className="w-4 h-4" />
                   </div>
                   <input
@@ -109,7 +111,7 @@ export const LoginPage: React.FC = () => {
                     value={loginId}
                     onChange={(e) => setLoginId(e.target.value)}
                     placeholder="আপনার লগইন আইডি লিখুন"
-                    className="w-full pl-9 pr-3 py-2.5 bg-[#f7fcfa] border border-emerald-300 rounded-xl text-xs text-slate-950 font-semibold focus:outline-none focus:ring-2 focus:ring-[#0d9488] focus:bg-white transition-all font-mono"
+                    className="w-full pl-9 pr-3 py-2.5 bg-[#f8fafc] border border-slate-200 rounded-xl text-xs text-slate-950 font-semibold focus:outline-none focus:ring-2 focus:ring-[#1d4ed8] focus:bg-white transition-all font-mono"
                     autoComplete="username"
                     required
                   />
@@ -121,7 +123,7 @@ export const LoginPage: React.FC = () => {
                   সিকিউর পিন কোড (৪-৬ ডিজিট)
                 </label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-emerald-700">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#1d4ed8]">
                     <KeyRound className="w-4 h-4" />
                   </div>
                   <input
@@ -131,7 +133,7 @@ export const LoginPage: React.FC = () => {
                     value={pin}
                     onChange={(e) => setPin(e.target.value)}
                     placeholder="আপনার পিন কোড লিখুন"
-                    className="w-full pl-9 pr-3 py-2.5 bg-[#f7fcfa] border border-emerald-300 rounded-xl text-xs text-slate-950 font-bold tracking-widest font-mono focus:outline-none focus:ring-2 focus:ring-[#0d9488] focus:bg-white transition-all"
+                    className="w-full pl-9 pr-3 py-2.5 bg-[#f8fafc] border border-slate-200 rounded-xl text-xs text-slate-950 font-bold tracking-widest font-mono focus:outline-none focus:ring-2 focus:ring-[#1d4ed8] focus:bg-white transition-all"
                     autoComplete="current-password"
                     required
                   />
@@ -141,7 +143,7 @@ export const LoginPage: React.FC = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full min-h-[44px] mt-1 py-2.5 bg-[#0d9488] hover:bg-[#0f766e] text-white rounded-xl text-xs sm:text-sm font-bold shadow-sm transition-colors flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
+                className="w-full min-h-[44px] mt-1 py-2.5 bg-[#1d4ed8] hover:bg-[#1e40af] text-white rounded-xl text-xs sm:text-sm font-bold shadow-sm transition-colors flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
               >
                 {loading ? (
                   'যাচাই করা হচ্ছে...'
@@ -159,9 +161,9 @@ export const LoginPage: React.FC = () => {
                 type="button"
                 onClick={handleQuickAdminLogin}
                 disabled={loading}
-                className="w-full min-h-[44px] py-2 bg-[#0b2820] hover:bg-[#133b30] text-white rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+                className="w-full min-h-[44px] py-2 bg-[#1e40af] hover:bg-[#1e3a8a] text-white rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
               >
-                <Zap className="w-3.5 h-3.5 text-emerald-300" />
+                <Zap className="w-3.5 h-3.5 text-[#93c5fd]" />
                 <span>১-ক্লিকে মাস্টার এডমিন লগইন (ID: admin, PIN: 1234)</span>
               </button>
             </div>
@@ -170,7 +172,7 @@ export const LoginPage: React.FC = () => {
 
         {/* Security Notice */}
         <div className="mt-3 text-center text-[11px] text-slate-700 font-medium flex items-center justify-center gap-1.5">
-          <Lock className="w-3.5 h-3.5 text-[#0f766e]" />
+          <Lock className="w-3.5 h-3.5 text-[#1d4ed8]" />
           <span>সার্ভার-সাইড হ্যাশ ও সিকিউর পিন ভেরিফিকেশন সচল</span>
         </div>
       </div>

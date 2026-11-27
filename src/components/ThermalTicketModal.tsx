@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import type { Booking } from '../types/index.ts';
 import { useAuth } from '../context/AuthContext.tsx';
-import { formatTaka, toBengaliDigits, formatBengaliDateTime } from '../utils/formatters.ts';
+import { formatTaka, toBengaliDigits, formatBengaliDate, formatBengaliDateTime, formatTime12Hour } from '../utils/formatters.ts';
 import { api } from '../services/api.ts';
 import { getBookingFareParts } from '../utils/routeSort.ts';
 import { downloadElementAsPDF, openPrintWindow } from '../utils/pdfGenerator.ts';
@@ -167,11 +167,11 @@ export const ThermalTicketModal: React.FC<ThermalTicketModalProps> = ({
               </tr>
               <tr>
                 <td className="lbl" style={{ width: '42%', textAlign: 'left', color: '#1e293b', padding: '2px 0', whiteSpace: 'nowrap' }}>যাত্রা তারিখ:</td>
-                <td className="val" style={{ width: '58%', textAlign: 'right', fontWeight: 700, color: '#000000', padding: '2px 0' }}>{booking.tripDate}</td>
+                <td className="val" style={{ width: '58%', textAlign: 'right', fontWeight: 700, color: '#000000', padding: '2px 0' }}>{formatBengaliDate(booking.tripDate)}</td>
               </tr>
               <tr>
                 <td className="lbl" style={{ width: '42%', textAlign: 'left', fontWeight: 700, color: '#0f172a', padding: '2px 0', whiteSpace: 'nowrap' }}>ছাড়ার সময়:</td>
-                <td className="val" style={{ width: '58%', textAlign: 'right', fontWeight: 900, fontSize: '12px', color: '#000000', padding: '2px 0' }}>{booking.tripTime}</td>
+                <td className="val" style={{ width: '58%', textAlign: 'right', fontWeight: 900, fontSize: '12px', color: '#000000', padding: '2px 0' }}>{formatTime12Hour(booking.tripTime)}</td>
               </tr>
               <tr>
                 <td className="lbl" style={{ width: '42%', textAlign: 'left', color: '#1e293b', padding: '2px 0', whiteSpace: 'nowrap' }}>গাড়ির নং:</td>
@@ -341,21 +341,21 @@ export const ThermalTicketModal: React.FC<ThermalTicketModalProps> = ({
   return (
     <>
       <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/70 backdrop-blur-xs p-0 sm:p-4 animate-in fade-in duration-200">
-        <div className="bg-white w-full max-w-lg rounded-t-2xl sm:rounded-2xl shadow-2xl border border-emerald-200 overflow-hidden flex flex-col max-h-[92dvh] sm:max-h-[90dvh]">
+        <div className="bg-white w-full max-w-lg rounded-t-2xl sm:rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[92dvh] sm:max-h-[90dvh]">
           {/* Sticky Header */}
-          <div className="shrink-0 px-4 py-3 bg-[#0b2820] text-white flex items-center justify-between gap-2 border-b border-[#071d17]">
+          <div className="shrink-0 px-4 py-3 bg-[#1d4ed8] text-white flex items-center justify-between gap-2 border-b border-[#1e40af]">
             <div className="flex items-center gap-2 min-w-0">
-              <div className="w-8 h-8 rounded-xl bg-[#0d9488]/30 text-emerald-300 flex items-center justify-center font-bold shrink-0">
+              <div className="w-8 h-8 rounded-xl bg-[#1e40af] text-white flex items-center justify-center font-bold shrink-0">
                 <Printer className="w-4 h-4" />
               </div>
               <div className="min-w-0">
                 <h3 className="font-bold text-sm truncate">
                   থার্মাল টিকিট প্রিন্ট ও PDF প্রিভিউ
                 </h3>
-                <div className="text-[11px] text-emerald-200 flex items-center gap-1.5 truncate">
+                <div className="text-[11px] text-[#dbeafe] flex items-center gap-1.5 truncate">
                   <span className="truncate">{companyName}</span>
                   <span>•</span>
-                  <span className="font-bold text-emerald-300 shrink-0">
+                  <span className="font-bold text-[#93c5fd] shrink-0">
                     {printerSettings.paperSize} রোল
                   </span>
                 </div>
@@ -366,17 +366,17 @@ export const ThermalTicketModal: React.FC<ThermalTicketModalProps> = ({
               <button
                 type="button"
                 onClick={() => setIsPrinterModalOpen(true)}
-                className="px-2.5 py-1.5 bg-[#0f766e] hover:bg-[#0d9488] text-white rounded-xl text-[11px] font-bold flex items-center gap-1 transition-colors cursor-pointer"
+                className="px-2.5 py-1.5 bg-[#1e40af] hover:bg-[#1e3a8a] border border-white/20 text-white rounded-xl text-[11px] font-bold flex items-center gap-1 transition-colors cursor-pointer"
                 title="প্রিন্টার নির্বাচন ও সাইজ পরিবর্তন"
               >
-                <Sliders className="w-3.5 h-3.5 text-emerald-200" />
+                <Sliders className="w-3.5 h-3.5 text-white" />
                 <span className="hidden sm:inline">সিলেক্ট প্রিন্টার</span>
               </button>
 
               <button
                 type="button"
                 onClick={onClose}
-                className="p-1.5 text-emerald-200 hover:text-white rounded-lg hover:bg-white/10 transition-colors cursor-pointer"
+                className="p-1.5 text-[#dbeafe] hover:text-white rounded-lg hover:bg-white/15 transition-colors cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -384,7 +384,7 @@ export const ThermalTicketModal: React.FC<ThermalTicketModalProps> = ({
           </div>
 
           {/* Copy Selector Tabs */}
-          <div className="shrink-0 px-3 sm:px-4 py-2 bg-[#f0f9f6] border-b border-emerald-200 flex flex-wrap items-center justify-between gap-2">
+          <div className="shrink-0 px-3 sm:px-4 py-2 bg-[#f8fafc] border-b border-slate-200 flex flex-wrap items-center justify-between gap-2">
             <div className="flex items-center gap-1 flex-wrap">
               {[
                 { id: 'BOTH', label: 'উভয় কপি' },
@@ -397,8 +397,8 @@ export const ThermalTicketModal: React.FC<ThermalTicketModalProps> = ({
                   onClick={() => setPrintMode(tab.id as PrintMode)}
                   className={`px-2.5 py-1.5 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
                     printMode === tab.id
-                      ? 'bg-[#0b2820] text-white shadow-2xs'
-                      : 'bg-white text-slate-700 hover:bg-emerald-50 border border-emerald-200'
+                      ? 'bg-[#1d4ed8] text-white shadow-2xs'
+                      : 'bg-white text-slate-800 hover:bg-[#eff6ff] border border-slate-200'
                   }`}
                 >
                   {tab.label}
@@ -414,7 +414,7 @@ export const ThermalTicketModal: React.FC<ThermalTicketModalProps> = ({
           {/* Printable Ticket Preview Canvas */}
           <div
             id="printable-thermal-ticket"
-            className="p-3 sm:p-5 overflow-y-auto overscroll-contain bg-slate-200/70 flex-1 space-y-4"
+            className="p-3 sm:p-5 overflow-y-auto overscroll-contain bg-[#f8fafc] flex-1 space-y-4"
           >
             {(printMode === 'BOTH' || printMode === 'PASSENGER') && (
               <div>{renderSingleReceipt('যাত্রী কপি (Passenger Copy)')}</div>
@@ -445,10 +445,10 @@ export const ThermalTicketModal: React.FC<ThermalTicketModalProps> = ({
           </div>
 
           {/* Sticky Modal Footer */}
-          <div className="shrink-0 px-3 sm:px-4 py-3 bg-[#f0f9f6] border-t border-emerald-200 flex flex-wrap items-center justify-between gap-2 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+          <div className="shrink-0 px-3 sm:px-4 py-3 bg-[#f8fafc] border-t border-slate-200 flex flex-wrap items-center justify-between gap-2 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
             <div className="text-[11px] text-slate-600 hidden sm:block">
               {hasPrinted ? (
-                <span className="flex items-center gap-1 text-emerald-700 font-bold">
+                <span className="flex items-center gap-1 text-[#1d4ed8] font-bold">
                   <CheckCircle className="w-4 h-4" /> প্রিন্ট ট্র্যাক সফল হয়েছে
                 </span>
               ) : (
@@ -462,7 +462,7 @@ export const ThermalTicketModal: React.FC<ThermalTicketModalProps> = ({
               <button
                 type="button"
                 onClick={onClose}
-                className="min-h-[44px] px-3.5 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 cursor-pointer"
+                className="min-h-[44px] px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800 hover:bg-[#eff6ff] cursor-pointer"
               >
                 বন্ধ
               </button>
@@ -470,9 +470,9 @@ export const ThermalTicketModal: React.FC<ThermalTicketModalProps> = ({
               <button
                 type="button"
                 onClick={handleDownloadPDF}
-                className="min-h-[44px] flex items-center gap-1.5 px-3.5 py-2 bg-[#0b2820] hover:bg-[#071d17] text-white rounded-xl text-xs font-bold shadow-xs transition-all cursor-pointer"
+                className="min-h-[44px] flex items-center gap-1.5 px-3.5 py-2 bg-[#1e40af] hover:bg-[#1e3a8a] text-white rounded-xl text-xs font-bold shadow-xs transition-all cursor-pointer"
               >
-                <Download className="w-3.5 h-3.5 text-emerald-300" />
+                <Download className="w-3.5 h-3.5 text-[#93c5fd]" />
                 <span>PDF ডাউনলোড</span>
               </button>
 
@@ -480,7 +480,7 @@ export const ThermalTicketModal: React.FC<ThermalTicketModalProps> = ({
                 type="button"
                 disabled={isPrinting}
                 onClick={handlePrint}
-                className="min-h-[44px] flex items-center gap-1.5 px-4 py-2 bg-[#0d9488] hover:bg-[#0f766e] text-white rounded-xl text-xs font-bold shadow-xs transition-all cursor-pointer"
+                className="min-h-[44px] flex items-center gap-1.5 px-4 py-2 bg-[#1d4ed8] hover:bg-[#1e40af] text-white rounded-xl text-xs font-bold shadow-xs transition-all cursor-pointer"
               >
                 <Printer className="w-4 h-4" />
                 <span>

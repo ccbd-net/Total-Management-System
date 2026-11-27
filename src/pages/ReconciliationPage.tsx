@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../context/AuthContext.tsx';
 import { api } from '../services/api.ts';
 import type { Reconciliation, Vehicle, FuelEntry } from '../types/index.ts';
-import { formatTaka, toBengaliDigits, getTodayDhakaDate, formatBengaliDate } from '../utils/formatters.ts';
+import { formatTaka, toBengaliDigits, getTodayDhakaDate, formatBengaliDate, formatTime12Hour } from '../utils/formatters.ts';
 import {
   downloadElementAsPDF,
   printElementById,
@@ -10,6 +10,7 @@ import {
   calculateTimeDifference,
 } from '../utils/pdfGenerator.ts';
 import { OwnerWhatsAppModal } from '../components/OwnerWhatsAppModal.tsx';
+import { DateInput } from '../components/DateInput.tsx';
 import { normalizeRegNo, type OwnerReportSummaryItem } from '../utils/whatsapp.ts';
 import {
   Scale,
@@ -142,8 +143,8 @@ export const ReconciliationPage: React.FC = () => {
     ];
 
     const rows = pairs.map((p, idx) => {
-      const upTime = p.upTrip?.departureTime || '-';
-      const downTime = p.downTrip?.departureTime || '-';
+      const upTime = p.upTrip?.departureTime ? formatTime12Hour(p.upTrip.departureTime) : '-';
+      const downTime = p.downTrip?.departureTime ? formatTime12Hour(p.downTrip.departureTime) : '-';
       const timeDiff = calculateTimeDifference(p.upTrip?.departureTime, p.downTrip?.departureTime, p.isNightHoldMatch);
       const combinedRoute = combineRouteNames(p.upRouteName, p.downRouteName);
       const totalKm = (p.upDistanceKm || 75) + (p.downDistanceKm || 75);
@@ -151,7 +152,7 @@ export const ReconciliationPage: React.FC = () => {
 
       return [
         idx + 1,
-        `"${date}"`,
+        `"${formatBengaliDate(date)}"`,
         `"${p.vehicleRegNo || ''}"`,
         p.isNightHoldMatch ? '"নাইট হোল্ড ট্রিপ"' : '"রেগুলার ট্রিপ"',
         `"আপ: ${upTime} | ডাউন: ${downTime}"`,
@@ -285,7 +286,7 @@ export const ReconciliationPage: React.FC = () => {
 
       const routeLine = combineRouteNames(p.upRouteName, p.downRouteName);
       entry.customLines?.push(
-        `${p.vehicleRegNo}: ${routeLine} | আপ: ${p.upTrip?.departureTime || '-'}, ডাউন: ${p.downTrip?.departureTime || '-'} (${formatTaka(pf.combinedTotal)})`
+        `${p.vehicleRegNo}: ${routeLine} | আপ: ${p.upTrip?.departureTime ? formatTime12Hour(p.upTrip.departureTime) : '-'}, ডাউন: ${p.downTrip?.departureTime ? formatTime12Hour(p.downTrip.departureTime) : '-'} (${formatTaka(pf.combinedTotal)})`
       );
 
       const fuelSum = fuelByReg.get(normalizeRegNo(p.vehicleRegNo));
@@ -315,12 +316,12 @@ export const ReconciliationPage: React.FC = () => {
       );
     } catch (err) {
       console.error('PDF generation error:', err);
-      printElementById('printable-reconciliation-report', `দৈনিক ট্রিপ রিপোর্ট — ${date}`, 'A4-landscape');
+      printElementById('printable-reconciliation-report', `দৈনিক ট্রিপ রিপোর্ট — ${formatBengaliDate(date)}`, 'A4-landscape');
     }
   };
 
   const handlePrintTableOnly = () => {
-    printElementById('printable-reconciliation-report', `দৈনিক ট্রিপ রিপোর্ট — ${date}`, 'A4-landscape');
+    printElementById('printable-reconciliation-report', `দৈনিক ট্রিপ রিপোর্ট — ${formatBengaliDate(date)}`, 'A4-landscape');
   };
 
   const cellBorderStyle: React.CSSProperties = {
@@ -380,7 +381,7 @@ export const ReconciliationPage: React.FC = () => {
             lineHeight: 1.4,
           }}
         >
-          দৈনিক ট্রিপ হিসাব সমন্বয় ডাটাবেইজ • তারিখ: {date} ({formatBengaliDate(date)})
+          দৈনিক ট্রিপ হিসাব সমন্বয় ডাটাবেইজ • তারিখ: {formatBengaliDate(date)}
         </div>
       </div>
 
@@ -435,8 +436,8 @@ export const ReconciliationPage: React.FC = () => {
           </thead>
           <tbody>
             {pairs.map((p, idx) => {
-              const upTime = p.upTrip?.departureTime || '-';
-              const downTime = p.downTrip?.departureTime || '-';
+              const upTime = p.upTrip?.departureTime ? formatTime12Hour(p.upTrip.departureTime) : '-';
+              const downTime = p.downTrip?.departureTime ? formatTime12Hour(p.downTrip.departureTime) : '-';
               const timeDiff = calculateTimeDifference(p.upTrip?.departureTime, p.downTrip?.departureTime, p.isNightHoldMatch);
               const combinedRoute = combineRouteNames(p.upRouteName, p.downRouteName);
               const upDist = p.upDistanceKm || 75;
@@ -453,7 +454,7 @@ export const ReconciliationPage: React.FC = () => {
                     {toBengaliDigits(idx + 1)}
                   </td>
                   <td style={{ ...cellBorderStyle, textAlign: 'center', fontWeight: 600 }}>
-                    {date}
+                    {formatBengaliDate(date)}
                   </td>
                   <td style={{ ...cellBorderStyle, fontWeight: 800, color: '#0f172a' }}>
                     {p.vehicleRegNo}
@@ -551,25 +552,24 @@ export const ReconciliationPage: React.FC = () => {
     <div className="space-y-3">
       <div className="space-y-3 print:hidden">
       {/* Compact Excel Header Card */}
-      <div className="bg-white rounded-xl border border-[#a7d7c5] shadow-2xs overflow-hidden">
-        <div className="bg-[#0b2820] px-3 py-2 text-white flex flex-col md:flex-row md:items-center justify-between gap-2">
+      <div className="bg-white rounded-xl border border-slate-200 shadow-2xs overflow-hidden">
+        <div className="bg-[#1d4ed8] px-3 py-2 text-white flex flex-col md:flex-row md:items-center justify-between gap-2">
           <div className="flex items-center gap-2 min-w-0">
-            <Scale className="w-4 h-4 text-emerald-300 shrink-0" />
+            <Scale className="w-4 h-4 text-[#bfdbfe] shrink-0" />
             <div className="min-w-0">
               <h2 className="text-xs sm:text-sm font-bold leading-tight truncate">
                 ট্রিপ হিসাব সমন্বয় শীট (আপ + ডাউন কালেকশন)
               </h2>
-              <p className="hidden sm:block text-[10px] text-emerald-200 leading-tight">
+              <p className="hidden sm:block text-[10px] text-[#dbeafe] leading-tight">
                 প্রতিটি গাড়ির আপ ও ডাউন ট্রিপ ক্যাশ সংগ্রহ ম্যাচিং, অডিট ও ডাউনলোড
               </p>
             </div>
           </div>
 
           <div className="flex flex-wrap items-center gap-1.5 shrink-0">
-            <div className="flex items-center gap-1 bg-white px-2 py-1 rounded-lg border border-emerald-200 text-[11px] font-bold text-slate-900">
-              <Calendar className="w-3.5 h-3.5 text-[#0d9488]" />
-              <input
-                type="date"
+            <div className="flex items-center gap-1 bg-white px-2 py-1 rounded-lg border border-slate-200 text-[11px] font-bold text-slate-900">
+              <Calendar className="w-3.5 h-3.5 text-[#1d4ed8]" />
+              <DateInput
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
                 className="bg-transparent outline-none cursor-pointer text-[11px]"
@@ -579,7 +579,7 @@ export const ReconciliationPage: React.FC = () => {
             <button
               type="button"
               onClick={fetchReconciliationData}
-              className="p-1.5 bg-[#071d17] hover:bg-[#0f766e] text-white rounded-lg transition-colors cursor-pointer"
+              className="p-1.5 bg-white/15 hover:bg-white/25 text-white rounded-lg border border-white/25 transition-colors cursor-pointer"
               title="রিফ্রেশ"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
@@ -588,27 +588,27 @@ export const ReconciliationPage: React.FC = () => {
             <button
               type="button"
               onClick={exportToExcel}
-              className="inline-flex items-center gap-1 px-2.5 py-1 bg-white hover:bg-emerald-50 text-[#0b2820] rounded-lg text-[11px] font-bold shadow-2xs transition-all cursor-pointer"
+              className="inline-flex items-center gap-1 px-2.5 py-1 bg-white hover:bg-[#eff6ff] text-[#1e3a8a] rounded-lg text-[11px] font-bold shadow-2xs transition-all cursor-pointer"
               title="এক্সেল ফাইল (.csv) হিসেবে ডাউনলোড করুন"
             >
-              <FileSpreadsheet className="w-3.5 h-3.5 text-[#0d9488]" />
+              <FileSpreadsheet className="w-3.5 h-3.5 text-[#1d4ed8]" />
               <span>Excel</span>
             </button>
 
             <button
               type="button"
               onClick={handleDownloadTablePDF}
-              className="inline-flex items-center gap-1 px-2.5 py-1 bg-[#071d17] hover:bg-[#0f766e] text-white border border-emerald-700/60 rounded-lg text-[11px] font-bold shadow-2xs transition-all cursor-pointer"
+              className="inline-flex items-center gap-1 px-2.5 py-1 bg-white/15 hover:bg-white/25 text-white border border-white/25 rounded-lg text-[11px] font-bold shadow-2xs transition-all cursor-pointer"
               title="শুধু ডাটা টেবিল পিডিএফ ডাউনলোড করুন"
             >
-              <Download className="w-3.5 h-3.5 text-emerald-300" />
+              <Download className="w-3.5 h-3.5 text-[#bfdbfe]" />
               <span>PDF</span>
             </button>
 
             <button
               type="button"
               onClick={() => setShowWhatsAppModal(true)}
-              className="inline-flex items-center gap-1 px-2.5 py-1 bg-[#0f766e] hover:bg-[#0d9488] text-white rounded-lg text-[11px] font-bold shadow-2xs transition-all cursor-pointer"
+              className="inline-flex items-center gap-1 px-2.5 py-1 bg-white/15 hover:bg-white/25 text-white border border-white/25 rounded-lg text-[11px] font-bold shadow-2xs transition-all cursor-pointer"
               title="মালিকদের মোবাইলে হোয়াটসঅ্যাপে হিসাব পাঠান"
             >
               <MessageCircle className="w-3.5 h-3.5" />
@@ -618,10 +618,10 @@ export const ReconciliationPage: React.FC = () => {
             <button
               type="button"
               onClick={() => setShowPrintModal(true)}
-              className="inline-flex items-center gap-1 px-2.5 py-1 bg-[#0d9488] hover:bg-[#0f766e] text-white rounded-lg text-[11px] font-bold shadow-2xs transition-all cursor-pointer"
+              className="inline-flex items-center gap-1 px-2.5 py-1 bg-white hover:bg-[#eff6ff] text-[#1e3a8a] rounded-lg text-[11px] font-bold shadow-2xs transition-all cursor-pointer"
               title="শুধু টেবিল প্রিন্ট / পিডিএফ প্রিভিউ দেখুন"
             >
-              <Printer className="w-3.5 h-3.5" />
+              <Printer className="w-3.5 h-3.5 text-[#1d4ed8]" />
               <span>প্রিন্ট</span>
             </button>
           </div>
@@ -630,27 +630,27 @@ export const ReconciliationPage: React.FC = () => {
 
       {/* Alert Messages */}
       {successMsg && (
-        <div className="p-2.5 bg-emerald-50 text-emerald-900 rounded-xl text-xs font-semibold border border-emerald-200 flex items-center gap-2">
-          <CheckCircle className="w-4 h-4 shrink-0 text-emerald-600" />
+        <div className="p-2.5 bg-[#eff6ff] text-[#1e3a8a] rounded-xl text-xs font-semibold border border-[#bfdbfe] flex items-center gap-2">
+          <CheckCircle className="w-4 h-4 shrink-0 text-[#1d4ed8]" />
           <span>{successMsg}</span>
         </div>
       )}
       {errorMsg && (
-        <div className="p-2.5 bg-rose-50 text-rose-700 rounded-xl text-xs font-semibold border border-rose-200 flex items-center gap-2">
-          <AlertCircle className="w-4 h-4 shrink-0" />
+        <div className="p-2.5 bg-red-50 text-red-700 rounded-xl text-xs font-semibold border border-red-200 flex items-center gap-2">
+          <AlertCircle className="w-4 h-4 shrink-0 text-red-600" />
           <span>{errorMsg}</span>
         </div>
       )}
 
       {/* Excel-Grid Summary Matrix */}
-      <div className="bg-[#a7d7c5] border border-[#a7d7c5] rounded-xl overflow-hidden shadow-2xs">
+      <div className="bg-slate-200 border border-slate-200 rounded-xl overflow-hidden shadow-2xs">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-px">
           <div className="bg-white">
-            <div className="bg-[#0b2820] px-2.5 py-1 text-[10px] font-bold text-white">
+            <div className="bg-[#1e3a8a] px-2.5 py-1 text-[10px] font-bold text-white">
               মোট কম্বাইন্ড আদায় (সিট + মাল)
             </div>
             <div className="px-3 py-1.5">
-              <div className="text-sm sm:text-base font-black text-[#0f766e] tabular-nums">
+              <div className="text-sm sm:text-base font-black text-[#1d4ed8] tabular-nums">
                 {formatTaka(totalCombinedCollection)}
               </div>
               <div className="text-[10px] text-slate-600 font-semibold tabular-nums">
@@ -660,11 +660,11 @@ export const ReconciliationPage: React.FC = () => {
           </div>
 
           <div className="bg-white">
-            <div className="bg-[#0f766e] px-2.5 py-1 text-[10px] font-bold text-white">
+            <div className="bg-[#1d4ed8] px-2.5 py-1 text-[10px] font-bold text-white">
               সমন্বিত গাড়ি সংখ্যা
             </div>
             <div className="px-3 py-1.5">
-              <div className="text-sm sm:text-base font-black text-[#0b2820] tabular-nums">
+              <div className="text-sm sm:text-base font-black text-[#1e3a8a] tabular-nums">
                 {toBengaliDigits(reconciledCount)} / {toBengaliDigits(pairs.length)}
               </div>
               <div className="text-[10px] text-slate-600">অনুমোদিত সমন্বয় সম্পন্ন</div>
@@ -672,14 +672,14 @@ export const ReconciliationPage: React.FC = () => {
           </div>
 
           <div className="bg-white">
-            <div className={`${pendingCount === 0 ? 'bg-[#0d9488]' : 'bg-amber-700'} px-2.5 py-1 text-[10px] font-bold text-white flex items-center justify-between`}>
+            <div className={`${pendingCount === 0 ? 'bg-[#1d4ed8]' : 'bg-[#1e40af]'} px-2.5 py-1 text-[10px] font-bold text-white flex items-center justify-between`}>
               <span>অসমন্বিত / অপেক্ষমান ট্রিপ</span>
               {pendingCount === 0 && (
-                <span className="px-1.5 py-0.2 rounded bg-white/25 text-[9px]">সব সমন্বিত</span>
+                <span className="px-1.5 py-0.2 rounded bg-white/15 text-[9px]">সব সমন্বিত</span>
               )}
             </div>
             <div className="px-3 py-1.5">
-              <div className={`text-sm sm:text-base font-black tabular-nums ${pendingCount === 0 ? 'text-[#0f766e]' : 'text-amber-700'}`}>
+              <div className={`text-sm sm:text-base font-black tabular-nums ${pendingCount === 0 ? 'text-[#1d4ed8]' : 'text-[#1e3a8a]'}`}>
                 {toBengaliDigits(pendingCount)} টি
               </div>
               <div className="text-[10px] text-slate-600">
@@ -691,14 +691,14 @@ export const ReconciliationPage: React.FC = () => {
       </div>
 
       {/* Filter Tabs and Quick Batch Action Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-2.5 bg-white p-2.5 rounded-xl border border-[#a7d7c5] shadow-2xs">
-        <div className="flex flex-wrap items-center gap-1 bg-[#f0f9f6] p-1 rounded-xl text-xs font-bold border border-[#d1e7de]">
+      <div className="flex flex-wrap items-center justify-between gap-2.5 bg-white p-2.5 rounded-xl border border-slate-200 shadow-2xs">
+        <div className="flex flex-wrap items-center gap-1 bg-[#f8fafc] p-1 rounded-xl text-xs font-bold border border-slate-200">
           <button
             type="button"
             onClick={() => setFilterTab('ALL')}
             className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
               filterTab === 'ALL'
-                ? 'bg-[#0b2820] text-white shadow-2xs'
+                ? 'bg-[#1d4ed8] text-white shadow-2xs'
                 : 'text-slate-700 hover:text-slate-950'
             }`}
           >
@@ -709,7 +709,7 @@ export const ReconciliationPage: React.FC = () => {
             onClick={() => setFilterTab('RECONCILED')}
             className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1 ${
               filterTab === 'RECONCILED'
-                ? 'bg-[#0d9488] text-white shadow-2xs'
+                ? 'bg-[#1d4ed8] text-white shadow-2xs'
                 : 'text-slate-700 hover:text-slate-950'
             }`}
           >
@@ -721,7 +721,7 @@ export const ReconciliationPage: React.FC = () => {
             onClick={() => setFilterTab('PENDING')}
             className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1 ${
               filterTab === 'PENDING'
-                ? 'bg-amber-700 text-white shadow-2xs'
+                ? 'bg-[#1e3a8a] text-white shadow-2xs'
                 : 'text-slate-700 hover:text-slate-950'
             }`}
           >
@@ -735,9 +735,9 @@ export const ReconciliationPage: React.FC = () => {
             type="button"
             disabled={batchReconciling}
             onClick={handleBatchReconcile}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-[#0d9488] hover:bg-[#0f766e] text-white rounded-xl text-xs font-bold shadow-2xs transition-all cursor-pointer disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-[#1d4ed8] hover:bg-[#1e40af] text-white rounded-xl text-xs font-bold shadow-2xs transition-all cursor-pointer disabled:opacity-50"
           >
-            <ShieldCheck className="w-4 h-4 text-emerald-100" />
+            <ShieldCheck className="w-4 h-4 text-[#dbeafe]" />
             <span>
               {batchReconciling
                 ? 'সমন্বয় হচ্ছে...'
@@ -748,12 +748,12 @@ export const ReconciliationPage: React.FC = () => {
       </div>
 
       {/* Pairs Reconciliation Table */}
-      <div className="bg-white rounded-xl border border-[#a7d7c5] shadow-2xs overflow-hidden">
-        <div className="px-3.5 py-2.5 bg-[#0b2820] text-white flex flex-wrap items-center justify-between gap-2">
+      <div className="bg-white rounded-xl border border-slate-200 shadow-2xs overflow-hidden">
+        <div className="px-3.5 py-2.5 bg-[#1e3a8a] text-white flex flex-wrap items-center justify-between gap-2">
           <h3 className="font-bold text-xs sm:text-sm text-white">
             গাড়িভিত্তিক আপ ও ডাউন ট্রিপ পেয়ারিং তালিকা
           </h3>
-          <span className="text-[11px] text-emerald-200">
+          <span className="text-[11px] text-[#dbeafe]">
             নাইট-হোল্ড ট্রিপ স্বয়ংক্রিয়ভাবে রিটার্ন ট্রিপের সাথে সংযুক্ত হয়
           </span>
         </div>
@@ -761,10 +761,10 @@ export const ReconciliationPage: React.FC = () => {
         {filteredPairs.length === 0 ? (
           <div className="text-center py-12 px-4">
             {filterTab === 'PENDING' ? (
-              <div className="max-w-md mx-auto p-6 bg-emerald-50 rounded-2xl border border-emerald-200">
-                <CheckCircle className="w-10 h-10 text-emerald-600 mx-auto mb-2" />
-                <h4 className="font-bold text-sm text-emerald-950">কোনো ট্রিপ অপেক্ষমান নেই!</h4>
-                <p className="text-xs text-emerald-700 mt-1">
+              <div className="max-w-md mx-auto p-6 bg-[#eff6ff] rounded-2xl border border-[#bfdbfe]">
+                <CheckCircle className="w-10 h-10 text-[#1d4ed8] mx-auto mb-2" />
+                <h4 className="font-bold text-sm text-[#1e3a8a]">কোনো ট্রিপ অপেক্ষমান নেই!</h4>
+                <p className="text-xs text-[#1d4ed8] mt-1">
                   আজকের সকল গাড়ির আপ ও ডাউন ট্রিপ সফলভাবে সমন্বয় করা হয়েছে।
                 </p>
               </div>
@@ -776,30 +776,30 @@ export const ReconciliationPage: React.FC = () => {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
+            <table className="w-full text-left text-xs border-collapse">
               <thead>
-                <tr className="bg-slate-50 text-slate-600 border-b">
-                  <th className="py-3 px-4 font-bold">গাড়ির নম্বর ও রুট</th>
-                  <th className="py-3 px-4 font-bold">আপ ট্রিপ (Up Collection)</th>
-                  <th className="py-3 px-4 font-bold">ডাউন ট্রিপ (Down Collection)</th>
-                  <th className="py-3 px-3 font-bold text-right bg-blue-50/50">সিট ভাড়া</th>
-                  <th className="py-3 px-3 font-bold text-right bg-amber-50/50">মালের ভাড়া</th>
-                  <th className="py-3 px-3 font-bold text-right bg-emerald-50/70">মোট টাকা</th>
-                  <th className="py-3 px-4 font-bold text-center">স্ট্যাটাস</th>
+                <tr className="bg-[#1d4ed8] text-white border-b border-[#1e40af]">
+                  <th className="py-3 px-4 font-bold border-r border-blue-600/60">গাড়ির নম্বর ও রুট</th>
+                  <th className="py-3 px-4 font-bold border-r border-blue-600/60">আপ ট্রিপ (Up Collection)</th>
+                  <th className="py-3 px-4 font-bold border-r border-blue-600/60">ডাউন ট্রিপ (Down Collection)</th>
+                  <th className="py-3 px-3 font-bold text-right border-r border-blue-600/60 bg-[#1e40af]">সিট ভাড়া</th>
+                  <th className="py-3 px-3 font-bold text-right border-r border-blue-600/60 bg-[#1e40af]">মালের ভাড়া</th>
+                  <th className="py-3 px-3 font-bold text-right border-r border-blue-600/60 bg-[#1e3a8a]">মোট টাকা</th>
+                  <th className="py-3 px-4 font-bold text-center border-r border-blue-600/60">স্ট্যাটাস</th>
                   <th className="py-3 px-4 font-bold text-right">অ্যাকশন</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-slate-200">
                 {filteredPairs.map((p) => {
                   const isReconciled = p.reconciliationStatus === 'reconciled';
                   const isReady = p.reconciliationStatus === 'ready';
                   const pf = getPairFares(p);
 
                   return (
-                    <tr key={p.vehicleId} className="hover:bg-slate-50/80 transition-colors">
-                      <td className="py-3 px-4">
+                    <tr key={p.vehicleId} className="odd:bg-white even:bg-[#f1f5f9] hover:bg-[#eff6ff] transition-colors">
+                      <td className="py-3 px-4 border-r border-slate-200">
                         <div className="font-bold text-slate-900 flex items-center gap-1.5">
-                          <Bus className="w-4 h-4 text-slate-500" />
+                          <Bus className="w-4 h-4 text-[#1d4ed8]" />
                           <span>{p.vehicleRegNo}</span>
                         </div>
                         <div className="text-[10px] text-slate-500 flex flex-wrap gap-2 mt-0.5">
@@ -811,13 +811,13 @@ export const ReconciliationPage: React.FC = () => {
                       </td>
 
                       {/* Up Trip */}
-                      <td className="py-3 px-4">
+                      <td className="py-3 px-4 border-r border-slate-200">
                         {p.upTrip ? (
                           <div>
                             <div className="font-semibold text-slate-800">
-                              {p.upTrip.tripNo} ({p.upTrip.departureTime})
+                              {p.upTrip.tripNo} ({formatTime12Hour(p.upTrip.departureTime)})
                             </div>
-                            <div className="font-bold text-blue-700 text-xs tabular-nums">
+                            <div className="font-bold text-[#1e3a8a] text-xs tabular-nums">
                               {formatTaka(pf.upTotal)}
                             </div>
                             <div className="text-[10px] text-slate-500">
@@ -825,7 +825,7 @@ export const ReconciliationPage: React.FC = () => {
                               {pf.upCargo > 0 && ` | সিট: ${formatTaka(pf.upSeat)} + মাল: ${formatTaka(pf.upCargo)}`}
                             </div>
                             {p.isNightHoldMatch && (
-                              <span className="inline-block mt-0.5 px-1.5 py-0.2 bg-purple-100 text-purple-800 text-[9px] rounded font-bold">
+                              <span className="inline-block mt-0.5 px-1.5 py-0.2 bg-[#1e3a8a] text-white text-[9px] rounded font-bold">
                                 নাইট হোল্ড আপ
                               </span>
                             )}
@@ -836,13 +836,13 @@ export const ReconciliationPage: React.FC = () => {
                       </td>
 
                       {/* Down Trip */}
-                      <td className="py-3 px-4">
+                      <td className="py-3 px-4 border-r border-slate-200">
                         {p.downTrip ? (
                           <div>
                             <div className="font-semibold text-slate-800">
-                              {p.downTrip.tripNo} ({p.downTrip.departureTime})
+                              {p.downTrip.tripNo} ({formatTime12Hour(p.downTrip.departureTime)})
                             </div>
-                            <div className="font-bold text-emerald-700 text-xs tabular-nums">
+                            <div className="font-bold text-[#1d4ed8] text-xs tabular-nums">
                               {formatTaka(pf.downTotal)}
                             </div>
                             <div className="text-[10px] text-slate-500">
@@ -856,18 +856,18 @@ export const ReconciliationPage: React.FC = () => {
                       </td>
 
                       {/* Seat Fare */}
-                      <td className="py-3 px-3 text-right font-bold text-blue-800 bg-blue-50/20 tabular-nums whitespace-nowrap">
+                      <td className="py-3 px-3 text-right font-bold text-[#1e3a8a] tabular-nums whitespace-nowrap border-r border-slate-200">
                         {formatTaka(pf.totalSeat)}
                       </td>
 
                       {/* Cargo Fare */}
-                      <td className="py-3 px-3 text-right font-bold text-amber-800 bg-amber-50/20 tabular-nums whitespace-nowrap">
+                      <td className="py-3 px-3 text-right font-bold text-[#1e3a8a] tabular-nums whitespace-nowrap border-r border-slate-200">
                         {formatTaka(pf.totalCargo)}
                       </td>
 
                       {/* Combined Total */}
-                      <td className="py-3 px-3 text-right bg-emerald-50/30 tabular-nums whitespace-nowrap">
-                        <div className="text-sm font-black text-emerald-900">
+                      <td className="py-3 px-3 text-right tabular-nums whitespace-nowrap border-r border-slate-200">
+                        <div className="text-sm font-black text-[#1d4ed8]">
                           {formatTaka(pf.combinedTotal)}
                         </div>
                         <div className="text-[10px] text-slate-500">
@@ -876,20 +876,20 @@ export const ReconciliationPage: React.FC = () => {
                       </td>
 
                       {/* Status */}
-                      <td className="py-3 px-4 text-center">
+                      <td className="py-3 px-4 text-center border-r border-slate-200">
                         {isReconciled ? (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-100 text-emerald-800 text-[11px] font-bold rounded-full">
-                            <CheckCircle className="w-3.5 h-3.5 text-emerald-600" />
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-[#eff6ff] text-[#1d4ed8] text-[11px] font-bold rounded-full border border-[#bfdbfe]">
+                            <CheckCircle className="w-3.5 h-3.5 text-[#1d4ed8]" />
                             <span>সমন্বিত (১টি পূর্ণাঙ্গ ট্রিপ)</span>
                           </span>
                         ) : isReady ? (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-100 text-blue-800 text-[11px] font-bold rounded-full">
-                            <Clock className="w-3 h-3 text-blue-600" />
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-[#1e3a8a] text-white text-[11px] font-bold rounded-full">
+                            <Clock className="w-3 h-3 text-[#93c5fd]" />
                             <span>সমন্বয়ের জন্য প্রস্তুত</span>
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-100 text-amber-800 text-[11px] font-bold rounded-full">
-                            <AlertCircle className="w-3 h-3 text-amber-600" />
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-[#f8fafc] text-[#1e3a8a] text-[11px] font-bold rounded-full border border-slate-200">
+                            <AlertCircle className="w-3 h-3 text-[#1d4ed8]" />
                             <span>অসম্পূর্ণ ট্রিপ (অপেক্ষমান)</span>
                           </span>
                         )}
@@ -898,8 +898,8 @@ export const ReconciliationPage: React.FC = () => {
                       {/* Action */}
                       <td className="py-3 px-4 text-right">
                         {isReconciled ? (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-slate-100 text-slate-700 text-[10px] font-bold rounded-lg border border-slate-200">
-                            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-[#f8fafc] text-[#1e3a8a] text-[10px] font-bold rounded-lg border border-slate-200">
+                            <ShieldCheck className="w-3.5 h-3.5 text-[#1d4ed8]" />
                             <span>অনুমোদিত: {p.existingReconciliation?.reconciledBy || 'এডমিন'}</span>
                           </span>
                         ) : (
@@ -907,7 +907,7 @@ export const ReconciliationPage: React.FC = () => {
                             type="button"
                             disabled={reconcilingVehicleId === p.vehicleId}
                             onClick={() => handleReconcile(p)}
-                            className="inline-flex items-center gap-1 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-xs hover:shadow-md transition-all cursor-pointer disabled:opacity-50"
+                            className="inline-flex items-center gap-1 px-3 py-1.5 bg-[#1d4ed8] hover:bg-[#1e40af] text-white rounded-xl text-xs font-bold shadow-xs hover:shadow-md transition-all cursor-pointer disabled:opacity-50"
                           >
                             <ShieldCheck className="w-3.5 h-3.5" />
                             <span>
@@ -920,21 +920,21 @@ export const ReconciliationPage: React.FC = () => {
                   );
                 })}
               </tbody>
-              <tfoot className="bg-slate-100 border-t-2 border-slate-300 font-black text-xs text-slate-900">
+              <tfoot className="bg-[#eff6ff] border-t-2 border-[#bfdbfe] font-black text-xs text-[#1e3a8a]">
                 <tr>
-                  <td colSpan={3} className="py-2.5 px-4 text-right">
+                  <td colSpan={3} className="py-2.5 px-4 text-right border-r border-[#bfdbfe]">
                     সর্বমোট ({toBengaliDigits(filteredPairs.length)} টি গাড়ি):
                   </td>
-                  <td className="py-2.5 px-3 text-right text-blue-900 bg-blue-50/60 tabular-nums whitespace-nowrap">
+                  <td className="py-2.5 px-3 text-right text-[#1e3a8a] border-r border-[#bfdbfe] tabular-nums whitespace-nowrap">
                     {formatTaka(filteredPairs.reduce((sum, p) => sum + getPairFares(p).totalSeat, 0))}
                   </td>
-                  <td className="py-2.5 px-3 text-right text-amber-900 bg-amber-50/60 tabular-nums whitespace-nowrap">
+                  <td className="py-2.5 px-3 text-right text-[#1e3a8a] border-r border-[#bfdbfe] tabular-nums whitespace-nowrap">
                     {formatTaka(filteredPairs.reduce((sum, p) => sum + getPairFares(p).totalCargo, 0))}
                   </td>
-                  <td className="py-2.5 px-3 text-right text-emerald-950 bg-emerald-100/70 tabular-nums whitespace-nowrap">
+                  <td className="py-2.5 px-3 text-right text-[#1d4ed8] border-r border-[#bfdbfe] tabular-nums whitespace-nowrap">
                     {formatTaka(filteredPairs.reduce((sum, p) => sum + getPairFares(p).combinedTotal, 0))}
                   </td>
-                  <td colSpan={2} className="py-2.5 px-4 text-center text-[10px] text-slate-500">
+                  <td colSpan={2} className="py-2.5 px-4 text-center text-[10px] text-[#1e3a8a]">
                     সিট + মাল = মোট
                   </td>
                 </tr>
@@ -955,17 +955,17 @@ export const ReconciliationPage: React.FC = () => {
       {/* PDF / Printable Daily Financial Reconciliation Report Modal */}
       {showPrintModal && (
         <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in duration-200">
-          <div className="bg-white w-full max-w-6xl rounded-t-2xl sm:rounded-2xl shadow-2xl border border-emerald-200 overflow-hidden flex flex-col max-h-[92dvh] sm:max-h-[90dvh]">
+          <div className="bg-white w-full max-w-6xl rounded-t-2xl sm:rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[92dvh] sm:max-h-[90dvh]">
             {/* Sticky Modal Header */}
-            <div className="shrink-0 px-4 py-3 bg-[#0b2820] text-white flex items-center justify-between gap-2 print:hidden">
+            <div className="shrink-0 px-4 py-3 bg-[#1d4ed8] text-white flex items-center justify-between gap-2 print:hidden">
               <div className="flex items-center gap-2 min-w-0">
-                <FileText className="w-5 h-5 text-emerald-300 shrink-0" />
+                <FileText className="w-5 h-5 text-[#bfdbfe] shrink-0" />
                 <div className="min-w-0">
                   <h3 className="font-bold text-sm sm:text-base truncate">
                     দৈনিক ট্রিপ সমন্বয় ডাটা টেবিল — প্রিভিউ
                   </h3>
-                  <div className="text-[11px] text-emerald-200 truncate">
-                    {user?.company?.name || 'কাউন্টার টিকেটিং'} • তারিখ: {date}
+                  <div className="text-[11px] text-[#dbeafe] truncate">
+                    {user?.company?.name || 'কাউন্টার টিকেটিং'} • তারিখ: {formatBengaliDate(date)}
                   </div>
                 </div>
               </div>
@@ -973,7 +973,7 @@ export const ReconciliationPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setShowPrintModal(false)}
-                className="p-2 text-emerald-200 hover:text-white rounded-xl hover:bg-white/10 transition-colors cursor-pointer shrink-0"
+                className="p-2 text-[#dbeafe] hover:text-white rounded-xl hover:bg-white/15 transition-colors cursor-pointer shrink-0"
                 title="বন্ধ করুন"
               >
                 <X className="w-5 h-5" />
@@ -986,11 +986,11 @@ export const ReconciliationPage: React.FC = () => {
             </div>
 
             {/* Sticky Footer */}
-            <div className="shrink-0 px-4 py-3 bg-[#f0f9f6] border-t border-emerald-200 flex flex-wrap items-center justify-end gap-2 pb-[max(0.75rem,env(safe-area-inset-bottom))] print:hidden">
+            <div className="shrink-0 px-4 py-3 bg-[#f8fafc] border-t border-slate-200 flex flex-wrap items-center justify-end gap-2 pb-[max(0.75rem,env(safe-area-inset-bottom))] print:hidden">
               <button
                 type="button"
                 onClick={() => setShowPrintModal(false)}
-                className="min-h-[44px] px-4 py-2 bg-white border border-slate-300 text-slate-800 hover:bg-slate-100 text-xs font-bold rounded-xl cursor-pointer"
+                className="min-h-[44px] px-4 py-2 bg-white border border-slate-200 text-[#1e3a8a] hover:bg-[#eff6ff] text-xs font-bold rounded-xl cursor-pointer"
               >
                 বন্ধ করুন
               </button>
@@ -998,25 +998,25 @@ export const ReconciliationPage: React.FC = () => {
               <button
                 type="button"
                 onClick={exportToExcel}
-                className="min-h-[44px] px-3.5 py-2 bg-[#0f766e] hover:bg-[#0d9488] text-white text-xs font-bold rounded-xl flex items-center gap-1.5 transition-colors cursor-pointer"
+                className="min-h-[44px] px-3.5 py-2 bg-[#1e3a8a] hover:bg-[#1e40af] text-white text-xs font-bold rounded-xl flex items-center gap-1.5 transition-colors cursor-pointer"
               >
-                <FileSpreadsheet className="w-4 h-4" />
+                <FileSpreadsheet className="w-4 h-4 text-[#93c5fd]" />
                 <span>এক্সেল</span>
               </button>
 
               <button
                 type="button"
                 onClick={handleDownloadTablePDF}
-                className="min-h-[44px] px-3.5 py-2 bg-[#0b2820] hover:bg-[#071d17] text-white text-xs font-bold rounded-xl flex items-center gap-1.5 transition-colors cursor-pointer"
+                className="min-h-[44px] px-3.5 py-2 bg-[#1e40af] hover:bg-[#1e3a8a] text-white text-xs font-bold rounded-xl flex items-center gap-1.5 transition-colors cursor-pointer"
               >
-                <Download className="w-4 h-4 text-emerald-300" />
+                <Download className="w-4 h-4 text-[#bfdbfe]" />
                 <span>টেবিল PDF</span>
               </button>
 
               <button
                 type="button"
                 onClick={handlePrintTableOnly}
-                className="min-h-[44px] px-4 py-2 bg-[#0d9488] hover:bg-[#0f766e] text-white text-xs font-bold rounded-xl flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
+                className="min-h-[44px] px-4 py-2 bg-[#1d4ed8] hover:bg-[#1e40af] text-white text-xs font-bold rounded-xl flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
               >
                 <Printer className="w-4 h-4" />
                 <span>প্রিন্ট (Landscape)</span>
@@ -1031,7 +1031,7 @@ export const ReconciliationPage: React.FC = () => {
         onClose={() => setShowWhatsAppModal(false)}
         companyName={user?.company?.name || 'কাউন্টার টিকেটিং'}
         reportTitle="দৈনিক ট্রিপ হিসাব সমন্বয়"
-        dateLabel={`${date} (${formatBengaliDate(date)})`}
+        dateLabel={formatBengaliDate(date)}
         items={whatsappOwnerItems}
       />
     </div>

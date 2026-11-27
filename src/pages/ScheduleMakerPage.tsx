@@ -3,10 +3,11 @@ import { useAuth } from '../context/AuthContext.tsx';
 import { api } from '../services/api.ts';
 import type { Vehicle, RouteItem, Schedule, Driver } from '../types/index.ts';
 import { useDataSync } from '../hooks/useDataSync.ts';
-import { getTodayDhakaDate, toBengaliDigits } from '../utils/formatters.ts';
+import { getTodayDhakaDate, toBengaliDigits, formatBengaliDate, formatTime12Hour } from '../utils/formatters.ts';
 import { sortRoutesByNumber } from '../utils/routeSort.ts';
 import { DigitalClockPicker } from '../components/DigitalClockPicker.tsx';
 import { ForwardUpTripsModal } from '../components/ForwardUpTripsModal.tsx';
+import { DateInput } from '../components/DateInput.tsx';
 import {
   CalendarPlus,
   Bus,
@@ -178,7 +179,7 @@ export const ScheduleMakerPage: React.FC<{ onScheduleCreated?: () => void }> = (
 
       const tripLabel = res.schedule.tripSequenceLabel ? ` (${res.schedule.tripSequenceLabel})` : '';
       setSuccessMsg(
-        `অভিনন্দন! ${direction === 'UP' ? 'আপ ট্রিপ' : 'ডাউন ট্রিপ'} (${res.schedule.tripNo}) শিডিউল সফলভাবে তৈরি হয়েছে। গাড়ি: ${res.schedule.vehicleRegNo}${tripLabel}, রুট: ${res.schedule.routeName}, সময়: ${res.schedule.departureTime}`
+        `অভিনন্দন! ${direction === 'UP' ? 'আপ ট্রিপ' : 'ডাউন ট্রিপ'} (${res.schedule.tripNo}) শিডিউল সফলভাবে তৈরি হয়েছে। গাড়ি: ${res.schedule.vehicleRegNo}${tripLabel}, রুট: ${res.schedule.routeName}, সময়: ${formatTime12Hour(res.schedule.departureTime)}`
       );
       if (onScheduleCreated) onScheduleCreated();
     } catch (err: any) {
@@ -207,15 +208,15 @@ export const ScheduleMakerPage: React.FC<{ onScheduleCreated?: () => void }> = (
   return (
     <div className="max-w-3xl mx-auto space-y-3">
       {/* Compact Header */}
-      <div className="bg-white rounded-xl border border-emerald-300 shadow-2xs overflow-hidden">
-        <div className="bg-[#0b2820] px-3 py-2 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+      <div className="bg-white rounded-xl border border-slate-200 shadow-2xs overflow-hidden">
+        <div className="bg-[#1d4ed8] px-3 py-2 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div className="flex items-center gap-2 min-w-0">
-            <CalendarPlus className="w-4 h-4 shrink-0 text-emerald-300" />
+            <CalendarPlus className="w-4 h-4 shrink-0 text-[#bfdbfe]" />
             <div className="min-w-0">
               <h2 className="text-xs sm:text-sm font-bold leading-tight truncate">
                 শিডিউল মেকার — নতুন ট্রিপ সংযোজন
               </h2>
-              <p className="hidden sm:block text-[10px] text-emerald-200 leading-tight truncate">
+              <p className="hidden sm:block text-[10px] text-[#dbeafe] leading-tight truncate">
                 তারিখ, সময়, গাড়ী নম্বর, রুট, সুপারভাইজার ও ড্রাইভার দিয়ে ট্রিপ শুরু করুন
               </p>
             </div>
@@ -224,9 +225,9 @@ export const ScheduleMakerPage: React.FC<{ onScheduleCreated?: () => void }> = (
           <button
             type="button"
             onClick={() => setShowForwardModal(true)}
-            className="px-2.5 py-1.5 bg-white hover:bg-emerald-50 text-[#0b2820] rounded-lg text-[11px] font-extrabold shadow-2xs transition-all flex items-center gap-1 cursor-pointer shrink-0"
+            className="px-2.5 py-1.5 bg-white hover:bg-[#eff6ff] text-[#1e3a8a] rounded-lg text-[11px] font-extrabold shadow-2xs transition-all flex items-center gap-1 cursor-pointer shrink-0"
           >
-            <Forward className="w-3.5 h-3.5 text-[#0d9488]" />
+            <Forward className="w-3.5 h-3.5 text-[#1d4ed8]" />
             <span>গতকালের আপ ট্রিপ ফরোয়ার্ড</span>
           </button>
         </div>
@@ -234,21 +235,21 @@ export const ScheduleMakerPage: React.FC<{ onScheduleCreated?: () => void }> = (
 
       {/* Messages */}
       {successMsg && (
-        <div className="p-2.5 bg-emerald-50 text-emerald-900 rounded-xl text-xs font-semibold border border-emerald-200 flex items-center gap-2">
-          <CheckCircle className="w-4 h-4 shrink-0 text-emerald-600" />
+        <div className="p-2.5 bg-[#eff6ff] text-[#1e3a8a] rounded-xl text-xs font-semibold border border-[#bfdbfe] flex items-center gap-2">
+          <CheckCircle className="w-4 h-4 shrink-0 text-[#1d4ed8]" />
           <span>{successMsg}</span>
         </div>
       )}
 
       {errorMsg && (
-        <div className="p-2.5 bg-rose-50 text-rose-700 rounded-xl text-xs font-semibold border border-rose-200 flex items-center gap-2">
-          <AlertTriangle className="w-4 h-4 shrink-0" />
+        <div className="p-2.5 bg-red-50 text-red-700 rounded-xl text-xs font-bold border border-red-200 flex items-center gap-2">
+          <AlertTriangle className="w-4 h-4 shrink-0 text-red-600" />
           <span>{errorMsg}</span>
         </div>
       )}
 
       {/* Compact Excel Sheet Form Card */}
-      <form onSubmit={handleCreate} className="bg-white p-3.5 sm:p-4 rounded-xl border border-emerald-300 shadow-2xs space-y-3.5">
+      <form onSubmit={handleCreate} className="bg-white p-3.5 sm:p-4 rounded-xl border border-slate-200 shadow-2xs space-y-3.5">
         {/* 1. Trip Direction (আপ ট্রিপ / ডাউন ট্রিপ) */}
         <div>
           <label className="block text-[11px] font-bold text-slate-900 mb-1.5">
@@ -260,12 +261,12 @@ export const ScheduleMakerPage: React.FC<{ onScheduleCreated?: () => void }> = (
               onClick={() => setDirection('UP')}
               className={`p-2.5 rounded-xl border text-center transition-all cursor-pointer ${
                 direction === 'UP'
-                  ? 'bg-[#0b2820] border-[#0b2820] text-white shadow-xs'
-                  : 'bg-[#f7fcfa] border-emerald-200 text-slate-900 hover:bg-emerald-50'
+                  ? 'bg-[#1e3a8a] border-[#1e3a8a] text-white shadow-xs'
+                  : 'bg-[#f8fafc] border-slate-200 text-slate-900 hover:bg-[#eff6ff]'
               }`}
             >
               <div className="font-black text-xs">১. আপ ট্রিপ (UP TRIP)</div>
-              <div className={`text-[10px] mt-0.5 ${direction === 'UP' ? 'text-emerald-200' : 'text-slate-600'}`}>
+              <div className={`text-[10px] mt-0.5 ${direction === 'UP' ? 'text-[#dbeafe]' : 'text-slate-600'}`}>
                 প্রান্তিক পয়েন্ট ➔ ঢাকা অভিমুখী
               </div>
             </button>
@@ -275,12 +276,12 @@ export const ScheduleMakerPage: React.FC<{ onScheduleCreated?: () => void }> = (
               onClick={() => setDirection('DOWN')}
               className={`p-2.5 rounded-xl border text-center transition-all cursor-pointer ${
                 direction === 'DOWN'
-                  ? 'bg-[#0d9488] border-[#0d9488] text-white shadow-xs'
-                  : 'bg-[#f7fcfa] border-emerald-200 text-slate-900 hover:bg-emerald-50'
+                  ? 'bg-[#1d4ed8] border-[#1d4ed8] text-white shadow-xs'
+                  : 'bg-[#f8fafc] border-slate-200 text-slate-900 hover:bg-[#eff6ff]'
               }`}
             >
               <div className="font-black text-xs">২. ডাউন ট্রিপ (DOWN TRIP)</div>
-              <div className={`text-[10px] mt-0.5 ${direction === 'DOWN' ? 'text-emerald-50' : 'text-slate-600'}`}>
+              <div className={`text-[10px] mt-0.5 ${direction === 'DOWN' ? 'text-[#dbeafe]' : 'text-slate-600'}`}>
                 ঢাকা ➔ প্রান্তিক (ফিরতি ট্রিপ)
               </div>
             </button>
@@ -288,36 +289,35 @@ export const ScheduleMakerPage: React.FC<{ onScheduleCreated?: () => void }> = (
         </div>
 
         {/* 2. Date & Night Hold */}
-        <div className="bg-slate-50/80 p-4 rounded-2xl border border-slate-200 space-y-3">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
+        <div className="bg-[#f8fafc] p-3.5 rounded-2xl border border-slate-200 space-y-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 items-center">
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-1.5">
-                <Calendar className="w-4 h-4 text-emerald-600" />
+              <label className="block text-xs font-bold text-slate-800 mb-1.5 flex items-center gap-1.5">
+                <Calendar className="w-4 h-4 text-[#1d4ed8]" />
                 <span>২. ট্রিপের তারিখ *</span>
               </label>
-              <input
-                type="date"
+              <DateInput
                 value={date ?? ''}
                 onChange={(e) => setDate(e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-xs font-bold focus:ring-2 focus:ring-emerald-500 outline-none"
+                className="w-full px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:ring-2 focus:ring-[#1d4ed8] outline-none"
                 required
               />
             </div>
 
             {/* Night Hold Checkbox */}
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-1.5">
-                <Moon className="w-4 h-4 text-indigo-600" />
+              <label className="block text-xs font-bold text-slate-800 mb-1.5 flex items-center gap-1.5">
+                <Moon className="w-4 h-4 text-[#1e3a8a]" />
                 <span>নাইট হোল্ড (রাত্রিযাপন)</span>
               </label>
-              <label className="flex items-center gap-2.5 px-3 py-2 bg-white border border-slate-300 rounded-xl cursor-pointer hover:bg-indigo-50/40 transition-colors">
+              <label className="flex items-center gap-2.5 px-3 py-2 bg-white border border-slate-200 rounded-xl cursor-pointer hover:bg-[#eff6ff] transition-colors">
                 <input
                   type="checkbox"
                   checked={isNightHold}
                   onChange={(e) => setIsNightHold(e.target.checked)}
-                  className="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500 cursor-pointer"
+                  className="w-4 h-4 accent-[#1d4ed8] rounded cursor-pointer"
                 />
-                <span className="text-xs font-bold text-slate-800">
+                <span className="text-xs font-bold text-slate-900">
                   নাইট হোল্ড ট্রিপ হিসেবে চিহ্নিত করুন
                 </span>
               </label>
@@ -325,10 +325,10 @@ export const ScheduleMakerPage: React.FC<{ onScheduleCreated?: () => void }> = (
           </div>
 
           {isNightHold && (
-            <div className="p-2.5 bg-indigo-50 text-indigo-900 border border-indigo-200 rounded-xl text-xs flex items-start gap-2">
-              <Moon className="w-4 h-4 shrink-0 text-indigo-600 mt-0.5" />
+            <div className="p-2.5 bg-[#eff6ff] text-[#1e3a8a] border border-[#bfdbfe] rounded-xl text-xs flex items-start gap-2">
+              <Moon className="w-4 h-4 shrink-0 text-[#1d4ed8] mt-0.5" />
               <div>
-                <strong>নাইট হোল্ড সক্রিয়:</strong> এই গাড়িটি রাতে গন্তব্যে অবস্থান করবে। এর ফিরতি ডাউন ট্রিপ পরবর্তী দিন (<strong>{calculateNextDay(date)}</strong>) কাউন্ট হবে এবং ট্রিপ সমন্বয়ে <strong>{calculateNextDay(date)}</strong> তারিখের রিপোর্টে ২টি ট্রিপ মিলে ১টি পূর্ণাঙ্গ ট্রিপ হিসেবে প্রদর্শিত হবে।
+                <strong>নাইট হোল্ড সক্রিয়:</strong> এই গাড়িটি রাতে গন্তব্যে অবস্থান করবে। এর ফিরতি ডাউন ট্রিপ পরবর্তী দিন (<strong>{formatBengaliDate(calculateNextDay(date))}</strong>) কাউন্ট হবে এবং ট্রিপ সমন্বয়ে <strong>{formatBengaliDate(calculateNextDay(date))}</strong> তারিখের রিপোর্টে ২টি ট্রিপ মিলে ১টি পূর্ণাঙ্গ ট্রিপ হিসেবে প্রদর্শিত হবে।
               </div>
             </div>
           )}
@@ -346,12 +346,12 @@ export const ScheduleMakerPage: React.FC<{ onScheduleCreated?: () => void }> = (
         {/* 4. Vehicle Selection */}
         <div>
           <div className="flex items-center justify-between mb-1.5">
-            <label className="block text-xs font-bold text-slate-700 flex items-center gap-1.5">
-              <Bus className="w-4 h-4 text-blue-600" />
+            <label className="block text-xs font-bold text-slate-800 flex items-center gap-1.5">
+              <Bus className="w-4 h-4 text-[#1d4ed8]" />
               <span>৪. গাড়ী নাম্বার (Vehicle Number) *</span>
             </label>
             {direction === 'UP' && vehicleUpTripsToday.length > 0 && nextTripSeqLabel && (
-              <span className="text-[10px] font-bold px-2 py-0.5 bg-amber-100 text-amber-800 rounded-md border border-amber-200">
+              <span className="text-[10px] font-bold px-2 py-0.5 bg-[#eff6ff] text-[#1e3a8a] rounded-md border border-[#bfdbfe]">
                 আজকের {nextTripSeqLabel}
               </span>
             )}
@@ -359,7 +359,7 @@ export const ScheduleMakerPage: React.FC<{ onScheduleCreated?: () => void }> = (
           <select
             value={vehicleId ?? ''}
             onChange={(e) => setVehicleId(e.target.value)}
-            className="w-full px-3.5 py-3 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold focus:bg-white focus:ring-2 focus:ring-emerald-500 outline-none"
+            className="w-full px-3.5 py-2.5 bg-[#f8fafc] border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:bg-white focus:ring-2 focus:ring-[#1d4ed8] outline-none"
             required
           >
             {vehicles.map((v) => (
@@ -370,10 +370,10 @@ export const ScheduleMakerPage: React.FC<{ onScheduleCreated?: () => void }> = (
           </select>
 
           {direction === 'UP' && vehicleUpTripsToday.length > 0 && nextTripSeqLabel && (
-            <div className="mt-2 p-2.5 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800 flex items-center gap-2">
-              <AlertTriangle className="w-4 h-4 shrink-0 text-amber-600" />
+            <div className="mt-2 p-2.5 bg-[#eff6ff] border border-[#bfdbfe] rounded-xl text-xs text-[#1e3a8a] flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4 shrink-0 text-[#1d4ed8]" />
               <span>
-                এই গাড়িটির ({selectedVehicle?.regNo}) {date} তারিখে ইতিমধ্যে {toBengaliDigits(vehicleUpTripsToday.length)}টি আপ ট্রিপ নির্ধারিত আছে। নতুন ট্রিপ যুক্ত করলে এটি গাড়িটির <strong>{nextTripSeqLabel}</strong> হিসেবে যুক্ত হবে।
+                এই গাড়িটির ({selectedVehicle?.regNo}) {formatBengaliDate(date)} তারিখে ইতিমধ্যে {toBengaliDigits(vehicleUpTripsToday.length)}টি আপ ট্রিপ নির্ধারিত আছে। নতুন ট্রিপ যুক্ত করলে এটি গাড়িটির <strong>{nextTripSeqLabel}</strong> হিসেবে যুক্ত হবে।
               </span>
             </div>
           )}
@@ -381,15 +381,15 @@ export const ScheduleMakerPage: React.FC<{ onScheduleCreated?: () => void }> = (
 
         {/* 5. Route Selection (Filtered strictly by UP or DOWN) */}
         <div>
-          <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-1.5">
-            <MapPin className="w-4 h-4 text-emerald-600" />
+          <label className="block text-xs font-bold text-slate-800 mb-1.5 flex items-center gap-1.5">
+            <MapPin className="w-4 h-4 text-[#1d4ed8]" />
             <span>৫. রুট নির্বাচন ({direction === 'UP' ? 'আপ রুট' : 'ডাউন রুট'}) *</span>
           </label>
           {availableRoutes.length > 0 ? (
             <select
               value={routeId ?? ''}
               onChange={(e) => setRouteId(e.target.value)}
-              className="w-full px-3.5 py-3 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold focus:bg-white focus:ring-2 focus:ring-emerald-500 outline-none"
+              className="w-full px-3.5 py-2.5 bg-[#f8fafc] border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:bg-white focus:ring-2 focus:ring-[#1d4ed8] outline-none"
               required
             >
               {availableRoutes.map((r) => (
@@ -399,25 +399,24 @@ export const ScheduleMakerPage: React.FC<{ onScheduleCreated?: () => void }> = (
               ))}
             </select>
           ) : (
-            <div className="p-3 bg-amber-50 text-amber-800 border border-amber-200 rounded-xl text-xs">
+            <div className="p-3 bg-[#f8fafc] text-[#1e3a8a] border border-slate-200 rounded-xl text-xs">
               এই ট্রিপ টাইপের ({direction === 'UP' ? 'আপ' : 'ডাউন'}) জন্য কোনো সক্রিয় রুট পাওয়া যায়নি। রুট ব্যবস্থাপনা পেজ থেকে রুট তৈরি করতে পারেন।
             </div>
           )}
         </div>
 
-        {/* 6 & 7. Supervisor & Driver (Scrollable dropdowns from name directory) */}
+        {/* 6 & 7. Supervisor & Driver */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {/* Supervisor */}
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-1.5">
-              <User className="w-4 h-4 text-purple-600" />
+            <label className="block text-xs font-bold text-slate-800 mb-1.5 flex items-center gap-1.5">
+              <User className="w-4 h-4 text-[#1d4ed8]" />
               <span>৬. সুপারভাইজার নির্বাচন (তালিকা থেকে) *</span>
             </label>
             {supervisorsList.length > 0 ? (
               <select
                 value={supervisor ?? ''}
                 onChange={(e) => setSupervisor(e.target.value)}
-                className="w-full px-3.5 py-3 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold focus:bg-white focus:ring-2 focus:ring-emerald-500 outline-none max-h-48 overflow-y-auto"
+                className="w-full px-3.5 py-2.5 bg-[#f8fafc] border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:bg-white focus:ring-2 focus:ring-[#1d4ed8] outline-none max-h-48 overflow-y-auto"
                 required
               >
                 <option value="">-- সুপারভাইজার নির্বাচন করুন --</option>
@@ -433,23 +432,22 @@ export const ScheduleMakerPage: React.FC<{ onScheduleCreated?: () => void }> = (
                 value={supervisor ?? ''}
                 onChange={(e) => setSupervisor(e.target.value)}
                 placeholder="সুপারভাইজারের নাম লিখুন"
-                className="w-full px-3.5 py-3 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold focus:bg-white focus:ring-2 focus:ring-emerald-500 outline-none"
+                className="w-full px-3.5 py-2.5 bg-[#f8fafc] border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:bg-white focus:ring-2 focus:ring-[#1d4ed8] outline-none"
                 required
               />
             )}
           </div>
 
-          {/* Driver */}
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-1.5">
-              <User className="w-4 h-4 text-blue-600" />
+            <label className="block text-xs font-bold text-slate-800 mb-1.5 flex items-center gap-1.5">
+              <User className="w-4 h-4 text-[#1e3a8a]" />
               <span>৭. ড্রাইভার নির্বাচন (তালিকা থেকে)</span>
             </label>
             {driversList.length > 0 ? (
               <select
                 value={driver ?? ''}
                 onChange={(e) => setDriver(e.target.value)}
-                className="w-full px-3.5 py-3 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold focus:bg-white focus:ring-2 focus:ring-emerald-500 outline-none max-h-48 overflow-y-auto"
+                className="w-full px-3.5 py-2.5 bg-[#f8fafc] border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:bg-white focus:ring-2 focus:ring-[#1d4ed8] outline-none max-h-48 overflow-y-auto"
               >
                 <option value="">-- ড্রাইভার নির্বাচন করুন (ঐচ্ছিক) --</option>
                 {driversList.map((d) => (
@@ -464,18 +462,18 @@ export const ScheduleMakerPage: React.FC<{ onScheduleCreated?: () => void }> = (
                 value={driver ?? ''}
                 onChange={(e) => setDriver(e.target.value)}
                 placeholder="ড্রাইভারের নাম লিখুন (ঐচ্ছিক)"
-                className="w-full px-3.5 py-3 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold focus:bg-white focus:ring-2 focus:ring-emerald-500 outline-none"
+                className="w-full px-3.5 py-2.5 bg-[#f8fafc] border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:bg-white focus:ring-2 focus:ring-[#1d4ed8] outline-none"
               />
             )}
           </div>
         </div>
 
         {/* Submit Button */}
-        <div className="pt-2 border-t border-emerald-200">
+        <div className="pt-2 border-t border-slate-200">
           <button
             type="submit"
             disabled={loading}
-            className="w-full min-h-[44px] py-2.5 bg-[#0d9488] hover:bg-[#0f766e] text-white rounded-xl text-xs sm:text-sm font-bold shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+            className="w-full min-h-[44px] py-2.5 bg-[#1d4ed8] hover:bg-[#1e40af] text-white rounded-xl text-xs sm:text-sm font-bold shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
           >
             <CalendarPlus className="w-4 h-4" />
             <span>{loading ? 'শিডিউল তৈরি হচ্ছে...' : 'নতুন ট্রিপ শিডিউল সংরক্ষণ করুন'}</span>
@@ -486,9 +484,9 @@ export const ScheduleMakerPage: React.FC<{ onScheduleCreated?: () => void }> = (
       {/* Confirmation Modal for Vehicle Multi-Trip on same day */}
       {showConfirmDoubleTrip && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
-          <div className="bg-white rounded-t-2xl sm:rounded-2xl max-w-md w-full shadow-2xl border border-emerald-200 flex flex-col max-h-[90dvh] overflow-hidden">
+          <div className="bg-white rounded-t-2xl sm:rounded-2xl max-w-md w-full shadow-2xl border border-slate-200 flex flex-col max-h-[90dvh] overflow-hidden">
             <div className="shrink-0 p-5 overflow-y-auto overscroll-contain space-y-3">
-              <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mx-auto">
+              <div className="w-12 h-12 rounded-2xl bg-[#eff6ff] text-[#1d4ed8] flex items-center justify-center mx-auto border border-[#bfdbfe]">
                 <AlertTriangle className="w-6 h-6" />
               </div>
 
@@ -497,26 +495,26 @@ export const ScheduleMakerPage: React.FC<{ onScheduleCreated?: () => void }> = (
                   {nextTripSeqLabel} তৈরির সতর্কতা ও নিশ্চিতকরণ
                 </h3>
                 <p className="text-xs text-slate-700 mt-1.5 leading-relaxed">
-                  গাড়ি নম্বর <strong className="text-slate-950">{selectedVehicle?.regNo}</strong> এর আজকের দিনে ({date}) ইতিমধ্যে <strong className="text-[#0f766e]">{toBengaliDigits(vehicleUpTripsToday.length)}টি আপ ট্রিপ</strong> বিদ্যমান রয়েছে।
+                  গাড়ি নম্বর <strong className="text-slate-950">{selectedVehicle?.regNo}</strong> এর আজকের দিনে ({formatBengaliDate(date)}) ইতিমধ্যে <strong className="text-[#1d4ed8]">{toBengaliDigits(vehicleUpTripsToday.length)}টি আপ ট্রিপ</strong> বিদ্যমান রয়েছে।
                 </p>
-                <div className="mt-2 p-2.5 bg-amber-50 rounded-xl border border-amber-200 text-amber-900 text-xs font-semibold">
+                <div className="mt-2 p-2.5 bg-[#eff6ff] rounded-xl border border-[#bfdbfe] text-[#1e3a8a] text-xs font-semibold">
                   আপনি কি নিশ্চিতভাবে এই গাড়ির জন্য <strong>&ldquo;{nextTripSeqLabel}&rdquo;</strong> তৈরি করতে চান?
                 </div>
               </div>
             </div>
 
-            <div className="shrink-0 px-4 py-3 bg-[#f0f9f6] border-t border-emerald-200 grid grid-cols-2 gap-2.5 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+            <div className="shrink-0 px-4 py-3 bg-[#f8fafc] border-t border-slate-200 grid grid-cols-2 gap-2.5 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
               <button
                 type="button"
                 onClick={() => setShowConfirmDoubleTrip(false)}
-                className="min-h-[44px] py-2 px-4 bg-white hover:bg-slate-100 border border-slate-300 text-slate-800 rounded-xl text-xs font-bold cursor-pointer transition-colors"
+                className="min-h-[44px] py-2 px-4 bg-white hover:bg-[#eff6ff] border border-slate-200 text-[#1e3a8a] rounded-xl text-xs font-bold cursor-pointer transition-colors"
               >
                 বাতিল করুন
               </button>
               <button
                 type="button"
                 onClick={executeCreate}
-                className="min-h-[44px] py-2 px-4 bg-[#0d9488] hover:bg-[#0f766e] text-white rounded-xl text-xs font-bold cursor-pointer transition-colors shadow-xs"
+                className="min-h-[44px] py-2 px-4 bg-[#1d4ed8] hover:bg-[#1e40af] text-white rounded-xl text-xs font-bold cursor-pointer transition-colors shadow-xs"
               >
                 হ্যাঁ, {nextTripSeqLabel} নিশ্চিত করুন
               </button>

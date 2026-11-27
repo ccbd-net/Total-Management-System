@@ -5,8 +5,9 @@ import type { Schedule, Booking, Counter } from '../types/index.ts';
 import { SeatMap } from '../components/SeatMap.tsx';
 import { TripAlertBanner } from '../components/TripAlertBanner.tsx';
 import { ThermalTicketModal } from '../components/ThermalTicketModal.tsx';
+import { DateInput } from '../components/DateInput.tsx';
 import { useDataSync } from '../hooks/useDataSync.ts';
-import { formatTaka, toBengaliDigits, getTodayDhakaDate, formatBengaliDate } from '../utils/formatters.ts';
+import { formatTaka, toBengaliDigits, getTodayDhakaDate, formatBengaliDate, formatTime12Hour } from '../utils/formatters.ts';
 import { groupSchedulesByRouteNumber, getBookingFareParts } from '../utils/routeSort.ts';
 import {
   Armchair,
@@ -243,15 +244,15 @@ export const BookingPage: React.FC = () => {
   return (
     <div className="space-y-3">
       {/* Top Controls: Date, Direction & Schedule Selector */}
-      <div className="bg-white rounded-xl border border-emerald-300 shadow-2xs overflow-hidden">
-        <div className="bg-[#0b2820] px-3 py-2 text-white flex flex-col md:flex-row md:items-center justify-between gap-2">
+      <div className="bg-white rounded-xl border border-slate-200 shadow-2xs overflow-hidden">
+        <div className="bg-[#1d4ed8] px-3 py-2 text-white flex flex-col md:flex-row md:items-center justify-between gap-2">
           <div className="flex items-center gap-2 min-w-0">
-            <Armchair className="w-4 h-4 shrink-0 text-emerald-300" />
+            <Armchair className="w-4 h-4 shrink-0 text-[#93c5fd]" />
             <div className="min-w-0">
               <h2 className="text-xs sm:text-sm font-bold leading-tight truncate">
                 লাইভ বাস সিট বুকিং ও টিকিটিং শীট
               </h2>
-              <p className="hidden sm:block text-[10px] text-emerald-200 leading-tight">
+              <p className="hidden sm:block text-[10px] text-[#dbeafe] leading-tight">
                 ট্রিপ নির্বাচন করে ইন্টারঅ্যাক্টিভ ম্যাপ থেকে আসন বুকিং ও তাৎক্ষণিক প্রিন্ট করুন
               </p>
             </div>
@@ -260,14 +261,14 @@ export const BookingPage: React.FC = () => {
           {/* Up / Down Tabs & Date */}
           <div className="flex flex-wrap items-center gap-1.5 shrink-0">
             {/* Direction Tabs */}
-            <div className="flex bg-[#071d17] p-0.5 rounded-lg text-[11px] font-bold border border-[#1a4d3e]">
+            <div className="flex bg-[#1e40af] p-0.5 rounded-lg text-[11px] font-bold border border-white/20">
               <button
                 type="button"
                 onClick={() => setDirection('UP')}
                 className={`px-2.5 py-1 rounded-md transition-all whitespace-nowrap shrink-0 cursor-pointer ${
                   direction === 'UP'
-                    ? 'bg-[#0d9488] text-white shadow-2xs'
-                    : 'text-emerald-100 hover:text-white'
+                    ? 'bg-white/15 text-white border border-white/25 shadow-2xs'
+                    : 'text-[#dbeafe] hover:text-white'
                 }`}
               >
                 আপ (মাদারীপুর ➜ ঢাকা)
@@ -277,8 +278,8 @@ export const BookingPage: React.FC = () => {
                 onClick={() => setDirection('DOWN')}
                 className={`px-2.5 py-1 rounded-md transition-all whitespace-nowrap shrink-0 cursor-pointer ${
                   direction === 'DOWN'
-                    ? 'bg-[#0d9488] text-white shadow-2xs'
-                    : 'text-emerald-100 hover:text-white'
+                    ? 'bg-white/15 text-white border border-white/25 shadow-2xs'
+                    : 'text-[#dbeafe] hover:text-white'
                 }`}
               >
                 ডাউন (ঢাকা ➜ মাদারীপুর)
@@ -286,10 +287,9 @@ export const BookingPage: React.FC = () => {
             </div>
 
             {/* Date Selector */}
-            <div className="flex items-center gap-1 bg-white/95 px-2 py-1 rounded-lg border border-emerald-200 text-[11px] font-bold text-slate-900">
-              <Calendar className="w-3.5 h-3.5 text-[#0f766e]" />
-              <input
-                type="date"
+            <div className="flex items-center gap-1 bg-white/95 px-2 py-1 rounded-lg border border-slate-200 text-[11px] font-bold text-slate-900">
+              <Calendar className="w-3.5 h-3.5 text-[#1d4ed8]" />
+              <DateInput
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
                 className="bg-transparent outline-none cursor-pointer text-[11px]"
@@ -300,7 +300,7 @@ export const BookingPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setDate(todayDhaka)}
-                className="px-2 py-1 bg-white hover:bg-emerald-50 text-[#0b2820] rounded-lg text-[11px] font-bold transition-colors whitespace-nowrap shrink-0 cursor-pointer"
+                className="px-2 py-1 bg-white hover:bg-[#eff6ff] text-[#1e3a8a] rounded-lg text-[11px] font-bold transition-colors whitespace-nowrap shrink-0 cursor-pointer"
               >
                 আজ
               </button>
@@ -312,7 +312,7 @@ export const BookingPage: React.FC = () => {
                 fetchSchedules();
                 if (selectedScheduleId) fetchScheduleDetails(selectedScheduleId);
               }}
-              className="p-1.5 bg-[#133b30] hover:bg-[#194d3f] text-white rounded-lg transition-colors cursor-pointer"
+              className="p-1.5 bg-[#1e40af] hover:bg-white/15 text-white border border-white/20 rounded-lg transition-colors cursor-pointer"
               title="রিফ্রেশ"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
@@ -323,8 +323,8 @@ export const BookingPage: React.FC = () => {
         {/* Excel-Sheet Style Trip Schedule Table (Grouped by Route 1/2/3 & Sorted by Time) */}
         <div className="p-2.5 sm:p-3 space-y-2.5">
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <div className="flex items-center gap-1.5 text-xs font-bold text-slate-800">
-              <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600" />
+            <div className="flex items-center gap-1.5 text-xs font-bold text-slate-900">
+              <FileSpreadsheet className="w-3.5 h-3.5 text-[#1d4ed8]" />
               <span>
                 নির্ধারিত ট্রিপ তালিকা ({formatBengaliDate(date)} · {toBengaliDigits(schedules.length)} টি ট্রিপ)
               </span>
@@ -335,7 +335,7 @@ export const BookingPage: React.FC = () => {
           </div>
 
           {schedules.length === 0 ? (
-            <div className="p-4 bg-slate-50 rounded-xl text-center text-xs text-slate-500 border border-slate-200">
+            <div className="p-4 bg-[#f8fafc] rounded-xl text-center text-xs text-slate-600 border border-slate-200">
               নির্বাচিত তারিখ ({formatBengaliDate(date)}) এ কোনো{' '}
               {direction === 'UP' ? 'আপ ট্রিপ' : 'ডাউন ট্রিপ'} শিডিউল পাওয়া যায়নি। শিডিউল মেকার থেকে ট্রিপ যোগ করুন।
             </div>
@@ -344,16 +344,16 @@ export const BookingPage: React.FC = () => {
               {routeGroups.map((group) => (
                 <div
                   key={`${direction}-${group.routeName}`}
-                  className="border border-slate-300 rounded-xl overflow-hidden bg-white"
+                  className="border border-slate-200 rounded-xl overflow-hidden bg-white"
                 >
                   {/* Route Header Strip */}
                   <div
                     className={`px-3 py-1.5 flex flex-wrap items-center justify-between gap-2 text-xs text-white ${
-                      direction === 'UP' ? 'bg-[#0b2820]' : 'bg-[#0f766e]'
+                      direction === 'UP' ? 'bg-[#1e3a8a]' : 'bg-[#1e40af]'
                     }`}
                   >
                     <div className="flex items-center gap-2 font-bold">
-                      <span className="px-2 py-0.5 rounded bg-white/25 text-white text-[10px] font-black tabular-nums">
+                      <span className="px-2 py-0.5 rounded bg-white/15 text-white text-[10px] font-black tabular-nums">
                         {toBengaliDigits(group.routeNumber)} নং রুট
                       </span>
                       <span>{group.routeName}</span>
@@ -367,14 +367,14 @@ export const BookingPage: React.FC = () => {
                   <div className="overflow-x-auto">
                     <table className="w-full border-collapse text-left text-[11px]">
                       <thead>
-                        <tr className="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold text-[11px]">
-                          <th className="py-2 px-2.5 border-r border-slate-300 text-center w-12">ক্রম</th>
-                          <th className="py-2 px-2.5 border-r border-slate-300 whitespace-nowrap">তারিখ</th>
-                          <th className="py-2 px-2.5 border-r border-slate-300 whitespace-nowrap">ট্রিপ নং</th>
-                          <th className="py-2 px-2.5 border-r border-slate-300 whitespace-nowrap">ছাড়ার সময়</th>
-                          <th className="py-2 px-2.5 border-r border-slate-300 whitespace-nowrap">গাড়ি নম্বর</th>
-                          <th className="py-2 px-2.5 border-r border-slate-300 whitespace-nowrap">সুপারভাইজার</th>
-                          <th className="py-2 px-2.5 border-r border-slate-300 text-center whitespace-nowrap">খালি আসন</th>
+                        <tr className="bg-[#1d4ed8] border-b border-[#1e40af] text-white font-bold text-[11px]">
+                          <th className="py-2 px-2.5 border-r border-blue-600/60 text-center w-12">ক্রম</th>
+                          <th className="py-2 px-2.5 border-r border-blue-600/60 whitespace-nowrap">তারিখ</th>
+                          <th className="py-2 px-2.5 border-r border-blue-600/60 whitespace-nowrap">ট্রিপ নং</th>
+                          <th className="py-2 px-2.5 border-r border-blue-600/60 whitespace-nowrap">ছাড়ার সময়</th>
+                          <th className="py-2 px-2.5 border-r border-blue-600/60 whitespace-nowrap">গাড়ি নম্বর</th>
+                          <th className="py-2 px-2.5 border-r border-blue-600/60 whitespace-nowrap">সুপারভাইজার</th>
+                          <th className="py-2 px-2.5 border-r border-blue-600/60 text-center whitespace-nowrap">খালি আসন</th>
                           <th className="py-2 px-2.5 text-center whitespace-nowrap">বুকিং সিলেক্ট</th>
                         </tr>
                       </thead>
@@ -390,11 +390,11 @@ export const BookingPage: React.FC = () => {
                               onClick={() => setSelectedScheduleId(sch.id)}
                               className={`cursor-pointer transition-colors ${
                                 isSelected
-                                  ? 'bg-emerald-50/90 font-semibold'
-                                  : 'bg-white hover:bg-slate-50'
+                                  ? 'bg-[#dbeafe] font-semibold'
+                                  : 'odd:bg-white even:bg-[#f1f5f9] hover:bg-[#eff6ff]'
                               }`}
                             >
-                              <td className="py-2 px-2.5 border-r border-slate-200 text-center font-bold text-slate-700 bg-slate-50/60 tabular-nums">
+                              <td className="py-2 px-2.5 border-r border-slate-200 text-center font-bold text-slate-800 tabular-nums">
                                 {toBengaliDigits(sch.serialInRoute)}
                               </td>
                               <td className="py-2 px-2.5 border-r border-slate-200 text-slate-700 whitespace-nowrap tabular-nums">
@@ -403,18 +403,18 @@ export const BookingPage: React.FC = () => {
                               <td className="py-2 px-2.5 border-r border-slate-200 font-mono font-bold text-slate-900 whitespace-nowrap">
                                 <span>{sch.tripNo}</span>
                                 {sch.tripSequenceLabel && (
-                                  <span className="ml-1.5 text-[10px] font-sans font-bold text-amber-700">
+                                  <span className="ml-1.5 text-[10px] font-sans font-bold text-[#1d4ed8]">
                                     ({sch.tripSequenceLabel})
                                   </span>
                                 )}
                                 {sch.isNightHold && (
-                                  <span className="ml-1.5 text-[10px] font-sans font-bold text-purple-700">
+                                  <span className="ml-1.5 text-[10px] font-sans font-bold text-[#1e3a8a]">
                                     · নাইট হোল্ড
                                   </span>
                                 )}
                               </td>
                               <td className="py-2 px-2.5 border-r border-slate-200 font-mono font-bold text-slate-900 whitespace-nowrap tabular-nums">
-                                {sch.departureTime}
+                                {formatTime12Hour(sch.departureTime)}
                               </td>
                               <td className="py-2 px-2.5 border-r border-slate-200 font-bold text-slate-900 whitespace-nowrap tabular-nums">
                                 {sch.vehicleRegNo}
@@ -423,7 +423,7 @@ export const BookingPage: React.FC = () => {
                                 {sch.supervisor || 'অনির্ধারিত'}
                               </td>
                               <td className="py-2 px-2.5 border-r border-slate-200 text-center whitespace-nowrap tabular-nums">
-                                <span className="font-bold text-emerald-700">
+                                <span className="font-bold text-[#1d4ed8]">
                                   {toBengaliDigits(availableCount)}
                                 </span>
                                 <span className="text-slate-400">
@@ -439,8 +439,8 @@ export const BookingPage: React.FC = () => {
                                   }}
                                   className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
                                     isSelected
-                                      ? 'bg-emerald-600 text-white'
-                                      : 'bg-slate-100 hover:bg-slate-200 text-slate-800'
+                                      ? 'bg-[#1d4ed8] text-white'
+                                      : 'bg-[#f8fafc] hover:bg-[#eff6ff] text-[#1e3a8a] border border-slate-200'
                                   }`}
                                 >
                                   {isSelected ? 'নির্বাচিত' : 'নির্বাচন করুন'}
@@ -464,30 +464,30 @@ export const BookingPage: React.FC = () => {
         <div className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-start">
             {/* Left Column: Interactive Seat Plan */}
-            <div className="md:col-span-6 xl:col-span-5 bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs flex flex-col items-center">
-              {/* Red Alert Banner if Trip Info Changed */}
+            <div className="md:col-span-6 xl:col-span-5 bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-2xs flex flex-col items-center">
+              {/* Alert Banner if Trip Info Changed */}
               <div className="w-full">
                 <TripAlertBanner schedule={currentSchedule} />
               </div>
 
-              <div className="w-full flex items-center justify-between mb-4 pb-2 border-b gap-2">
+              <div className="w-full flex items-center justify-between mb-4 pb-2 border-b border-slate-200 gap-2">
                 <div>
                   <div className="flex items-center gap-2">
-                    <h3 className="text-sm font-bold text-slate-800">{currentSchedule.vehicleRegNo}</h3>
+                    <h3 className="text-sm font-bold text-slate-900">{currentSchedule.vehicleRegNo}</h3>
                     {currentSchedule.tripSequenceLabel && (
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-amber-100 text-amber-800 border border-amber-300">
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-[#eff6ff] text-[#1e3a8a] border border-[#bfdbfe]">
                         {currentSchedule.tripSequenceLabel}
                       </span>
                     )}
                   </div>
                   <p className="text-xs text-slate-500">
                     {currentSchedule.vehicleOwnerName ? `মালিক: ${currentSchedule.vehicleOwnerName} | ` : ''}
-                    {currentSchedule.seatCapacity === 42 ? '৪২ সিট' : '৪৬ সিট'} | ছাড়ার সময়: {currentSchedule.departureTime}
+                    {currentSchedule.seatCapacity === 42 ? '৪২ সিট' : '৪৬ সিট'} | ছাড়ার সময়: {formatTime12Hour(currentSchedule.departureTime)}
                   </p>
                 </div>
 
                 <div className="text-right shrink-0">
-                  <span className="text-xs font-bold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200">
+                  <span className="text-xs font-bold text-[#1d4ed8] bg-[#eff6ff] px-2.5 py-1 rounded-lg border border-[#bfdbfe]">
                     ভাড়া: ম্যানুয়াল
                   </span>
                 </div>
@@ -504,10 +504,10 @@ export const BookingPage: React.FC = () => {
             </div>
 
             {/* Right Column: Booking Form */}
-            <div className="md:col-span-6 xl:col-span-7 bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
-              <div className="flex items-center justify-between mb-4 pb-2 border-b gap-2">
+            <div className="md:col-span-6 xl:col-span-7 bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs">
+              <div className="flex items-center justify-between mb-4 pb-2 border-b border-slate-200 gap-2">
                 <div>
-                  <h3 className="font-bold text-base text-slate-800">যাত্রী তথ্য ও বুকিং কনফার্মেশন</h3>
+                  <h3 className="font-bold text-base text-slate-900">যাত্রী তথ্য ও বুকিং কনফার্মেশন</h3>
                   <p className="text-xs text-slate-500">আসন ও মালের ভাড়া এন্ট্রি করে বুকিং সম্পন্ন করুন</p>
                 </div>
 
@@ -520,7 +520,7 @@ export const BookingPage: React.FC = () => {
                     <select
                       value={selectedCounterId}
                       onChange={(e) => setSelectedCounterId(e.target.value)}
-                      className="text-xs font-bold p-1.5 bg-slate-50 border border-slate-300 rounded-xl"
+                      className="text-xs font-bold p-1.5 bg-[#f8fafc] border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-[#1d4ed8]"
                     >
                       {counters
                         .filter((c) => c.status === 'active')
@@ -531,7 +531,7 @@ export const BookingPage: React.FC = () => {
                         ))}
                     </select>
                   ) : (
-                    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-slate-100 rounded-xl text-xs font-bold text-slate-800">
+                    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[#f8fafc] border border-slate-200 rounded-xl text-xs font-bold text-slate-900">
                       <span
                         className="w-2.5 h-2.5 rounded-full"
                         style={{ backgroundColor: currentCounterColor }}
@@ -544,23 +544,23 @@ export const BookingPage: React.FC = () => {
 
               {/* Error & Success Messages */}
               {errorMsg && (
-                <div className="mb-4 p-3 bg-red-50 text-red-700 text-xs font-semibold rounded-xl border border-red-200 flex items-center gap-2">
-                  <AlertTriangle className="w-4 h-4 shrink-0" />
+                <div className="mb-4 p-3 bg-[#eff6ff] text-[#1e3a8a] text-xs font-bold rounded-xl border border-[#1d4ed8] flex items-center gap-2">
+                  <AlertTriangle className="w-4 h-4 shrink-0 text-[#1d4ed8]" />
                   <span>{errorMsg}</span>
                 </div>
               )}
 
               {successMsg && (
-                <div className="mb-4 p-3 bg-emerald-50 text-emerald-800 text-xs font-semibold rounded-xl border border-emerald-200 flex items-center justify-between">
+                <div className="mb-4 p-3 bg-[#eff6ff] text-[#1e3a8a] text-xs font-semibold rounded-xl border border-[#bfdbfe] flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4 shrink-0 text-emerald-600" />
+                    <CheckCircle className="w-4 h-4 shrink-0 text-[#1d4ed8]" />
                     <span>{successMsg}</span>
                   </div>
                   {printedBooking && (
                     <button
                       type="button"
                       onClick={() => setPrintedBooking(printedBooking)}
-                      className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold flex items-center gap-1 cursor-pointer"
+                      className="px-2.5 py-1 bg-[#1d4ed8] hover:bg-[#1e40af] text-white rounded-lg text-xs font-bold flex items-center gap-1 cursor-pointer shrink-0"
                     >
                       <Printer className="w-3.5 h-3.5" />
                       <span>প্রিন্ট ভিউ</span>
@@ -571,10 +571,10 @@ export const BookingPage: React.FC = () => {
 
               <form onSubmit={handleConfirmBooking} className="space-y-4">
                 {/* Selected Seats Banner & Seat + Cargo Fare Inputs */}
-                <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-3">
+                <div className="p-4 bg-[#f8fafc] rounded-2xl border border-slate-200 space-y-3">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 pb-3">
                     <div>
-                      <span className="text-xs text-slate-500 font-semibold">নির্বাচিত আসন সমূহ:</span>
+                      <span className="text-xs text-slate-600 font-semibold">নির্বাচিত আসন সমূহ:</span>
                       <div className="text-base font-black text-slate-900 mt-0.5">
                         {selectedSeats.length > 0 ? (
                           <div className="flex flex-wrap gap-1.5 items-center">
@@ -587,16 +587,16 @@ export const BookingPage: React.FC = () => {
                                 {s}
                               </span>
                             ))}
-                            <span className="text-xs text-slate-500 font-bold ml-1">
+                            <span className="text-xs text-slate-600 font-bold ml-1">
                               (মোট {toBengaliDigits(selectedSeats.length)} টি আসন)
                             </span>
                           </div>
                         ) : parsedCargoFare > 0 ? (
-                          <span className="text-amber-700 text-xs font-bold">
+                          <span className="text-[#1d4ed8] text-xs font-bold">
                             মালামাল বুকিং (আসনবিহীন · শুধুমাত্র মালের ভাড়া)
                           </span>
                         ) : (
-                          <span className="text-slate-400 text-xs font-normal">
+                          <span className="text-slate-500 text-xs font-normal">
                             বামপাশের বাস ম্যাপ থেকে আসন ক্লিক করুন অথবা মালের ভাড়া লিখুন
                           </span>
                         )}
@@ -604,10 +604,10 @@ export const BookingPage: React.FC = () => {
                     </div>
 
                     <div className="text-left sm:text-right shrink-0">
-                      <span className="text-[11px] text-slate-500 font-semibold block">
+                      <span className="text-[11px] text-slate-600 font-semibold block">
                         সিট ({formatTaka(parsedSeatFare)}) + মাল ({formatTaka(parsedCargoFare)})
                       </span>
-                      <div className="text-xl font-black text-emerald-700 tabular-nums">
+                      <div className="text-xl font-black text-[#1d4ed8] tabular-nums">
                         মোট: {formatTaka(currentTotalFare)}
                       </div>
                     </div>
@@ -616,16 +616,16 @@ export const BookingPage: React.FC = () => {
                   {/* Manual Seat Fare + Manual Cargo Fare Side by Side */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {/* Seat Fare Box */}
-                    <div className="bg-white p-3.5 rounded-xl border border-emerald-200/90 shadow-xs space-y-2">
+                    <div className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-xs space-y-2">
                       <div className="flex items-center justify-between gap-1">
-                        <label className="text-xs font-black text-emerald-950 flex items-center gap-1.5">
-                          <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                        <label className="text-xs font-black text-[#1e3a8a] flex items-center gap-1.5">
+                          <span className="w-2 h-2 rounded-full bg-[#1d4ed8]" />
                           <span>সিট ভাড়া (ম্যানুয়াল ৳) {selectedSeats.length > 0 ? '*' : ''}</span>
                         </label>
                       </div>
 
                       <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-emerald-700 font-bold text-sm">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#1d4ed8] font-bold text-sm">
                           ৳
                         </div>
                         <input
@@ -640,7 +640,7 @@ export const BookingPage: React.FC = () => {
                               ? 'সিট নিলে চালু হবে'
                               : `যেমন: ${selectedSeats.length * (currentSchedule.fare || 550)}`
                           }
-                          className="w-full pl-8 pr-3 py-2 bg-emerald-50/30 border border-emerald-300 rounded-xl text-sm font-bold text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-emerald-500 focus:bg-white outline-none disabled:bg-slate-100 disabled:cursor-not-allowed tabular-nums"
+                          className="w-full pl-8 pr-3 py-2 bg-[#f8fafc] border border-slate-200 rounded-xl text-sm font-bold text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-[#1d4ed8] focus:bg-white outline-none disabled:opacity-60 disabled:cursor-not-allowed tabular-nums"
                         />
                       </div>
 
@@ -652,14 +652,14 @@ export const BookingPage: React.FC = () => {
                               const refFare = currentSchedule.fare * selectedSeats.length;
                               setManualFare(String(refFare));
                             }}
-                            className="px-2.5 py-1 bg-emerald-100 hover:bg-emerald-200 text-emerald-900 rounded-lg text-[11px] font-bold transition-colors cursor-pointer"
+                            className="px-2.5 py-1 bg-[#eff6ff] hover:bg-[#dbeafe] text-[#1e3a8a] border border-[#bfdbfe] rounded-lg text-[11px] font-bold transition-colors cursor-pointer"
                             title="রেফারেন্স বেস ভাড়া স্বয়ংক্রিয়ভাবে ইনপুট বক্সে বসান"
                           >
                             রেফারেন্স: {formatTaka(currentSchedule.fare * selectedSeats.length)}
                           </button>
                           {manualFare !== '' && (
                             <span className="text-[11px] text-slate-600 tabular-nums">
-                              গড়: <strong className="text-emerald-700">{formatTaka(Math.round(parsedSeatFare / selectedSeats.length))}</strong>
+                              গড়: <strong className="text-[#1d4ed8]">{formatTaka(Math.round(parsedSeatFare / selectedSeats.length))}</strong>
                             </span>
                           )}
                         </div>
@@ -667,19 +667,19 @@ export const BookingPage: React.FC = () => {
                     </div>
 
                     {/* Cargo / Goods Fare Box */}
-                    <div className="bg-white p-3.5 rounded-xl border border-amber-300/90 shadow-xs space-y-2">
+                    <div className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-xs space-y-2">
                       <div className="flex items-center justify-between gap-1">
-                        <label className="text-xs font-black text-amber-950 flex items-center gap-1.5">
-                          <span className="w-2 h-2 rounded-full bg-amber-500" />
+                        <label className="text-xs font-black text-[#1e3a8a] flex items-center gap-1.5">
+                          <span className="w-2 h-2 rounded-full bg-[#1e3a8a]" />
                           <span>মালের ভাড়া (ম্যানুয়াল ৳)</span>
                         </label>
-                        <span className="text-[10px] font-bold text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded">
+                        <span className="text-[10px] font-bold text-[#1d4ed8] bg-[#eff6ff] px-1.5 py-0.5 rounded border border-[#bfdbfe]">
                           ঐচ্ছিক
                         </span>
                       </div>
 
                       <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-amber-700 font-bold text-sm">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#1e3a8a] font-bold text-sm">
                           ৳
                         </div>
                         <input
@@ -689,7 +689,7 @@ export const BookingPage: React.FC = () => {
                           value={cargoFare}
                           onChange={(e) => setCargoFare(e.target.value)}
                           placeholder="মালের ভাড়া লিখুন (যেমন: ২০০)"
-                          className="w-full pl-8 pr-3 py-2 bg-amber-50/30 border border-amber-300 rounded-xl text-sm font-bold text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-amber-500 focus:bg-white outline-none tabular-nums"
+                          className="w-full pl-8 pr-3 py-2 bg-[#f8fafc] border border-slate-200 rounded-xl text-sm font-bold text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-[#1d4ed8] focus:bg-white outline-none tabular-nums"
                         />
                       </div>
 
@@ -706,7 +706,7 @@ export const BookingPage: React.FC = () => {
                       যাত্রীর / প্রেরকের নাম
                     </label>
                     <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#1d4ed8]">
                         <User className="w-4 h-4" />
                       </div>
                       <input
@@ -714,7 +714,7 @@ export const BookingPage: React.FC = () => {
                         value={passengerName}
                         onChange={(e) => setPassengerName(e.target.value)}
                         placeholder="যাত্রী বা মালামাল প্রেরকের নাম"
-                        className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-emerald-500 focus:bg-white outline-none"
+                        className="w-full pl-9 pr-3 py-2 bg-[#f8fafc] border border-slate-200 rounded-xl text-xs text-slate-900 focus:ring-2 focus:ring-[#1d4ed8] focus:bg-white outline-none"
                       />
                     </div>
                   </div>
@@ -724,7 +724,7 @@ export const BookingPage: React.FC = () => {
                       মোবাইল নম্বর
                     </label>
                     <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#1d4ed8]">
                         <Phone className="w-4 h-4" />
                       </div>
                       <input
@@ -732,7 +732,7 @@ export const BookingPage: React.FC = () => {
                         value={passengerPhone}
                         onChange={(e) => setPassengerPhone(e.target.value)}
                         placeholder="০১৭xxxxxxxx"
-                        className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-emerald-500 focus:bg-white outline-none"
+                        className="w-full pl-9 pr-3 py-2 bg-[#f8fafc] border border-slate-200 rounded-xl text-xs text-slate-900 focus:ring-2 focus:ring-[#1d4ed8] focus:bg-white outline-none"
                       />
                     </div>
                   </div>
@@ -742,7 +742,7 @@ export const BookingPage: React.FC = () => {
                       বোর্ডিং পয়েন্ট (উঠা)
                     </label>
                     <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#1d4ed8]">
                         <MapPin className="w-4 h-4" />
                       </div>
                       <input
@@ -750,7 +750,7 @@ export const BookingPage: React.FC = () => {
                         value={boardingPoint}
                         onChange={(e) => setBoardingPoint(e.target.value)}
                         placeholder={activeCounter?.name || 'কাউন্টার পয়েন্ট'}
-                        className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-emerald-500 focus:bg-white outline-none"
+                        className="w-full pl-9 pr-3 py-2 bg-[#f8fafc] border border-slate-200 rounded-xl text-xs text-slate-900 focus:ring-2 focus:ring-[#1d4ed8] focus:bg-white outline-none"
                       />
                     </div>
                   </div>
@@ -760,7 +760,7 @@ export const BookingPage: React.FC = () => {
                       গন্তব্য (নামা)
                     </label>
                     <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#1d4ed8]">
                         <MapPin className="w-4 h-4" />
                       </div>
                       <input
@@ -768,7 +768,7 @@ export const BookingPage: React.FC = () => {
                         value={destination}
                         onChange={(e) => setDestination(e.target.value)}
                         placeholder={currentSchedule.direction === 'UP' ? 'ঢাকা' : 'মাদারীপুর'}
-                        className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-emerald-500 focus:bg-white outline-none"
+                        className="w-full pl-9 pr-3 py-2 bg-[#f8fafc] border border-slate-200 rounded-xl text-xs text-slate-900 focus:ring-2 focus:ring-[#1d4ed8] focus:bg-white outline-none"
                       />
                     </div>
                   </div>
@@ -780,7 +780,7 @@ export const BookingPage: React.FC = () => {
                       <select
                         value={selectedCounterId}
                         onChange={(e) => setSelectedCounterId(e.target.value)}
-                        className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold focus:bg-white outline-none"
+                        className="w-full px-3 py-2 bg-[#f8fafc] border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:bg-white focus:ring-2 focus:ring-[#1d4ed8] outline-none"
                       >
                         {directionCounters.map((cnt) => (
                           <option key={cnt.id} value={cnt.id}>
@@ -793,7 +793,7 @@ export const BookingPage: React.FC = () => {
                 </div>
 
                 {isReadOnlyViewer ? (
-                  <div className="p-3 bg-indigo-50 border border-indigo-200 rounded-xl text-xs font-bold text-indigo-800 text-center">
+                  <div className="p-3 bg-[#eff6ff] border border-[#bfdbfe] rounded-xl text-xs font-bold text-[#1e3a8a] text-center">
                     চেকার পরিদর্শন মোড — আপনি লাইভ সিট প্ল্যান ও বুকিং তালিকা দেখতে পারবেন (বুকিং/বাতিল অনুমোদিত নয়)
                   </div>
                 ) : (
@@ -807,7 +807,7 @@ export const BookingPage: React.FC = () => {
                           isNaN(Number(manualFare)) ||
                           Number(manualFare) < 0))
                     }
-                    className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+                    className="w-full py-3 bg-[#1d4ed8] hover:bg-[#1e40af] text-white font-bold rounded-xl text-sm shadow-sm transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
                   >
                     {bookingInProgress ? (
                       'ডাটাবেজে সুরক্ষিত বুকিং নিশ্চিত করা হচ্ছে...'
@@ -844,49 +844,49 @@ export const BookingPage: React.FC = () => {
               { seat: 0, cargo: 0, total: 0 }
             );
             return (
-              <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4 pb-3 border-b">
+              <div className="bg-white rounded-2xl border border-slate-200 shadow-2xs overflow-hidden">
+                <div className="bg-[#1e3a8a] px-4 py-2.5 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <div>
-                    <h3 className="font-bold text-sm text-slate-800">
+                    <h3 className="font-bold text-xs sm:text-sm">
                       এই ট্রিপের বুকিং রেকর্ড ({toBengaliDigits(bookedSeats.length)} টি টিকিট/রসিদ)
                     </h3>
-                    <p className="text-xs text-slate-500 mt-0.5 tabular-nums">
-                      মোট বিক্রিত আসন: <strong>{toBengaliDigits(currentSchedule.totalBookedSeats || 0)} টি</strong> ·{' '}
-                      সিট ভাড়া: <strong className="text-blue-700">{formatTaka(totals.seat)}</strong> ·{' '}
-                      মালের ভাড়া: <strong className="text-amber-700">{formatTaka(totals.cargo)}</strong> ·{' '}
-                      সর্বমোট আদায়: <strong className="text-emerald-700">{formatTaka(totals.total)}</strong>
+                    <p className="text-[11px] text-[#dbeafe] mt-0.5 tabular-nums">
+                      মোট বিক্রিত আসন: <strong className="text-white">{toBengaliDigits(currentSchedule.totalBookedSeats || 0)} টি</strong> ·{' '}
+                      সিট ভাড়া: <strong className="text-[#dbeafe]">{formatTaka(totals.seat)}</strong> ·{' '}
+                      মালের ভাড়া: <strong className="text-[#dbeafe]">{formatTaka(totals.cargo)}</strong> ·{' '}
+                      সর্বমোট আদায়: <strong className="text-[#93c5fd]">{formatTaka(totals.total)}</strong>
                     </p>
                   </div>
                 </div>
 
                 {bookedSeats.length === 0 ? (
-                  <div className="text-center py-6 text-xs text-slate-400">
+                  <div className="text-center py-6 text-xs text-slate-500">
                     এখনও কোনো আসন বা মালামাল বুকিং হয়নি।
                   </div>
                 ) : (
                   <div className="overflow-x-auto">
                     <table className="w-full text-left text-xs border-collapse">
                       <thead>
-                        <tr className="bg-slate-100 text-slate-700 border-b border-slate-300 font-bold">
-                          <th className="py-2.5 px-3">টিকিট নং</th>
-                          <th className="py-2.5 px-3">কাউন্টার</th>
-                          <th className="py-2.5 px-3">যাত্রী ও ফোন</th>
-                          <th className="py-2.5 px-3">সিট নম্বর / ধরন</th>
-                          <th className="py-2.5 px-3 text-right">সিট ভাড়া</th>
-                          <th className="py-2.5 px-3 text-right">মালের ভাড়া</th>
-                          <th className="py-2.5 px-3 text-right">মোট টাকা</th>
+                        <tr className="bg-[#1d4ed8] text-white border-b border-[#1e40af] font-bold">
+                          <th className="py-2.5 px-3 border-r border-blue-600/60">টিকিট নং</th>
+                          <th className="py-2.5 px-3 border-r border-blue-600/60">কাউন্টার</th>
+                          <th className="py-2.5 px-3 border-r border-blue-600/60">যাত্রী ও ফোন</th>
+                          <th className="py-2.5 px-3 border-r border-blue-600/60">সিট নম্বর / ধরন</th>
+                          <th className="py-2.5 px-3 border-r border-blue-600/60 text-right">সিট ভাড়া</th>
+                          <th className="py-2.5 px-3 border-r border-blue-600/60 text-right">মালের ভাড়া</th>
+                          <th className="py-2.5 px-3 border-r border-blue-600/60 text-right">মোট টাকা</th>
                           <th className="py-2.5 px-3 text-right">অ্যাকশন</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-slate-100">
+                      <tbody className="divide-y divide-slate-200">
                         {bookedSeats.map((b) => {
                           const fp = getBookingFareParts(b);
                           return (
-                            <tr key={b.id} className="hover:bg-slate-50/80">
-                              <td className="py-2.5 px-3 font-mono font-bold text-slate-900 whitespace-nowrap">
+                            <tr key={b.id} className="odd:bg-white even:bg-[#f1f5f9] hover:bg-[#eff6ff] transition-colors">
+                              <td className="py-2.5 px-3 font-mono font-bold text-slate-900 whitespace-nowrap border-r border-slate-200">
                                 {b.ticketNo}
                               </td>
-                              <td className="py-2.5 px-3 whitespace-nowrap">
+                              <td className="py-2.5 px-3 whitespace-nowrap border-r border-slate-200">
                                 <div className="flex items-center gap-1.5">
                                   <span
                                     className="w-2.5 h-2.5 rounded-full shrink-0"
@@ -895,11 +895,11 @@ export const BookingPage: React.FC = () => {
                                   <span className="font-semibold text-slate-800">{b.counterName}</span>
                                 </div>
                               </td>
-                              <td className="py-2.5 px-3">
-                                <div className="font-medium text-slate-800">{b.passengerName}</div>
-                                <div className="text-[10px] text-slate-400">{b.passengerPhone || 'নেই'}</div>
+                              <td className="py-2.5 px-3 border-r border-slate-200">
+                                <div className="font-medium text-slate-900">{b.passengerName}</div>
+                                <div className="text-[10px] text-slate-500">{b.passengerPhone || 'নেই'}</div>
                               </td>
-                              <td className="py-2.5 px-3">
+                              <td className="py-2.5 px-3 border-r border-slate-200">
                                 {b.seatNumbers.length > 0 ? (
                                   <div className="flex flex-wrap gap-1">
                                     {b.seatNumbers.map((s) => (
@@ -913,25 +913,25 @@ export const BookingPage: React.FC = () => {
                                     ))}
                                   </div>
                                 ) : (
-                                  <span className="px-2 py-0.5 rounded bg-amber-100 text-amber-800 text-[10px] font-bold">
+                                  <span className="px-2 py-0.5 rounded bg-[#eff6ff] text-[#1e3a8a] border border-[#bfdbfe] text-[10px] font-bold">
                                     মালামাল বুকিং
                                   </span>
                                 )}
                               </td>
-                              <td className="py-2.5 px-3 text-right font-semibold text-slate-800 tabular-nums whitespace-nowrap">
+                              <td className="py-2.5 px-3 text-right font-semibold text-slate-900 tabular-nums whitespace-nowrap border-r border-slate-200">
                                 {formatTaka(fp.seatFare)}
                               </td>
-                              <td className="py-2.5 px-3 text-right font-semibold text-amber-800 tabular-nums whitespace-nowrap">
+                              <td className="py-2.5 px-3 text-right font-semibold text-[#1e3a8a] tabular-nums whitespace-nowrap border-r border-slate-200">
                                 {formatTaka(fp.cargoFare)}
                               </td>
-                              <td className="py-2.5 px-3 text-right font-black text-emerald-700 tabular-nums whitespace-nowrap">
+                              <td className="py-2.5 px-3 text-right font-black text-[#1d4ed8] tabular-nums whitespace-nowrap border-r border-slate-200">
                                 {formatTaka(fp.totalFare)}
                               </td>
                               <td className="py-2.5 px-3 text-right space-x-1 whitespace-nowrap">
                                 <button
                                   type="button"
                                   onClick={() => setPrintedBooking(b)}
-                                  className="p-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg transition-colors cursor-pointer"
+                                  className="p-1.5 bg-[#eff6ff] hover:bg-[#dbeafe] text-[#1d4ed8] border border-[#bfdbfe] rounded-lg transition-colors cursor-pointer"
                                   title="থার্মাল টিকিট প্রিন্ট করুন"
                                 >
                                   <Printer className="w-3.5 h-3.5" />
@@ -949,7 +949,7 @@ export const BookingPage: React.FC = () => {
                                         }
                                       }
                                     }}
-                                    className="p-1.5 bg-red-50 hover:bg-red-100 text-red-700 rounded-lg transition-colors text-[10px] font-bold cursor-pointer"
+                                    className="px-2 py-1 bg-[#f8fafc] hover:bg-[#1e3a8a] text-[#1e3a8a] hover:text-white border border-slate-200 rounded-lg transition-colors text-[10px] font-bold cursor-pointer"
                                     title="বাতিল করুন"
                                   >
                                     বাতিল
@@ -961,17 +961,17 @@ export const BookingPage: React.FC = () => {
                         })}
                       </tbody>
                       <tfoot>
-                        <tr className="bg-slate-100 border-t-2 border-slate-300 font-black text-slate-900">
-                          <td colSpan={4} className="py-2.5 px-3 text-right">
+                        <tr className="bg-[#eff6ff] border-t-2 border-[#bfdbfe] font-black text-[#1e3a8a]">
+                          <td colSpan={4} className="py-2.5 px-3 text-right border-r border-[#bfdbfe]">
                             সর্বমোট আদায় হিসাব:
                           </td>
-                          <td className="py-2.5 px-3 text-right text-blue-800 tabular-nums whitespace-nowrap">
+                          <td className="py-2.5 px-3 text-right text-[#1e3a8a] tabular-nums whitespace-nowrap border-r border-[#bfdbfe]">
                             {formatTaka(totals.seat)}
                           </td>
-                          <td className="py-2.5 px-3 text-right text-amber-800 tabular-nums whitespace-nowrap">
+                          <td className="py-2.5 px-3 text-right text-[#1e3a8a] tabular-nums whitespace-nowrap border-r border-[#bfdbfe]">
                             {formatTaka(totals.cargo)}
                           </td>
-                          <td className="py-2.5 px-3 text-right text-emerald-800 tabular-nums whitespace-nowrap">
+                          <td className="py-2.5 px-3 text-right text-[#1d4ed8] tabular-nums whitespace-nowrap border-r border-[#bfdbfe]">
                             {formatTaka(totals.total)}
                           </td>
                           <td />

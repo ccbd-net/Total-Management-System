@@ -7,6 +7,7 @@ import {
   toBengaliDigits,
   getTodayDhakaDate,
   formatBengaliDate,
+  formatTime12Hour,
 } from '../utils/formatters.ts';
 import { downloadElementAsPDF, printElementById } from '../utils/pdfGenerator.ts';
 import {
@@ -15,6 +16,7 @@ import {
   type OwnerReportSummaryItem,
 } from '../utils/whatsapp.ts';
 import { OwnerWhatsAppModal } from '../components/OwnerWhatsAppModal.tsx';
+import { DateInput } from '../components/DateInput.tsx';
 import {
   Database,
   Calendar,
@@ -362,8 +364,8 @@ export const DatabasePage: React.FC = () => {
           ? `${formatBengaliDate(yesterday)} (আপ) + ${formatBengaliDate(date)} (ডাউন)`
           : `${formatBengaliDate(yesterday)} (আপ) [আজ ${formatBengaliDate(date)} ডাউন অপেক্ষমাণ]`;
 
-        const upTime = `${upTrip.departureTime} ${upTrip.tripSequenceLabel ? `(${upTrip.tripSequenceLabel})` : ''}`;
-        const downTime = downTrip ? `${downTrip.departureTime}` : 'ডাউন ট্রিপ অপেক্ষমাণ';
+        const upTime = `${formatTime12Hour(upTrip.departureTime)} ${upTrip.tripSequenceLabel ? `(${upTrip.tripSequenceLabel})` : ''}`;
+        const downTime = downTrip ? `${formatTime12Hour(downTrip.departureTime)}` : 'ডাউন ট্রিপ অপেক্ষমাণ';
 
         const { display: timeDiffDisplay, minutes: timeDiffMinutes } =
           downTrip
@@ -475,9 +477,9 @@ export const DatabasePage: React.FC = () => {
 
         const dateDisplay = formatBengaliDate(date);
         const upTime = upTrip
-          ? `${upTrip.departureTime} ${upTrip.tripSequenceLabel ? `(${upTrip.tripSequenceLabel})` : ''}`
+          ? `${formatTime12Hour(upTrip.departureTime)} ${upTrip.tripSequenceLabel ? `(${upTrip.tripSequenceLabel})` : ''}`
           : '-';
-        const downTime = downTrip ? `${downTrip.departureTime}` : 'ডাউন ট্রিপ অপেক্ষমাণ';
+        const downTime = downTrip ? `${formatTime12Hour(downTrip.departureTime)}` : 'ডাউন ট্রিপ অপেক্ষমাণ';
 
         const { display: timeDiffDisplay, minutes: timeDiffMinutes } =
           upTrip && downTrip
@@ -588,7 +590,7 @@ export const DatabasePage: React.FC = () => {
         const isNightHold = true;
         const isFullTrip = false; // Returns tomorrow!
         const dateDisplay = `${formatBengaliDate(date)} (আপ) [ফিরতি দিন: ${formatBengaliDate(tomorrow)}]`;
-        const upTime = `${upTrip.departureTime} ${upTrip.tripSequenceLabel ? `(${upTrip.tripSequenceLabel})` : ''}`;
+        const upTime = `${formatTime12Hour(upTrip.departureTime)} ${upTrip.tripSequenceLabel ? `(${upTrip.tripSequenceLabel})` : ''}`;
         const downTime = `আগামীকাল ফিরতি ট্রিপ (${formatBengaliDate(tomorrow)})`;
         const timeDiffDisplay = 'আগামীকাল গণনা হবে';
 
@@ -861,7 +863,7 @@ export const DatabasePage: React.FC = () => {
   };
 
   const handlePrint = () => {
-    printElementById('printable-database-report', `ডাটাবেইজ রিপোর্ট — ${date}`, 'A4-landscape');
+    printElementById('printable-database-report', `ডাটাবেইজ রিপোর্ট — ${formatBengaliDate(date)}`, 'A4-landscape');
   };
 
   const handleDownloadPDF = async () => {
@@ -874,7 +876,7 @@ export const DatabasePage: React.FC = () => {
       );
     } catch (err) {
       console.error('Database PDF export error:', err);
-      printElementById('printable-database-report', `ডাটাবেইজ রিপোর্ট — ${date}`, 'A4-landscape');
+      printElementById('printable-database-report', `ডাটাবেইজ রিপোর্ট — ${formatBengaliDate(date)}`, 'A4-landscape');
     }
   };
 
@@ -896,15 +898,15 @@ export const DatabasePage: React.FC = () => {
     <div className="space-y-3">
       <div className="space-y-3 print:hidden">
       {/* Compact Header Card */}
-      <div className="bg-white rounded-xl border border-emerald-200 shadow-2xs overflow-hidden">
-        <div className="bg-[#0b2820] px-3 py-2 text-white flex flex-col md:flex-row md:items-center justify-between gap-2">
+      <div className="bg-white rounded-xl border border-slate-200 shadow-2xs overflow-hidden">
+        <div className="bg-[#1d4ed8] px-3 py-2 text-white flex flex-col md:flex-row md:items-center justify-between gap-2">
           <div className="flex items-center gap-2 min-w-0">
-            <Database className="w-4 h-4 shrink-0 text-emerald-300" />
+            <Database className="w-4 h-4 shrink-0 text-[#bfdbfe]" />
             <div className="min-w-0">
               <h1 className="text-xs sm:text-sm font-bold leading-tight truncate text-white">
                 ডাটাবেইজ — ট্রিপ সমন্বয়, নাইট হোল্ড ও পুর্নাঙ্গ রিপোর্ট
               </h1>
-              <p className="hidden sm:block text-[10px] text-emerald-200/80 leading-tight truncate">
+              <p className="hidden sm:block text-[10px] text-[#dbeafe] leading-tight truncate">
                 আপ ও ডাউন ট্রিপ সমন্বয়, নাইট হোল্ড হিসাব, সময় ব্যবধান ও দূরত্ব রেজিস্টার
               </p>
             </div>
@@ -915,7 +917,7 @@ export const DatabasePage: React.FC = () => {
             <button
               type="button"
               onClick={fetchData}
-              className="p-1.5 bg-white/15 hover:bg-white/25 text-white rounded-lg transition-colors cursor-pointer"
+              className="p-1.5 bg-white/15 hover:bg-white/25 text-white border border-white/25 rounded-lg transition-colors cursor-pointer"
               title="রিফ্রেশ"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
@@ -924,7 +926,7 @@ export const DatabasePage: React.FC = () => {
             <button
               type="button"
               onClick={() => setShowWhatsAppModal(true)}
-              className="px-2.5 py-1 bg-[#0d9488] hover:bg-[#0f766e] text-white rounded-lg text-[11px] font-bold shadow-2xs transition-all flex items-center gap-1 cursor-pointer border border-emerald-400/30"
+              className="px-2.5 py-1 bg-white/15 hover:bg-white/25 text-white border border-white/25 rounded-lg text-[11px] font-bold shadow-2xs transition-all flex items-center gap-1 cursor-pointer"
               title="মালিকদের মোবাইল নম্বরে হোয়াটসঅ্যাপে রিপোর্ট পাঠান"
             >
               <MessageCircle className="w-3.5 h-3.5" />
@@ -934,40 +936,40 @@ export const DatabasePage: React.FC = () => {
             <button
               type="button"
               onClick={handleExportCSV}
-              className="px-2.5 py-1 bg-white hover:bg-emerald-50 text-emerald-950 rounded-lg text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer"
+              className="px-2.5 py-1 bg-white hover:bg-[#eff6ff] text-[#1e3a8a] rounded-lg text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer"
               title="এক্সেল ডাউনলোড"
             >
-              <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-700" />
+              <FileSpreadsheet className="w-3.5 h-3.5 text-[#1d4ed8]" />
               <span>Excel</span>
             </button>
 
             <button
               type="button"
               onClick={handleDownloadPDF}
-              className="px-2.5 py-1 bg-[#071d17] hover:bg-[#134235] text-white rounded-lg text-[11px] font-bold shadow-2xs transition-all flex items-center gap-1 cursor-pointer border border-emerald-500/30"
+              className="px-2.5 py-1 bg-white/15 hover:bg-white/25 text-white rounded-lg text-[11px] font-bold shadow-2xs transition-all flex items-center gap-1 cursor-pointer border border-white/25"
               title="শুধু ডাটা টেবিল পিডিএফ ডাউনলোড করুন"
             >
-              <Download className="w-3.5 h-3.5 text-emerald-300" />
+              <Download className="w-3.5 h-3.5 text-[#bfdbfe]" />
               <span>PDF</span>
             </button>
 
             <button
               type="button"
               onClick={handlePrint}
-              className="px-2.5 py-1 bg-[#0f766e] hover:bg-[#0d9488] text-white rounded-lg text-[11px] font-bold shadow-2xs transition-all flex items-center gap-1 cursor-pointer"
+              className="px-2.5 py-1 bg-white hover:bg-[#eff6ff] text-[#1e3a8a] rounded-lg text-[11px] font-bold shadow-2xs transition-all flex items-center gap-1 cursor-pointer"
               title="শুধু ডাটা টেবিল প্রিন্ট / সেভ PDF"
             >
-              <Printer className="w-3.5 h-3.5" />
+              <Printer className="w-3.5 h-3.5 text-[#1d4ed8]" />
               <span>প্রিন্ট</span>
             </button>
 
             <button
               type="button"
               onClick={handleGenerateAi}
-              className="px-2.5 py-1 bg-[#0d9488] hover:bg-[#0f766e] text-white rounded-lg text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer"
+              className="px-2.5 py-1 bg-[#1e3a8a] hover:bg-[#1e40af] text-white border border-white/20 rounded-lg text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer"
               title="এআই বিশ্লেষণ"
             >
-              <Sparkles className="w-3.5 h-3.5" />
+              <Sparkles className="w-3.5 h-3.5 text-[#bfdbfe]" />
               <span>ইনসাইটস</span>
             </button>
           </div>
@@ -975,16 +977,16 @@ export const DatabasePage: React.FC = () => {
       </div>
 
       {/* Excel-Sheet 6-Column KPI Summary Matrix */}
-      <div className="bg-emerald-200 border border-emerald-200 rounded-xl overflow-hidden shadow-2xs">
+      <div className="bg-slate-200 border border-slate-200 rounded-xl overflow-hidden shadow-2xs">
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-px">
           {/* Full Trips Count */}
           <div className="bg-white flex flex-col">
-            <div className="bg-[#0b2820] px-2.5 py-1 flex items-center justify-between gap-1 text-white">
+            <div className="bg-[#1e3a8a] px-2.5 py-1 flex items-center justify-between gap-1 text-white">
               <span className="text-[10px] font-bold truncate">আজকের পূর্ণাঙ্গ ট্রিপ</span>
-              <Award className="w-3 h-3 shrink-0 opacity-90 text-emerald-300" />
+              <Award className="w-3 h-3 shrink-0 opacity-90 text-[#bfdbfe]" />
             </div>
             <div className="px-2.5 py-1.5 flex items-baseline justify-between gap-1">
-              <span className="text-sm sm:text-base font-black text-slate-900 tabular-nums">
+              <span className="text-sm sm:text-base font-black text-[#1e3a8a] tabular-nums">
                 {toBengaliDigits(stats.fullTrips)}
               </span>
               <span className="text-[10px] text-slate-500 truncate">টি ট্রিপ</span>
@@ -993,12 +995,12 @@ export const DatabasePage: React.FC = () => {
 
           {/* Night Hold Trips */}
           <div className="bg-white flex flex-col">
-            <div className="bg-[#0f766e] px-2.5 py-1 flex items-center justify-between gap-1 text-white">
+            <div className="bg-[#1d4ed8] px-2.5 py-1 flex items-center justify-between gap-1 text-white">
               <span className="text-[10px] font-bold truncate">নাইট হোল্ড ট্রিপ</span>
               <Moon className="w-3 h-3 shrink-0 opacity-90" />
             </div>
             <div className="px-2.5 py-1.5 flex items-baseline justify-between gap-1">
-              <span className="text-sm sm:text-base font-black text-slate-900 tabular-nums">
+              <span className="text-sm sm:text-base font-black text-[#1e3a8a] tabular-nums">
                 {toBengaliDigits(stats.nightHoldTrips)}
               </span>
               <span className="text-[10px] text-slate-500 truncate">টি ফিরতি</span>
@@ -1007,12 +1009,12 @@ export const DatabasePage: React.FC = () => {
 
           {/* Total Booked Seats */}
           <div className="bg-white flex flex-col">
-            <div className="bg-[#0d9488] px-2.5 py-1 flex items-center justify-between gap-1 text-white">
+            <div className="bg-[#1e3a8a] px-2.5 py-1 flex items-center justify-between gap-1 text-white">
               <span className="text-[10px] font-bold truncate">মোট সিট বুকিং</span>
-              <User className="w-3 h-3 shrink-0 opacity-90" />
+              <User className="w-3 h-3 shrink-0 opacity-90 text-[#bfdbfe]" />
             </div>
             <div className="px-2.5 py-1.5 flex items-baseline justify-between gap-1">
-              <span className="text-sm sm:text-base font-black text-slate-900 tabular-nums">
+              <span className="text-sm sm:text-base font-black text-[#1e3a8a] tabular-nums">
                 {toBengaliDigits(stats.totalSeats)}
               </span>
               <span className="text-[10px] text-slate-500 truncate">টি আসন</span>
@@ -1021,12 +1023,12 @@ export const DatabasePage: React.FC = () => {
 
           {/* Total Revenue */}
           <div className="bg-white flex flex-col">
-            <div className="bg-[#0b2820] px-2.5 py-1 flex items-center justify-between gap-1 text-white">
+            <div className="bg-[#1d4ed8] px-2.5 py-1 flex items-center justify-between gap-1 text-white">
               <span className="text-[10px] font-bold truncate">মোট আদায়</span>
-              <TrendingUp className="w-3 h-3 shrink-0 opacity-90 text-emerald-300" />
+              <TrendingUp className="w-3 h-3 shrink-0 opacity-90" />
             </div>
             <div className="px-2.5 py-1.5">
-              <div className="text-sm sm:text-base font-black text-emerald-800 tabular-nums leading-tight">
+              <div className="text-sm sm:text-base font-black text-[#1d4ed8] tabular-nums leading-tight">
                 {formatTaka(stats.totalFare)}
               </div>
               <div className="text-[9.5px] text-slate-500 tabular-nums truncate">
@@ -1037,12 +1039,12 @@ export const DatabasePage: React.FC = () => {
 
           {/* Total Distance */}
           <div className="bg-white flex flex-col">
-            <div className="bg-[#0f766e] px-2.5 py-1 flex items-center justify-between gap-1 text-white">
+            <div className="bg-[#1e3a8a] px-2.5 py-1 flex items-center justify-between gap-1 text-white">
               <span className="text-[10px] font-bold truncate">মোট দূরত্ব</span>
-              <RouteIcon className="w-3 h-3 shrink-0 opacity-90" />
+              <RouteIcon className="w-3 h-3 shrink-0 opacity-90 text-[#bfdbfe]" />
             </div>
             <div className="px-2.5 py-1.5 flex items-baseline justify-between gap-1">
-              <span className="text-sm sm:text-base font-black text-slate-900 tabular-nums">
+              <span className="text-sm sm:text-base font-black text-[#1e3a8a] tabular-nums">
                 {toBengaliDigits(stats.totalDistance)}
               </span>
               <span className="text-[10px] text-slate-500 truncate">কিমি</span>
@@ -1051,12 +1053,12 @@ export const DatabasePage: React.FC = () => {
 
           {/* Pending Trips */}
           <div className="bg-white flex flex-col">
-            <div className={`${stats.pendingTrips === 0 ? 'bg-[#0d9488]' : 'bg-amber-700'} px-2.5 py-1 flex items-center justify-between gap-1 text-white`}>
+            <div className={`${stats.pendingTrips === 0 ? 'bg-[#1d4ed8]' : 'bg-[#1e40af]'} px-2.5 py-1 flex items-center justify-between gap-1 text-white`}>
               <span className="text-[10px] font-bold truncate">ফিরতি অপেক্ষমাণ</span>
               <Clock className="w-3 h-3 shrink-0 opacity-90" />
             </div>
             <div className="px-2.5 py-1.5 flex items-baseline justify-between gap-1">
-              <span className={`text-sm sm:text-base font-black tabular-nums ${stats.pendingTrips === 0 ? 'text-emerald-800' : 'text-rose-700'}`}>
+              <span className={`text-sm sm:text-base font-black tabular-nums ${stats.pendingTrips === 0 ? 'text-[#1d4ed8]' : 'text-[#1e3a8a]'}`}>
                 {toBengaliDigits(stats.pendingTrips)}
               </span>
               <span className="text-[10px] text-slate-500 truncate">
@@ -1068,26 +1070,25 @@ export const DatabasePage: React.FC = () => {
       </div>
 
       {/* Compact Filter Bar */}
-      <div className="bg-white p-2.5 rounded-xl border border-slate-300 shadow-2xs flex flex-wrap items-center justify-between gap-2">
+      <div className="bg-white p-2.5 rounded-xl border border-slate-200 shadow-2xs flex flex-wrap items-center justify-between gap-2">
         <div className="flex flex-wrap items-center gap-2">
           {/* Date Picker */}
-          <div className="flex items-center gap-1.5 bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-300 text-[11px] font-semibold">
-            <Calendar className="w-3.5 h-3.5 text-emerald-600" />
-            <input
-              type="date"
+          <div className="flex items-center gap-1.5 bg-[#f8fafc] px-2.5 py-1 rounded-lg border border-slate-200 text-[11px] font-semibold">
+            <Calendar className="w-3.5 h-3.5 text-[#1d4ed8]" />
+            <DateInput
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="bg-transparent outline-none cursor-pointer font-bold text-slate-800"
+              className="bg-transparent outline-none cursor-pointer font-bold text-[#1e3a8a]"
             />
           </div>
 
           {/* Vehicle Dropdown */}
-          <div className="flex items-center gap-1.5 bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-300 text-[11px] font-semibold">
-            <Bus className="w-3.5 h-3.5 text-blue-600" />
+          <div className="flex items-center gap-1.5 bg-[#f8fafc] px-2.5 py-1 rounded-lg border border-slate-200 text-[11px] font-semibold">
+            <Bus className="w-3.5 h-3.5 text-[#1d4ed8]" />
             <select
               value={vehicleFilter}
               onChange={(e) => setVehicleFilter(e.target.value)}
-              className="bg-transparent outline-none cursor-pointer font-bold text-slate-800"
+              className="bg-transparent outline-none cursor-pointer font-bold text-[#1e3a8a]"
             >
               <option value="ALL">সকল গাড়ি</option>
               {vehicles.map((v) => (
@@ -1099,13 +1100,13 @@ export const DatabasePage: React.FC = () => {
           </div>
 
           {/* Trip Type Filter */}
-          <div className="flex flex-wrap bg-[#e6f4ef] p-0.5 rounded-lg text-[11px] font-bold border border-emerald-200 gap-0.5">
+          <div className="flex flex-wrap bg-[#f8fafc] p-0.5 rounded-lg text-[11px] font-bold border border-slate-200 gap-0.5">
             <button
               type="button"
               onClick={() => setTripTypeFilter('ALL')}
               className={`px-2 py-1 rounded-md transition-all cursor-pointer ${
                 tripTypeFilter === 'ALL'
-                  ? 'bg-[#0b2820] text-white shadow-2xs'
+                  ? 'bg-[#1d4ed8] text-white shadow-2xs'
                   : 'text-slate-700 hover:text-slate-900'
               }`}
             >
@@ -1116,7 +1117,7 @@ export const DatabasePage: React.FC = () => {
               onClick={() => setTripTypeFilter('FULL_TRIPS')}
               className={`px-2 py-1 rounded-md transition-all cursor-pointer ${
                 tripTypeFilter === 'FULL_TRIPS'
-                  ? 'bg-[#0d9488] text-white shadow-2xs'
+                  ? 'bg-[#1d4ed8] text-white shadow-2xs'
                   : 'text-slate-700 hover:text-slate-900'
               }`}
             >
@@ -1127,7 +1128,7 @@ export const DatabasePage: React.FC = () => {
               onClick={() => setTripTypeFilter('NIGHT_HOLD')}
               className={`px-2 py-1 rounded-md transition-all cursor-pointer ${
                 tripTypeFilter === 'NIGHT_HOLD'
-                  ? 'bg-[#0f766e] text-white shadow-2xs'
+                  ? 'bg-[#1e3a8a] text-white shadow-2xs'
                   : 'text-slate-700 hover:text-slate-900'
               }`}
             >
@@ -1138,7 +1139,7 @@ export const DatabasePage: React.FC = () => {
               onClick={() => setTripTypeFilter('PENDING')}
               className={`px-2 py-1 rounded-md transition-all cursor-pointer ${
                 tripTypeFilter === 'PENDING'
-                  ? 'bg-amber-700 text-white shadow-2xs'
+                  ? 'bg-[#1e3a8a] text-white shadow-2xs'
                   : 'text-slate-700 hover:text-slate-900'
               }`}
             >
@@ -1155,17 +1156,17 @@ export const DatabasePage: React.FC = () => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="গাড়ি, রুট, সুপারভাইজার বা ড্রাইভার..."
-            className="w-full pl-8 pr-2.5 py-1 bg-[#f4fbf8] border border-emerald-200 rounded-lg text-[11px] text-slate-900 outline-none focus:bg-white focus:ring-1 focus:ring-emerald-600 font-medium"
+            className="w-full pl-8 pr-2.5 py-1 bg-[#f8fafc] border border-slate-200 rounded-lg text-[11px] text-slate-900 outline-none focus:bg-white focus:ring-1 focus:ring-[#1d4ed8] font-medium"
           />
         </div>
       </div>
 
       {/* Main Database Excel Sheet Card */}
-      <div className="bg-white rounded-xl border border-emerald-200 shadow-2xs overflow-hidden">
+      <div className="bg-white rounded-xl border border-slate-200 shadow-2xs overflow-hidden">
         {/* Card Header Bar */}
-        <div className="bg-[#0b2820] px-3 py-2 text-white flex flex-col md:flex-row md:items-center justify-between gap-2">
+        <div className="bg-[#1e3a8a] px-3 py-2 text-white flex flex-col md:flex-row md:items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <span className="px-1.5 py-0.2 rounded bg-white/25 text-white font-bold text-[10px] font-mono">
+            <span className="px-1.5 py-0.2 rounded bg-white/15 border border-white/25 text-white font-bold text-[10px] font-mono">
               {toBengaliDigits(filteredRows.length)}
             </span>
             <h3 className="text-xs font-bold">
@@ -1173,30 +1174,30 @@ export const DatabasePage: React.FC = () => {
             </h3>
           </div>
 
-          <div className="text-[10px] text-emerald-50 flex items-center gap-1">
-            <Info className="w-3 h-3 shrink-0" />
+          <div className="text-[10px] text-[#dbeafe] flex items-center gap-1">
+            <Info className="w-3 h-3 shrink-0 text-[#93c5fd]" />
             <span>আপ + ডাউন মিলে ১ পূর্ণাঙ্গ ট্রিপ · নাইট হোল্ড ফিরতি দিনে কাউন্ট হয়</span>
           </div>
         </div>
 
         {loading ? (
           <div className="py-16 text-center text-xs text-slate-400 flex items-center justify-center gap-2">
-            <RefreshCw className="w-4 h-4 animate-spin text-emerald-600" />
+            <RefreshCw className="w-4 h-4 animate-spin text-[#1d4ed8]" />
             ডাটাবেইজ লোড হচ্ছে...
           </div>
         ) : filteredRows.length === 0 ? (
           <div className="py-16 px-6 text-center bg-white">
             {tripTypeFilter === 'PENDING' ? (
-              <div className="max-w-md mx-auto p-6 bg-emerald-50 rounded-2xl border border-emerald-200">
-                <CheckCircle2 className="w-10 h-10 text-emerald-600 mx-auto mb-2" />
-                <h4 className="text-sm font-bold text-emerald-950">কোনো ট্রিপ অপেক্ষমাণ নেই!</h4>
-                <p className="text-xs text-emerald-700 mt-1">
+              <div className="max-w-md mx-auto p-6 bg-[#eff6ff] rounded-2xl border border-[#bfdbfe]">
+                <CheckCircle2 className="w-10 h-10 text-[#1d4ed8] mx-auto mb-2" />
+                <h4 className="text-sm font-bold text-[#1e3a8a]">কোনো ট্রিপ অপেক্ষমাণ নেই!</h4>
+                <p className="text-xs text-[#1d4ed8] mt-1">
                   আজকের সকল গাড়ির আপ ও ডাউন ট্রিপ সফলভাবে সমন্বয় করা হয়েছে।
                 </p>
               </div>
             ) : (
               <div>
-                <div className="w-14 h-14 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-3">
+                <div className="w-14 h-14 rounded-2xl bg-[#f8fafc] text-[#1d4ed8] border border-slate-200 flex items-center justify-center mx-auto mb-3">
                   <Database className="w-7 h-7" />
                 </div>
                 <h4 className="text-sm font-bold text-slate-800">ডাটাবেইজে কোনো ট্রিপ এন্ট্রি নেই</h4>
@@ -1208,26 +1209,26 @@ export const DatabasePage: React.FC = () => {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            {/* Excel Spreadsheet Grid Table with 13 columns */}
-            <table className="w-full text-xs text-left border-collapse border border-slate-300">
-              <thead className="bg-slate-100 text-slate-700 font-bold border-b border-slate-300 sticky top-0 z-10">
+            {/* Excel Spreadsheet Grid Table with 17 columns */}
+            <table className="w-full text-xs text-left border-collapse border border-slate-200">
+              <thead className="bg-[#1d4ed8] text-white font-bold border-b border-[#1e40af] sticky top-0 z-10">
                 <tr>
-                  <th className="px-2.5 py-2.5 text-center w-10 border-r border-slate-300">ক্রমিক</th>
-                  <th className="px-2.5 py-2.5 border-r border-slate-300 min-w-[120px]">তারিখ</th>
-                  <th className="px-2.5 py-2.5 border-r border-slate-300 min-w-[130px]">গাড়ি নাম্বার</th>
-                  <th className="px-2.5 py-2.5 text-center border-r border-slate-300 min-w-[80px]">নাইট হোল্ড</th>
-                  <th className="px-2.5 py-2.5 border-r border-slate-300 min-w-[110px]">আপ ট্রিপ সময়</th>
-                  <th className="px-2.5 py-2.5 border-r border-slate-300 min-w-[110px]">ডাউন ট্রিপ সময়</th>
-                  <th className="px-2.5 py-2.5 text-center border-r border-slate-300 min-w-[110px]">সময় ব্যবধান (আপ-ডাউন)</th>
-                  <th className="px-2.5 py-2.5 border-r border-slate-300 min-w-[200px]">রুট (আপ + ডাউন)</th>
-                  <th className="px-2.5 py-2.5 border-r border-slate-300 min-w-[130px]">মোট দূরত্ব (কিমি)</th>
-                  <th className="px-2.5 py-2.5 border-r border-slate-300 min-w-[130px] bg-blue-50/50">আপ সিট ও ভাড়া</th>
-                  <th className="px-2.5 py-2.5 border-r border-slate-300 min-w-[130px] bg-emerald-50/50">ডাউন সিট ও ভাড়া</th>
-                  <th className="px-2.5 py-2.5 border-r border-slate-300 min-w-[110px] text-right bg-blue-50/70">সিট বুকিং টাকা</th>
-                  <th className="px-2.5 py-2.5 border-r border-slate-300 min-w-[100px] text-right bg-amber-50/70">মালের ভাড়া</th>
-                  <th className="px-2.5 py-2.5 border-r border-slate-300 min-w-[115px] text-right bg-emerald-100/70 font-black">মোট টাকা</th>
-                  <th className="px-2.5 py-2.5 border-r border-slate-300 min-w-[105px] text-right bg-purple-50/70">ফুয়েল +/- মূল্য</th>
-                  <th className="px-2.5 py-2.5 border-r border-slate-300 min-w-[100px]">সুপারভাইজার</th>
+                  <th className="px-2.5 py-2.5 text-center w-10 border-r border-blue-600/60">ক্রমিক</th>
+                  <th className="px-2.5 py-2.5 border-r border-blue-600/60 min-w-[120px]">তারিখ</th>
+                  <th className="px-2.5 py-2.5 border-r border-blue-600/60 min-w-[130px]">গাড়ি নাম্বার</th>
+                  <th className="px-2.5 py-2.5 text-center border-r border-blue-600/60 min-w-[80px]">নাইট হোল্ড</th>
+                  <th className="px-2.5 py-2.5 border-r border-blue-600/60 min-w-[110px]">আপ ট্রিপ সময়</th>
+                  <th className="px-2.5 py-2.5 border-r border-blue-600/60 min-w-[110px]">ডাউন ট্রিপ সময়</th>
+                  <th className="px-2.5 py-2.5 text-center border-r border-blue-600/60 min-w-[110px]">সময় ব্যবধান (আপ-ডাউন)</th>
+                  <th className="px-2.5 py-2.5 border-r border-blue-600/60 min-w-[200px]">রুট (আপ + ডাউন)</th>
+                  <th className="px-2.5 py-2.5 border-r border-blue-600/60 min-w-[130px]">মোট দূরত্ব (কিমি)</th>
+                  <th className="px-2.5 py-2.5 border-r border-blue-600/60 min-w-[130px] bg-[#1e40af]">আপ সিট ও ভাড়া</th>
+                  <th className="px-2.5 py-2.5 border-r border-blue-600/60 min-w-[130px] bg-[#1e40af]">ডাউন সিট ও ভাড়া</th>
+                  <th className="px-2.5 py-2.5 border-r border-blue-600/60 min-w-[110px] text-right bg-[#1e40af]">সিট বুকিং টাকা</th>
+                  <th className="px-2.5 py-2.5 border-r border-blue-600/60 min-w-[100px] text-right bg-[#1e40af]">মালের ভাড়া</th>
+                  <th className="px-2.5 py-2.5 border-r border-blue-600/60 min-w-[115px] text-right bg-[#1e3a8a] font-black">মোট টাকা</th>
+                  <th className="px-2.5 py-2.5 border-r border-blue-600/60 min-w-[105px] text-right bg-[#1e40af]">ফুয়েল +/- মূল্য</th>
+                  <th className="px-2.5 py-2.5 border-r border-blue-600/60 min-w-[100px]">সুপারভাইজার</th>
                   <th className="px-2.5 py-2.5 min-w-[100px]">ড্রাইভার</th>
                 </tr>
               </thead>
@@ -1235,32 +1236,30 @@ export const DatabasePage: React.FC = () => {
                 {filteredRows.map((row) => (
                   <tr
                     key={row.id}
-                    className={`hover:bg-blue-50/40 transition-colors ${
-                      row.isFullTrip ? 'bg-white' : 'bg-slate-50/60'
-                    }`}
+                    className="odd:bg-white even:bg-[#f1f5f9] hover:bg-[#eff6ff] transition-colors"
                   >
                     {/* 1. ক্রমিক */}
-                    <td className="px-2.5 py-2 text-center font-bold text-slate-800 border-r border-slate-300">
-                      <span className="w-5 h-5 rounded bg-slate-100 text-slate-700 border border-slate-300 inline-flex items-center justify-center font-mono text-[11px]">
+                    <td className="px-2.5 py-2 text-center font-bold text-[#1e3a8a] border-r border-slate-200">
+                      <span className="w-5 h-5 rounded bg-[#eff6ff] text-[#1e3a8a] border border-[#bfdbfe] inline-flex items-center justify-center font-mono text-[11px]">
                         {toBengaliDigits(row.autoSerial)}
                       </span>
                     </td>
 
                     {/* 2. তারিখ */}
-                    <td className="px-2.5 py-2 border-r border-slate-300">
+                    <td className="px-2.5 py-2 border-r border-slate-200">
                       <div className="font-bold text-slate-900 leading-tight">{row.dateDisplay}</div>
                       {row.isNightHold && (
-                        <span className="inline-flex items-center gap-0.5 text-[9.5px] text-purple-700 font-bold bg-purple-50 px-1 rounded border border-purple-200 mt-0.5">
-                          <Moon className="w-2.5 h-2.5 text-purple-600" />
+                        <span className="inline-flex items-center gap-0.5 text-[9.5px] text-white font-bold bg-[#1e3a8a] px-1 rounded mt-0.5">
+                          <Moon className="w-2.5 h-2.5 text-[#93c5fd]" />
                           <span>নাইট হোল্ড রিটার্ন</span>
                         </span>
                       )}
                     </td>
 
                     {/* 3. গাড়ি নাম্বার */}
-                    <td className="px-2.5 py-2 border-r border-slate-300">
+                    <td className="px-2.5 py-2 border-r border-slate-200">
                       <div className="font-black text-slate-900 font-mono flex items-center gap-1">
-                        <Bus className="w-3 h-3 text-slate-400" />
+                        <Bus className="w-3 h-3 text-[#1d4ed8]" />
                         <span>{row.vehicleRegNo}</span>
                       </div>
                       <div className="text-[10px] text-slate-500">
@@ -1269,10 +1268,10 @@ export const DatabasePage: React.FC = () => {
                     </td>
 
                     {/* 4. নাইট হোল্ড */}
-                    <td className="px-2.5 py-2 text-center border-r border-slate-300">
+                    <td className="px-2.5 py-2 text-center border-r border-slate-200">
                       {row.isNightHold ? (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10.5px] font-bold bg-purple-100 text-purple-800 border border-purple-200 shadow-2xs">
-                          <Moon className="w-3 h-3" />
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10.5px] font-bold bg-[#1e3a8a] text-white shadow-2xs">
+                          <Moon className="w-3 h-3 text-[#93c5fd]" />
                           <span>হ্যাঁ</span>
                         </span>
                       ) : (
@@ -1281,92 +1280,92 @@ export const DatabasePage: React.FC = () => {
                     </td>
 
                     {/* 5. আপ ট্রিপ সময় */}
-                    <td className="px-2.5 py-2 border-r border-slate-300">
-                      <div className="font-bold text-blue-900">{row.upTime}</div>
+                    <td className="px-2.5 py-2 border-r border-slate-200">
+                      <div className="font-bold text-[#1e3a8a]">{row.upTime}</div>
                       {row.upTripNo && (
-                        <div className="text-[10px] text-blue-600 font-mono">{row.upTripNo}</div>
+                        <div className="text-[10px] text-[#1d4ed8] font-mono">{row.upTripNo}</div>
                       )}
                     </td>
 
                     {/* 6. ডাউন ট্রিপ সময় */}
-                    <td className="px-2.5 py-2 border-r border-slate-300">
-                      <div className={`font-bold ${row.downTime.includes('অপেক্ষমাণ') || row.downTime.includes('আগামীকাল') ? 'text-amber-700' : 'text-emerald-900'}`}>
+                    <td className="px-2.5 py-2 border-r border-slate-200">
+                      <div className={`font-bold ${row.downTime.includes('অপেক্ষমাণ') || row.downTime.includes('আগামীকাল') ? 'text-[#1e3a8a]' : 'text-[#1d4ed8]'}`}>
                         {row.downTime}
                       </div>
                       {row.downTripNo && (
-                        <div className="text-[10px] text-emerald-600 font-mono">{row.downTripNo}</div>
+                        <div className="text-[10px] text-[#1d4ed8] font-mono">{row.downTripNo}</div>
                       )}
                     </td>
 
                     {/* 7. সময় ব্যবধান (আপ সময় - ডাউন সময়) */}
-                    <td className="px-2.5 py-2 text-center border-r border-slate-300">
-                      <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-amber-50 text-amber-900 font-bold text-[11px] border border-amber-200">
-                        <Clock className="w-3 h-3 text-amber-600 shrink-0" />
+                    <td className="px-2.5 py-2 text-center border-r border-slate-200">
+                      <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-[#eff6ff] text-[#1e3a8a] font-bold text-[11px] border border-[#bfdbfe]">
+                        <Clock className="w-3 h-3 text-[#1d4ed8] shrink-0" />
                         <span>{row.timeDiffDisplay}</span>
                       </div>
                     </td>
 
                     {/* 8. রুট (আপ ট্রিপ রুট + ডাউন ট্রিপ রুট) */}
-                    <td className="px-2.5 py-2 border-r border-slate-300">
+                    <td className="px-2.5 py-2 border-r border-slate-200">
                       <div className="font-semibold text-slate-900 text-[11px] leading-snug">
                         {row.routeMerged}
                       </div>
                     </td>
 
                     {/* 9. মোট দূরত্ব (আপ রুট কিমি + ডাউন ট্রিপ কিমি) */}
-                    <td className="px-2.5 py-2 border-r border-slate-300 font-semibold text-slate-800">
+                    <td className="px-2.5 py-2 border-r border-slate-200 font-semibold text-slate-800">
                       <div className="flex items-center gap-1 font-mono text-[11px]">
-                        <RouteIcon className="w-3 h-3 text-indigo-500 shrink-0" />
+                        <RouteIcon className="w-3 h-3 text-[#1d4ed8] shrink-0" />
                         <span>{row.distanceKmDisplay}</span>
                       </div>
                     </td>
 
                     {/* 10. আপ ট্রিপ সিট বুকিং সংখ্যা + মোট ভাড়া */}
-                    <td className="px-2.5 py-2 border-r border-slate-300 bg-blue-50/30">
-                      <div className="font-bold text-blue-900 text-xs">{row.upSeatsAndFare}</div>
+                    <td className="px-2.5 py-2 border-r border-slate-200">
+                      <div className="font-bold text-[#1e3a8a] text-xs">{row.upSeatsAndFare}</div>
                       {row.upCargoFare > 0 && (
-                        <div className="text-[10px] text-amber-700 font-semibold">
+                        <div className="text-[10px] text-slate-600 font-semibold">
                           সিট: {formatTaka(row.upSeatFare)} | মাল: {formatTaka(row.upCargoFare)}
                         </div>
                       )}
                     </td>
 
                     {/* 11. ডাউন ট্রিপ সিট বুকিং সংখ্যা + মোট ভাড়া */}
-                    <td className="px-2.5 py-2 border-r border-slate-300 bg-emerald-50/30">
-                      <div className="font-bold text-emerald-900 text-xs">{row.downSeatsAndFare}</div>
+                    <td className="px-2.5 py-2 border-r border-slate-200">
+                      <div className="font-bold text-[#1d4ed8] text-xs">{row.downSeatsAndFare}</div>
                       {row.downCargoFare > 0 && (
-                        <div className="text-[10px] text-amber-700 font-semibold">
+                        <div className="text-[10px] text-slate-600 font-semibold">
                           সিট: {formatTaka(row.downSeatFare)} | মাল: {formatTaka(row.downCargoFare)}
                         </div>
                       )}
                     </td>
 
                     {/* 12. সিট বুকিং টাকা */}
-                    <td className="px-2.5 py-2 border-r border-slate-300 text-right bg-blue-50/30 tabular-nums whitespace-nowrap">
-                      <div className="font-bold text-blue-900 text-xs">{formatTaka(row.combinedSeatFare)}</div>
+                    <td className="px-2.5 py-2 border-r border-slate-200 text-right tabular-nums whitespace-nowrap">
+                      <div className="font-bold text-[#1e3a8a] text-xs">{formatTaka(row.combinedSeatFare)}</div>
                       <div className="text-[10px] text-slate-500">{toBengaliDigits(row.combinedSeats)} সিট</div>
                     </td>
 
                     {/* 13. মালের ভাড়া */}
-                    <td className="px-2.5 py-2 border-r border-slate-300 text-right bg-amber-50/30 tabular-nums whitespace-nowrap">
-                      <div className="font-bold text-amber-800 text-xs">{formatTaka(row.combinedCargoFare)}</div>
+                    <td className="px-2.5 py-2 border-r border-slate-200 text-right tabular-nums whitespace-nowrap">
+                      <div className="font-bold text-[#1e3a8a] text-xs">{formatTaka(row.combinedCargoFare)}</div>
                     </td>
 
                     {/* 14. মোট টাকা (সিট + মাল) */}
-                    <td className="px-2.5 py-2 border-r border-slate-300 text-right bg-emerald-50/60 tabular-nums whitespace-nowrap">
-                      <div className="font-black text-emerald-950 text-xs">{formatTaka(row.combinedFare)}</div>
+                    <td className="px-2.5 py-2 border-r border-slate-200 text-right tabular-nums whitespace-nowrap">
+                      <div className="font-black text-[#1d4ed8] text-xs">{formatTaka(row.combinedFare)}</div>
                     </td>
 
                     {/* 15. ফুয়েল +/- মূল্য */}
-                    <td className="px-2.5 py-2 border-r border-slate-300 text-right bg-purple-50/20 tabular-nums whitespace-nowrap">
+                    <td className="px-2.5 py-2 border-r border-slate-200 text-right tabular-nums whitespace-nowrap">
                       {row.fuelCostDiff !== null ? (
                         <span
                           className={`inline-block px-2 py-0.5 rounded font-bold text-[11px] border ${
                             row.fuelCostDiff > 0
-                              ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                              ? 'bg-[#eff6ff] text-[#1d4ed8] border-[#bfdbfe]'
                               : row.fuelCostDiff < 0
-                              ? 'bg-rose-50 text-rose-700 border-rose-200'
-                              : 'bg-slate-100 text-slate-700 border-slate-300'
+                              ? 'bg-[#1e3a8a] text-white border-[#1e3a8a]'
+                              : 'bg-[#f8fafc] text-[#1e3a8a] border-slate-200'
                           }`}
                         >
                           {formatSignedFuelCostDiff(row.fuelCostDiff)}
@@ -1377,9 +1376,9 @@ export const DatabasePage: React.FC = () => {
                     </td>
 
                     {/* 16. সুপারভাইজার */}
-                    <td className="px-2.5 py-2 border-r border-slate-300 font-semibold text-slate-800">
+                    <td className="px-2.5 py-2 border-r border-slate-200 font-semibold text-slate-800">
                       <div className="flex items-center gap-1">
-                        <User className="w-3 h-3 text-slate-400 shrink-0" />
+                        <User className="w-3 h-3 text-[#1d4ed8] shrink-0" />
                         <span>{row.supervisorDisplay}</span>
                       </div>
                     </td>
@@ -1393,40 +1392,40 @@ export const DatabasePage: React.FC = () => {
               </tbody>
 
               {/* Table Summary Footer */}
-              <tfoot className="bg-slate-200 text-slate-900 font-black border-t-2 border-slate-400 text-xs">
+              <tfoot className="bg-[#eff6ff] text-[#1e3a8a] font-black border-t-2 border-[#bfdbfe] text-xs">
                 <tr>
-                  <td colSpan={3} className="px-3 py-2.5 border-r border-slate-300 text-left font-bold">
+                  <td colSpan={3} className="px-3 py-2.5 border-r border-[#bfdbfe] text-left font-bold">
                     সর্বমোট: {toBengaliDigits(filteredRows.length)} টি রেকর্ড | পূর্ণাঙ্গ ট্রিপ: {toBengaliDigits(filteredTotals.fullTrips)} টি
                   </td>
-                  <td className="px-2 py-2.5 border-r border-slate-300 text-center">-</td>
-                  <td className="px-2 py-2.5 border-r border-slate-300 text-center">-</td>
-                  <td className="px-2 py-2.5 border-r border-slate-300 text-center">-</td>
-                  <td className="px-2 py-2.5 border-r border-slate-300 text-center">-</td>
-                  <td className="px-2 py-2.5 border-r border-slate-300 text-center">-</td>
-                  <td className="px-2.5 py-2.5 border-r border-slate-300 font-mono text-indigo-900">
+                  <td className="px-2 py-2.5 border-r border-[#bfdbfe] text-center">-</td>
+                  <td className="px-2 py-2.5 border-r border-[#bfdbfe] text-center">-</td>
+                  <td className="px-2 py-2.5 border-r border-[#bfdbfe] text-center">-</td>
+                  <td className="px-2 py-2.5 border-r border-[#bfdbfe] text-center">-</td>
+                  <td className="px-2 py-2.5 border-r border-[#bfdbfe] text-center">-</td>
+                  <td className="px-2.5 py-2.5 border-r border-[#bfdbfe] font-mono text-[#1e3a8a]">
                     {toBengaliDigits(filteredTotals.distance)} কিমি
                   </td>
-                  <td className="px-2.5 py-2.5 border-r border-slate-300 text-blue-900">
+                  <td className="px-2.5 py-2.5 border-r border-[#bfdbfe] text-[#1e3a8a]">
                     {toBengaliDigits(filteredTotals.upSeats)} সিট | {formatTaka(filteredTotals.upFare)}
                   </td>
-                  <td className="px-2.5 py-2.5 border-r border-slate-300 text-emerald-900">
+                  <td className="px-2.5 py-2.5 border-r border-[#bfdbfe] text-[#1d4ed8]">
                     {toBengaliDigits(filteredTotals.downSeats)} সিট | {formatTaka(filteredTotals.downFare)}
                   </td>
-                  <td className="px-2.5 py-2.5 border-r border-slate-300 text-right text-blue-950 bg-blue-100/70 tabular-nums whitespace-nowrap">
+                  <td className="px-2.5 py-2.5 border-r border-[#bfdbfe] text-right text-[#1e3a8a] tabular-nums whitespace-nowrap">
                     {formatTaka(filteredTotals.totalSeatFare)}
                   </td>
-                  <td className="px-2.5 py-2.5 border-r border-slate-300 text-right text-amber-950 bg-amber-100/70 tabular-nums whitespace-nowrap">
+                  <td className="px-2.5 py-2.5 border-r border-[#bfdbfe] text-right text-[#1e3a8a] tabular-nums whitespace-nowrap">
                     {formatTaka(filteredTotals.totalCargoFare)}
                   </td>
-                  <td className="px-2.5 py-2.5 border-r border-slate-300 text-right text-emerald-950 font-black bg-emerald-100 tabular-nums whitespace-nowrap">
+                  <td className="px-2.5 py-2.5 border-r border-[#bfdbfe] text-right text-[#1d4ed8] font-black tabular-nums whitespace-nowrap">
                     {formatTaka(filteredTotals.totalFare)}
                   </td>
-                  <td className={`px-2.5 py-2.5 border-r border-slate-300 text-right font-black tabular-nums whitespace-nowrap ${
-                    filteredTotals.fuelDiff > 0 ? 'text-emerald-800 bg-emerald-50' : filteredTotals.fuelDiff < 0 ? 'text-rose-800 bg-rose-50' : 'text-slate-700'
+                  <td className={`px-2.5 py-2.5 border-r border-[#bfdbfe] text-right font-black tabular-nums whitespace-nowrap ${
+                    filteredTotals.fuelDiff > 0 ? 'text-[#1d4ed8]' : filteredTotals.fuelDiff < 0 ? 'text-white bg-[#1e3a8a]' : 'text-[#1e3a8a]'
                   }`}>
                     {filteredTotals.hasFuelData ? formatSignedFuelCostDiff(filteredTotals.fuelDiff) : '-'}
                   </td>
-                  <td colSpan={2} className="px-3 py-2.5 text-center text-[11px] text-slate-600">
+                  <td colSpan={2} className="px-3 py-2.5 text-center text-[11px] text-[#1e3a8a]">
                     সমন্বয় সম্পন্ন
                   </td>
                 </tr>
@@ -1462,7 +1461,7 @@ export const DatabasePage: React.FC = () => {
             className="recon-subtitle"
             style={{ fontSize: '11px', fontWeight: 600, color: '#334155', marginTop: '3px', lineHeight: 1.4 }}
           >
-            ট্রিপ সমন্বয় ডাটাবেইজ • তারিখ: {date} ({formatBengaliDate(date)}) • পূর্ণাঙ্গ ট্রিপ: {toBengaliDigits(stats.fullTrips)} টি • মোট আদায়: {formatTaka(stats.totalFare)}
+            ট্রিপ সমন্বয় ডাটাবেইজ • তারিখ: {formatBengaliDate(date)} • পূর্ণাঙ্গ ট্রিপ: {toBengaliDigits(stats.fullTrips)} টি • মোট আদায়: {formatTaka(stats.totalFare)}
           </div>
         </div>
 
@@ -1616,23 +1615,23 @@ export const DatabasePage: React.FC = () => {
         onClose={() => setShowWhatsAppModal(false)}
         companyName={user?.company?.name || 'কাউন্টার টিকেটিং'}
         reportTitle="ডাটাবেইজ ও ফুয়েল +/- মূল্য রিপোর্ট"
-        dateLabel={`${date} (${formatBengaliDate(date)})`}
+        dateLabel={formatBengaliDate(date)}
         items={whatsappOwnerItems}
       />
 
       {/* AI Insights Modal */}
       {showAiModal && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 print:hidden">
-          <div className="bg-white rounded-t-2xl sm:rounded-2xl max-w-xl w-full shadow-2xl border border-emerald-200 flex flex-col max-h-[90dvh] overflow-hidden">
-            <div className="shrink-0 px-4 py-3 bg-[#0b2820] text-white flex items-center justify-between">
+          <div className="bg-white rounded-t-2xl sm:rounded-2xl max-w-xl w-full shadow-2xl border border-slate-200 flex flex-col max-h-[90dvh] overflow-hidden">
+            <div className="shrink-0 px-4 py-3 bg-[#1d4ed8] text-white flex items-center justify-between">
               <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-emerald-300" />
+                <Sparkles className="w-4 h-4 text-[#bfdbfe]" />
                 <span>এআই দৈনিক বিশ্লেষণ ও ইনসাইটস</span>
               </h3>
               <button
                 type="button"
                 onClick={() => setShowAiModal(false)}
-                className="p-1.5 text-emerald-100 hover:text-white hover:bg-white/15 rounded-lg cursor-pointer"
+                className="p-1.5 text-[#dbeafe] hover:text-white hover:bg-white/15 rounded-lg cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -1641,21 +1640,21 @@ export const DatabasePage: React.FC = () => {
             <div className="flex-1 overflow-y-auto overscroll-contain p-4">
               {aiLoading ? (
                 <div className="py-12 text-center text-xs text-slate-600 flex items-center justify-center gap-2">
-                  <RefreshCw className="w-4 h-4 animate-spin text-[#0d9488]" />
+                  <RefreshCw className="w-4 h-4 animate-spin text-[#1d4ed8]" />
                   এআই বিশ্লেষণ প্রস্তুত হচ্ছে...
                 </div>
               ) : (
-                <div className="p-4 bg-[#f4fbf8] rounded-xl border border-emerald-200 text-xs text-slate-800 leading-relaxed whitespace-pre-line font-medium">
+                <div className="p-4 bg-[#f8fafc] rounded-xl border border-slate-200 text-xs text-slate-800 leading-relaxed whitespace-pre-line font-medium">
                   {aiReport}
                 </div>
               )}
             </div>
 
-            <div className="shrink-0 px-4 py-3 bg-[#f0f9f6] border-t border-emerald-200 flex justify-end pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+            <div className="shrink-0 px-4 py-3 bg-[#f8fafc] border-t border-slate-200 flex justify-end pb-[max(0.75rem,env(safe-area-inset-bottom))]">
               <button
                 type="button"
                 onClick={() => setShowAiModal(false)}
-                className="px-5 py-2 min-h-[44px] bg-[#0b2820] hover:bg-[#134235] text-white rounded-xl text-xs font-bold cursor-pointer"
+                className="px-5 py-2 min-h-[44px] bg-[#1d4ed8] hover:bg-[#1e40af] text-white rounded-xl text-xs font-bold cursor-pointer"
               >
                 বন্ধ করুন
               </button>

@@ -1,6 +1,7 @@
 import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
+import { initBrandAssetSync } from './utils/brandAssets.ts';
 
 // Capture beforeinstallprompt globally before React mounts (e.g. on LoginPage)
 if (typeof window !== 'undefined') {
@@ -14,11 +15,14 @@ if (typeof window !== 'undefined') {
     (window as any).__deferredPwaPrompt = null;
   });
 
-  // Register Service Worker for PWA installability across Chrome/Android/Desktop
+  // Sync brand icons, favicons & manifest version across all devices immediately
+  initBrandAssetSync();
+
+  // Register Service Worker with updateViaCache: 'none' so icon/manifest updates propagate automatically
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker
-        .register('/sw.js', { scope: '/' })
+        .register('/sw.js', { scope: '/', updateViaCache: 'none' })
         .then((reg) => {
           reg.update().catch(() => {});
         })

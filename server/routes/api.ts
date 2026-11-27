@@ -8,6 +8,10 @@ import {
   generateValidSeatList,
 } from '../db.ts';
 import {
+  generateBrandAssetsFromBuffer,
+  restoreDefaultBrandAssets,
+} from '../brandAssets.ts';
+import {
   createSession,
   destroySession,
   authMiddleware,
@@ -3109,6 +3113,103 @@ apiRouter.put(
       newValues: updated,
     });
     res.json({ success: true, settings: updated });
+  }
+);
+
+// ==========================================
+// 11B. GLOBAL BRAND ICON / FAVICON / LOGO SYNC
+// ==========================================
+
+apiRouter.get('/brand/meta', (_req, res) => {
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  const version = db.getBrandAssetVersion();
+  const updatedAt = db.getBrandLogoUpdatedAt() || new Date().toISOString();
+  res.json({
+    version,
+    updatedAt,
+    logoUrl: `/logo.png?v=${version}`,
+    faviconUrl: `/favicon.ico?v=${version}`,
+    manifestUrl: `/manifest.json?v=${version}`,
+  });
+});
+
+apiRouter.post(
+  '/brand/upload',
+  authMiddleware,
+  requireRole(['super_admin', 'company_admin', 'master_admin']),
+  async (req: AuthenticatedRequest, res) => {
+    try {
+      const { imageDataUrl } = req.body || {};
+      if (!imageDataUrl || typeof imageDataUrl !== 'string') {
+        return res.status(400).json({ error: 'অনুগ্রহ করে একটি বৈধ ছবি ফাইল নির্বাচন করুন।' });
+      }
+
+      const match = imageDataUrl.match(/^data:image\/(png|jpeg|jpg|webp|gif);base64,(.+)$/i);
+      if (!match) {
+        return res.status(400).json({
+          error: 'সাপোর্টেড ইমেজ ফরম্যাট (PNG, JPG, WEBP) আপলোড করুন।',
+        });
+      }
+
+      const imgBuffer = Buffer.from(match[2], 'base64');
+      if (imgBuffer.length < 100 || imgBuffer.length > 10 * 1024 * 1024) {
+        return res.status(400).json({ error: 'ছবির সাইজ ১০ মেগাবাইটের মধ্যে হতে হবে।' });
+      }
+
+      await generateBrandAssetsFromBuffer(imgBuffer);
+      const nextVersion = db.bumpBrandAssetVersion();
+
+      db.logAudit({
+        companyId: getRequestCompanyId(req),
+        userId: req.user!.id,
+        userName: req.user!.name,
+        role: req.user!.role,
+        actionType: 'BRAND_ICON_UPLOAD',
+        entityType: 'SYSTEM',
+        entityId: 'brand-assets',
+        details: `অ্যাপ আইকন, ফেবিকন ও লোগো আপডেট করা হয়েছে (ভার্সন: ${nextVersion}) — সকল মোবাইল ও পিসিতে সিঙ্ক সচল।`,
+      });
+
+      res.json({
+        success: true,
+        version: nextVersion,
+        logoUrl: `/logo.png?v=${nextVersion}`,
+      });
+    } catch (err: any) {
+      console.error('Brand upload error:', err);
+      res.status(500).json({ error: err?.message || 'আইকন ও লোগো প্রসেস করা যায়নি।' });
+    }
+  }
+);
+
+apiRouter.post(
+  '/brand/reset',
+  authMiddleware,
+  requireRole(['super_admin', 'company_admin', 'master_admin']),
+  async (req: AuthenticatedRequest, res) => {
+    try {
+      await restoreDefaultBrandAssets();
+      const nextVersion = db.bumpBrandAssetVersion();
+
+      db.logAudit({
+        companyId: getRequestCompanyId(req),
+        userId: req.user!.id,
+        userName: req.user!.name,
+        role: req.user!.role,
+        actionType: 'BRAND_ICON_RESET',
+        entityType: 'SYSTEM',
+        entityId: 'brand-assets',
+        details: `অ্যাপ আইকন ও লোগো ডিফল্ট DATA CODE ডিজাইনে রিস্টোর করা হয়েছে (ভার্সন: ${nextVersion})।`,
+      });
+
+      res.json({
+        success: true,
+        version: nextVersion,
+        logoUrl: `/logo.png?v=${nextVersion}`,
+      });
+    } catch (err: any) {
+      res.status(500).json({ error: err?.message || 'ডিফল্ট লোগো রিস্টোর ব্যর্থ হয়েছে।' });
+    }
   }
 );
 
